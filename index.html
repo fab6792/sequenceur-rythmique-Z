@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique V10</title>
+    <title>Séquenceur Rythmique v1.1</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique V10" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.1" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -1211,7 +1211,7 @@
             outline: 3px solid #2196F3 !important;
             outline-offset: 2px;
         }
-		
+                
         .step-cell.flash-metronome {
             outline: 3px solid #ff0055 !important;
             box-shadow: 0 0 12px #ff0055 !important;
@@ -3312,7 +3312,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique V10</h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.1</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -3544,17 +3544,21 @@
                     <!-- LIGNE BATTERIE DÉDIÉE PLEINE LARGEUR (LISIBLE, ÉLÉGANTE, NE DÉBORDE JAMAIS) -->
                     <div class="control-group">
                         <span class="control-label">🥁 Motif de Batterie</span>
-                        <select id="selectDrumPattern" class="select-v2" onchange="changerPatternBatterie(this.value)">
-                            <option value="off">🚫 Off (Désactivée)</option>
-                            <option value="rock_8beat" selected>🎸 Rock 8-Beat (Standard)</option>
-                            <option value="rock_drive">🔥 Rock Punchy / Pop Rock</option>
-                            <option value="folk_pop">🪕 Folk / Pop Acoustique</option>
-                            <option value="funk_16">🕺 Funk 16th (Syncopé)</option>
-                            <option value="blues_shuffle">🎷 Blues Shuffle (Swingué)</option>
-                            <option value="reggae_onedrop">🌴 Reggae One Drop</option>
-                            <option value="bossa_nova">🏖️ Bossa Nova (Brésil)</option>
-                            <option value="half_time">⚡ Half-Time (Lourd)</option>
-                        </select>
+                        <div style="display: flex; gap: 6px; align-items: stretch;">
+                            <select id="selectDrumPattern" class="select-v2" onchange="changerPatternBatterie(this.value)" style="flex: 1; min-width: 0;">
+                                <option value="off">🚫 Off (Désactivée)</option>
+                                <option value="rock_8beat" selected>🎸 Rock 8-Beat (Standard)</option>
+                                <option value="rock_drive">🔥 Rock Punchy / Pop Rock</option>
+                                <option value="folk_pop">🪕 Folk / Pop Acoustique</option>
+                                <option value="funk_16">🕺 Funk 16th (Syncopé)</option>
+                                <option value="blues_shuffle">🎷 Blues Shuffle (Swingué)</option>
+                                <option value="reggae_onedrop">🌴 Reggae One Drop</option>
+                                <option value="bossa_nova">🏖️ Bossa Nova (Brésil)</option>
+                                <option value="half_time">⚡ Half-Time (Lourd)</option>
+                                <option value="personnalise">✨ Mon motif personnalisé…</option>
+                            </select>
+                            <button type="button" id="btnEditerBatterie" onclick="ouvrirEditeurBatterie()" title="Créer ou modifier votre propre motif de batterie (v1.1)" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; border: none; border-radius: 8px; padding: 0 13px; font-size: 1.05rem; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.35);">✏️</button>
+                        </div>
                     </div>
 
                     <!-- LIGNE CLIC MÉTRONOME & GAP CLICK EN 2 COLONNES -->
@@ -4076,7 +4080,7 @@
             <div class="palette-btn" draggable="true" ondragstart="dragStart(event, 'silence')" onclick="appliquerTypeAuPas('silence')">
                 <span class="badge-color bg-soupir">Ø</span> 1/8 Soupir [0]
             </div>
-			<div class="palette-btn" onclick="toggleLiaisonNoteActive()">
+                        <div class="palette-btn" onclick="toggleLiaisonNoteActive()">
                 <span class="badge-color" style="background:#2196F3; color:#fff;">⁀</span> Liaison [L]
             </div>
         </div>
@@ -4540,6 +4544,39 @@
             <div class="inversions-window-footer">
                 <span class="inversions-footer-tip">💡 Astuce : Les renversements permettent des lignes de basse mélodiques élégantes (ex: C → G/B → Am).</span>
                 <button type="button" class="btn-v2" onclick="fermerModalRenversements()" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: #fff;">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================
+         v1.1 — FENÊTRE : ÉDITEUR DE MOTIFS DE BATTERIE
+         ========================================================== -->
+    <div id="modalEditeurBatterie" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px);">
+        <div style="background: var(--bg-card, #ffffff); border-radius: 12px; max-width: 880px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35); border: 1px solid var(--panel-border, #ced4da); position: relative; color: var(--text-dark, #212529); font-size: 0.9rem; line-height: 1.5;">
+
+            <!-- EN-TÊTE MODAL -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--panel-border, #e9ecef); padding-bottom: 10px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem;">🥁</span>
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.2rem;">Éditeur de Motif de Batterie</h2>
+                        <div style="font-size: 0.72rem; color: var(--text-gray, #6c757d); margin-top: 2px;">Cliquez sur une case : <strong>note forte</strong> → <strong>note fantôme</strong> → <strong>silence</strong>. Chaque frappe est jouée immédiatement.</div>
+                    </div>
+                </div>
+                <button onclick="fermerEditeurBatterie()" style="background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-gray, #6c757d); padding: 4px 8px; border-radius: 4px; line-height: 1;" title="Fermer (Échap)">✕</button>
+            </div>
+
+            <!-- GRILLE (construite dynamiquement) -->
+            <div id="grilleEditeurBatterie" style="overflow-x: auto; padding-bottom: 4px;"></div>
+            <div style="font-size: 0.7rem; color: var(--text-gray, #6c757d); margin: 6px 0 12px 0;">💡 Sur mobile, faites glisser la grille horizontalement pour voir toute la mesure. Les cases légèrement plus marquées correspondent aux croches.</div>
+
+            <!-- COMMANDES -->
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                <button type="button" id="btnApercuBatterie" onclick="basculerApercuBatterie()" style="background: linear-gradient(135deg, #43a047, #2e7d32); color: #fff; border: none; border-radius: 8px; padding: 9px 14px; font-weight: 800; cursor: pointer; font-size: 0.85rem;">▶ Écouter l'aperçu</button>
+                <button type="button" onclick="copierMotifActuelDansEditeur()" title="Repartir du motif actuellement sélectionné dans le menu, puis modifiez-le à votre façon" style="background: var(--bg-card, #fff); color: var(--text-dark, #212529); border: 1.5px solid var(--panel-border, #ced4da); border-radius: 8px; padding: 9px 14px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">📥 Copier le motif actuel</button>
+                <button type="button" onclick="effacerMotifEditeur()" title="Vider toute la grille" style="background: var(--bg-card, #fff); color: var(--text-dark, #212529); border: 1.5px solid var(--panel-border, #ced4da); border-radius: 8px; padding: 9px 14px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">🧹 Tout effacer</button>
+                <div style="flex: 1;"></div>
+                <button type="button" onclick="enregistrerMotifPersonnalise()" title="Sauvegarder votre motif et l'utiliser dans la lecture" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-weight: 900; cursor: pointer; font-size: 0.9rem; box-shadow: 0 2px 8px rgba(245, 124, 0, 0.4);">💾 Enregistrer &amp; utiliser</button>
             </div>
         </div>
     </div>
@@ -7082,11 +7119,340 @@
     }
 
     function changerPatternBatterie(pattern) {
+        // v1.1 : si l'utilisateur choisit "personnalisé" sans motif enregistré, on ouvre l'éditeur
+        if (pattern === "personnalise") {
+            const sauvegarde = lireMotifPersonnalise();
+            if (!sauvegarde) {
+                afficherToast("Aucun motif personnalisé enregistré — ouverture de l'éditeur pour en créer un ✨", "info");
+                ouvrirEditeurBatterie();
+            }
+        }
         // Coupe immédiatement toutes les frappes de l'ancien motif et resynchronise le flux audio à la volée
         if (playing) {
             reinitialiserPlanificationAudioALaVolee();
         } else {
             couperToutesVoixBatterie();
+        }
+    }
+
+    // ==================================================================
+    // --- v1.1 : ÉDITEUR DE MOTIFS DE BATTERIE ---
+    // Créez votre propre motif : grille 3 instruments × 32 pas, avec
+    // notes fortes / fantômes, aperçu audio en boucle (avec swing),
+    // sauvegarde automatique dans le navigateur et transport dans
+    // les projets exportés (JSON).
+    // ==================================================================
+    const CLE_STOCKAGE_MOTIF_PERSO = "motifBatteriePersonnaliseV1";
+
+    const INSTRUMENTS_EDITEUR_BATTERIE = [
+        { id: "kick",  nom: "Grosse Caisse", emoji: "🥁", couleur: "#e53935" },
+        { id: "snare", nom: "Caisse Claire", emoji: "🪘", couleur: "#43a047" },
+        { id: "hihat", nom: "Charleston",    emoji: "🎩", couleur: "#1e88e5" }
+    ];
+
+    let motifEditeurCourant = null; // Copie de travail dans l'éditeur : { kick:[], snare:[], hihat:[] }
+    let apercuBatterie = null;      // État de l'aperçu en boucle : { actif, timer, pas, tempsProchain }
+
+    function creerMotifVideBatterie(nbPas) {
+        const motif = {};
+        INSTRUMENTS_EDITEUR_BATTERIE.forEach(inst => { motif[inst.id] = new Array(nbPas).fill(0); });
+        return motif;
+    }
+
+    function validerMotifPersonnalise(brut) {
+        // Sécurise des données venant du stockage local ou d'un fichier importé.
+        // Allonge éventuellement à un multiple de la subdivision pour un affichage parfait.
+        if (!brut || typeof brut !== "object" || !Array.isArray(brut.kick)) return null;
+        const subdivisions = (typeof subdivisionsParTemps !== "undefined" && subdivisionsParTemps) ? subdivisionsParTemps : 8;
+        let nbPas = parseInt(brut.kick.length) || 32;
+        nbPas = Math.max(4, Math.min(64, nbPas));
+        nbPas = Math.ceil(nbPas / subdivisions) * subdivisions;
+        const motif = creerMotifVideBatterie(nbPas);
+        INSTRUMENTS_EDITEUR_BATTERIE.forEach(inst => {
+            const source = Array.isArray(brut[inst.id]) ? brut[inst.id] : [];
+            for (let i = 0; i < nbPas; i++) {
+                const v = parseFloat(source[i]);
+                motif[inst.id][i] = isNaN(v) ? 0 : Math.max(0, Math.min(1.3, v));
+            }
+        });
+        return motif;
+    }
+
+    function lireMotifPersonnalise() {
+        try {
+            const brut = localStorage.getItem(CLE_STOCKAGE_MOTIF_PERSO);
+            if (!brut) return null;
+            return validerMotifPersonnalise(JSON.parse(brut));
+        } catch (e) { return null; }
+    }
+
+    function enregistrerMotifPersonnaliseSilencieux(motif) {
+        // Enregistre SANS notification : rend le motif actif + le persiste dans le navigateur
+        const propre = validerMotifPersonnalise(motif);
+        if (!propre) return false;
+        motifsBatterie.personnalise = propre;
+        try {
+            localStorage.setItem(CLE_STOCKAGE_MOTIF_PERSO, JSON.stringify(propre));
+        } catch (e) {}
+        return true;
+    }
+
+    function restaurerMotifPersonnaliseAuDemarrage() {
+        // Appelé une fois au démarrage : rend disponible le motif sauvegardé lors d'une session précédente
+        const motif = lireMotifPersonnalise();
+        if (!motif) return;
+        enregistrerMotifPersonnaliseSilencieux(motif);
+    }
+
+    function ouvrirEditeurBatterie() {
+        const modal = document.getElementById("modalEditeurBatterie");
+        if (!modal) return;
+
+        // Charge dans la grille : votre motif personnalisé s'il est sélectionné/enregistré,
+        // sinon le preset actuellement choisi (excellente base de départ), sinon une grille vide.
+        const select = document.getElementById("selectDrumPattern");
+        const choixActuel = select ? select.value : "rock_8beat";
+        if (choixActuel === "personnalise") {
+            motifEditeurCourant = lireMotifPersonnalise() || creerMotifVideBatterie(pasParMesure);
+        } else if (motifsBatterie[choixActuel]) {
+            motifEditeurCourant = JSON.parse(JSON.stringify(motifsBatterie[choixActuel]));
+        } else {
+            motifEditeurCourant = creerMotifVideBatterie(pasParMesure);
+        }
+        construireGrilleEditeurBatterie();
+        majBoutonApercuBatterie(false);
+        modal.style.display = "flex";
+    }
+
+    function fermerEditeurBatterie() {
+        arreterApercuBatterie();
+        const modal = document.getElementById("modalEditeurBatterie");
+        if (modal) modal.style.display = "none";
+    }
+
+    function construireGrilleEditeurBatterie() {
+        const conteneur = document.getElementById("grilleEditeurBatterie");
+        if (!conteneur || !motifEditeurCourant) return;
+
+        const nbPas = motifEditeurCourant.kick.length;
+        const subdivisions = (typeof subdivisionsParTemps !== "undefined" && subdivisionsParTemps) ? subdivisionsParTemps : 8;
+        const nbTemps = Math.max(1, Math.ceil(nbPas / subdivisions));
+
+        let html = "";
+
+        // Rangée d'en-tête : le numéro de chaque temps
+        html += '<div style="display: flex; align-items: flex-end; margin-bottom: 5px;">';
+        html += '<div style="width: 104px; flex-shrink: 0; position: sticky; left: 0; background: var(--bg-card, #fff); z-index: 2;"></div>';
+        html += '<div style="display: flex; gap: 8px;">';
+        for (let t = 0; t < nbTemps; t++) {
+            html += '<div style="display: grid; grid-template-columns: repeat(' + subdivisions + ', 24px); gap: 3px;">';
+            html += '<div style="grid-column: 1 / span ' + subdivisions + '; text-align: center; font-size: 0.66rem; font-weight: 800; color: var(--text-gray, #6c757d); background: rgba(128,128,128,0.12); border-radius: 4px; padding: 1px 0;">Temps ' + (t + 1) + '</div>';
+            html += '</div>';
+        }
+        html += '</div></div>';
+
+        // Une rangée par instrument, avec étiquette collante (reste visible au défilement)
+        INSTRUMENTS_EDITEUR_BATTERIE.forEach(inst => {
+            html += '<div style="display: flex; align-items: center; margin-bottom: 6px;">';
+            html += '<div style="width: 104px; flex-shrink: 0; position: sticky; left: 0; background: var(--bg-card, #fff); z-index: 2; text-align: right; padding-right: 10px; font-size: 0.72rem; font-weight: 800; white-space: nowrap; box-sizing: border-box;">' + inst.emoji + ' ' + inst.nom + '</div>';
+            html += '<div style="display: flex; gap: 8px;">';
+            for (let t = 0; t < nbTemps; t++) {
+                html += '<div style="display: grid; grid-template-columns: repeat(' + subdivisions + ', 24px); gap: 3px;">';
+                for (let s = 0; s < subdivisions; s++) {
+                    const pas = t * subdivisions + s;
+                    if (pas >= nbPas) break;
+                    html += '<div id="cellule-bat-' + inst.id + '-' + pas + '" data-pas="' + pas + '" onclick="basculerCelluleBatterie(\'' + inst.id + '\', ' + pas + ')" style="width: 24px; height: 30px; border-radius: 5px; cursor: pointer; transition: background 0.1s; box-sizing: border-box;"></div>';
+                }
+                html += '</div>';
+            }
+            html += '</div></div>';
+        });
+
+        conteneur.innerHTML = html;
+
+        // Applique l'état visuel initial de chaque case
+        INSTRUMENTS_EDITEUR_BATTERIE.forEach(inst => {
+            for (let pas = 0; pas < nbPas; pas++) {
+                rafraichirCelluleBatterie(inst.id, pas);
+            }
+        });
+    }
+
+    function rafraichirCelluleBatterie(instrument, pas) {
+        const cellule = document.getElementById("cellule-bat-" + instrument + "-" + pas);
+        if (!cellule || !motifEditeurCourant) return;
+        const valeur = motifEditeurCourant[instrument][pas] || 0;
+        const info = INSTRUMENTS_EDITEUR_BATTERIE.find(i => i.id === instrument);
+        const couleur = info ? info.couleur : "#1e88e5";
+        // Cases des croches (1 pas sur 4) légèrement plus visibles pour se repérer
+        const base = (pas % 4 === 0) ? "rgba(128, 128, 128, 0.30)" : "rgba(128, 128, 128, 0.14)";
+
+        if (valeur >= 0.7) {
+            cellule.style.background = couleur;
+            cellule.style.border = "1px solid rgba(0,0,0,0.25)";
+            cellule.title = "Note forte — cliquez pour une note fantôme";
+        } else if (valeur > 0) {
+            cellule.style.background = "transparent";
+            cellule.style.border = "2px dashed " + couleur;
+            cellule.title = "Note fantôme (frappe légère) — cliquez pour effacer";
+        } else {
+            cellule.style.background = base;
+            cellule.style.border = "1px solid rgba(128,128,128,0.35)";
+            cellule.title = "Silence — cliquez pour une note forte";
+        }
+    }
+
+    function basculerCelluleBatterie(instrument, pas) {
+        if (!motifEditeurCourant || !motifEditeurCourant[instrument]) return;
+        const valeurActuelle = motifEditeurCourant[instrument][pas] || 0;
+        let nouvelle;
+        if (valeurActuelle === 0) nouvelle = 1.0;       // Silence → note forte
+        else if (valeurActuelle >= 0.7) nouvelle = 0.4; // Note forte → note fantôme
+        else nouvelle = 0;                              // Note fantôme → silence
+        motifEditeurCourant[instrument][pas] = nouvelle;
+        rafraichirCelluleBatterie(instrument, pas);
+        if (nouvelle > 0) previsualiserFrappeBatterie(instrument, nouvelle);
+    }
+
+    function previsualiserFrappeBatterie(instrument, velocite) {
+        // Retour sonore immédiat lors du clic sur une case
+        demarrerAudio().then(() => {
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
+            const vol = 0.75 * velocite;
+            if (instrument === "kick") jouerKick(t, vol, audioCtx);
+            else if (instrument === "snare") jouerSnare(t, vol, audioCtx);
+            else jouerHiHat(t, vol, audioCtx);
+        }).catch(() => {});
+    }
+
+    function basculerApercuBatterie() {
+        if (apercuBatterie && apercuBatterie.actif) {
+            arreterApercuBatterie();
+        } else {
+            demarrerApercuBatterie();
+        }
+    }
+
+    function demarrerApercuBatterie() {
+        if (!motifEditeurCourant) return;
+        demarrerAudio().then(() => {
+            if (!audioCtx) return;
+            arreterApercuBatterie(); // réinitialisation propre
+            const motif = motifEditeurCourant;
+            const nbPas = motif.kick.length;
+            const volDrums = parseFloat(document.getElementById("volDrums")?.value || 0.7);
+            const volApercu = 0.35 + 0.5 * volDrums;
+            const etat = { actif: true, timer: null, pas: 0, tempsProchain: audioCtx.currentTime + 0.1 };
+            apercuBatterie = etat;
+            majBoutonApercuBatterie(true);
+
+            const boucleApercu = () => {
+                if (!etat.actif || !audioCtx) return;
+                // Planification anticipée (même principe que le séquenceur principal)
+                while (etat.tempsProchain < audioCtx.currentTime + 0.18) {
+                    const p = etat.pas % nbPas;
+                    const vk = motif.kick[p] || 0;
+                    const vs = motif.snare[p] || 0;
+                    const vh = motif.hihat[p] || 0;
+                    if (vk > 0) jouerKick(etat.tempsProchain, volApercu * vk, audioCtx);
+                    if (vs > 0) jouerSnare(etat.tempsProchain, volApercu * vs, audioCtx);
+                    if (vh > 0) jouerHiHat(etat.tempsProchain, volApercu * vh, audioCtx);
+                    programmerCurseurApercuBatterie(p, etat.tempsProchain);
+                    // calculerDureePas applique le swing et la signature réglés dans l'application
+                    etat.tempsProchain += calculerDureePas(etat.pas, 1);
+                    etat.pas++;
+                }
+                etat.timer = setTimeout(boucleApercu, 40);
+            };
+            boucleApercu();
+        }).catch(() => {});
+    }
+
+    function arreterApercuBatterie() {
+        if (apercuBatterie) {
+            apercuBatterie.actif = false;
+            if (apercuBatterie.timer) clearTimeout(apercuBatterie.timer);
+            apercuBatterie = null;
+        }
+        effacerCurseurApercuBatterie();
+        majBoutonApercuBatterie(false);
+    }
+
+    function majBoutonApercuBatterie(actif) {
+        const btn = document.getElementById("btnApercuBatterie");
+        if (!btn) return;
+        btn.textContent = actif ? "⏹ Arrêter l'aperçu" : "▶ Écouter l'aperçu";
+        btn.style.background = actif ? "linear-gradient(135deg, #e53935, #c62828)" : "linear-gradient(135deg, #43a047, #2e7d32)";
+    }
+
+    let curseurColonneActive = -1;
+
+    function programmerCurseurApercuBatterie(pas, tempsCible) {
+        const delai = Math.max(0, (tempsCible - audioCtx.currentTime) * 1000);
+        setTimeout(() => {
+            if (!apercuBatterie || !apercuBatterie.actif) return;
+            const grille = document.getElementById("grilleEditeurBatterie");
+            if (!grille) return;
+            if (curseurColonneActive >= 0) {
+                grille.querySelectorAll('[data-pas="' + curseurColonneActive + '"]').forEach(c => { c.style.outline = ""; });
+            }
+            grille.querySelectorAll('[data-pas="' + pas + '"]').forEach(c => { c.style.outline = "2px solid #ff9800"; c.style.outlineOffset = "-1px"; });
+            curseurColonneActive = pas;
+        }, delai);
+    }
+
+    function effacerCurseurApercuBatterie() {
+        curseurColonneActive = -1;
+        const grille = document.getElementById("grilleEditeurBatterie");
+        if (!grille) return;
+        grille.querySelectorAll('[style*="outline"]').forEach(c => { c.style.outline = ""; });
+    }
+
+    function copierMotifActuelDansEditeur() {
+        const select = document.getElementById("selectDrumPattern");
+        const choix = select ? select.value : "rock_8beat";
+        let source = null;
+        let nomSource = "du motif actuel";
+        if (choix === "personnalise") {
+            source = lireMotifPersonnalise();
+            nomSource = "de votre motif personnalisé";
+        } else if (motifsBatterie[choix]) {
+            source = motifsBatterie[choix];
+            const option = select ? select.querySelector('option[value="' + choix + '"]') : null;
+            nomSource = option ? option.textContent.trim() : "du motif actuel";
+        }
+        motifEditeurCourant = source ? JSON.parse(JSON.stringify(source)) : creerMotifVideBatterie(pasParMesure);
+        arreterApercuBatterie();
+        construireGrilleEditeurBatterie();
+        afficherToast("Motif « " + nomSource + " » copié dans l'éditeur — modifiez-le à votre façon 🎨", "success");
+    }
+
+    function effacerMotifEditeur() {
+        if (!motifEditeurCourant) return;
+        motifEditeurCourant = creerMotifVideBatterie(motifEditeurCourant.kick.length);
+        arreterApercuBatterie();
+        construireGrilleEditeurBatterie();
+        afficherToast("Grille effacée — à vous de composer ✨", "info");
+    }
+
+    function enregistrerMotifPersonnalise() {
+        if (!motifEditeurCourant) return;
+        const nbNotes = INSTRUMENTS_EDITEUR_BATTERIE.reduce((somme, inst) => {
+            return somme + motifEditeurCourant[inst.id].reduce((a, v) => a + (v > 0 ? 1 : 0), 0);
+        }, 0);
+        if (nbNotes === 0) {
+            afficherToast("Le motif est vide — placez au moins une note avant d'enregistrer 🥁", "error");
+            return;
+        }
+        if (enregistrerMotifPersonnaliseSilencieux(motifEditeurCourant)) {
+            const select = document.getElementById("selectDrumPattern");
+            if (select) select.value = "personnalise";
+            arreterApercuBatterie();
+            fermerEditeurBatterie();
+            afficherToast("Motif personnalisé enregistré ✅ (" + nbNotes + " notes) Il reste disponible même après fermeture de l'application.", "success");
+            // Si la lecture est en cours, resynchronise pour entendre le nouveau motif immédiatement
+            if (playing) reinitialiserPlanificationAudioALaVolee();
         }
     }
 
@@ -10487,9 +10853,11 @@
 
     // --- CAPTURE & APPLICATION UNIFIÉE DE L'ÉTAT DU SÉQUENCEUR ---
     function capturerDonneesSequencer(nom = "") {
+        // v1.1 : le motif de batterie personnalisé voyage avec le projet (partage possible)
+        const motifPersoCapture = lireMotifPersonnalise();
         return {
             app: "GuitarRhythmSequencer",
-            version: "2.1",
+            version: "2.2",
             date: obtenirDateFormatee(),
             nom: nom,
             bpm: tempo,
@@ -10505,6 +10873,7 @@
             boucleDebutMesure: boucleDebutMesure,
             boucleFinMesure: boucleFinMesure,
             drumPattern: document.getElementById("selectDrumPattern")?.value || "off",
+            motifBatteriePerso: motifPersoCapture ? JSON.parse(JSON.stringify(motifPersoCapture)) : null,
             guitarMode: document.getElementById("selectGuitarMode")?.value || "folk",
             volGuitar: parseFloat(document.getElementById("volGuitar")?.value || 0.7),
             volClick: parseFloat(document.getElementById("volClick")?.value || 0.2),
@@ -10580,6 +10949,10 @@
         if (data.drumPattern) {
             const selectDrum = document.getElementById("selectDrumPattern");
             if (selectDrum) selectDrum.value = data.drumPattern;
+        }
+        // v1.1 : restaure le motif de batterie personnalisé inclus dans le projet importé
+        if (data.motifBatteriePerso) {
+            enregistrerMotifPersonnaliseSilencieux(data.motifBatteriePerso);
         }
         if (data.guitarMode) {
             const selectGuitar = document.getElementById("selectGuitarMode");
@@ -11206,6 +11579,11 @@
     // Fermeture du modal avec Échap ou clic extérieur et désélection
     window.addEventListener("keydown", function(e) {
         if (e.key === "Escape" || e.key === "Esc") {
+            const modalEditeurBatEl = document.getElementById("modalEditeurBatterie");
+            if (modalEditeurBatEl && modalEditeurBatEl.style.display === "flex") {
+                fermerEditeurBatterie();
+                return;
+            }
             const modalInversionsEl = document.getElementById("chordInversionsModal");
             if (modalInversionsEl && modalInversionsEl.style.display === "flex") {
                 fermerModalRenversements();
@@ -11253,6 +11631,17 @@
                 }
             });
         }
+
+        // v1.1 : fermeture de l'éditeur de batterie au clic sur le fond + restauration du motif sauvegardé
+        const modalEditeurBatEl = document.getElementById("modalEditeurBatterie");
+        if (modalEditeurBatEl) {
+            modalEditeurBatEl.addEventListener("click", function(e) {
+                if (e.target === this) {
+                    fermerEditeurBatterie();
+                }
+            });
+        }
+        restaurerMotifPersonnaliseAuDemarrage();
 
         const btnOpenInversionsEl = document.getElementById("btnOpenInversions");
         if (btnOpenInversionsEl) {
@@ -11302,8 +11691,8 @@
         appliquerPresetMesure, appliquerProgressionHarmonique, appliquerProgressionSur4Mesures,
         appliquerProgressionSurTempsMesure, appliquerRenversement, appliquerTypeAuPas,
         assignerAccordDepuisManche, attacherGlissementInteractif, audioBufferToWav,
-        basculerBoucleMesureUnique, basculerLecture, basculerMasquageNotesEntrainement,
-        basculerModeEntrainementManche, basculerModeGammesManche, basculerPickingMode,
+        basculerBoucleMesureUnique, basculerCelluleBatterie, basculerLecture, basculerMasquageNotesEntrainement,
+        basculerApercuBatterie, basculerModeEntrainementManche, basculerModeGammesManche, basculerPickingMode,
         basculerSilencePasScore, boucleScheduler, calculerDegreNoteDansAccord, calculerDureePas,
         calculerNoteFrette, capturerDonneesSequencer, changerAccordInversionModal,
         changerBoucleDebut, changerBoucleFin, changerDivision, changerFiltreCordesExercice,
@@ -11313,15 +11702,15 @@
         changerPatternBatterie, changerPickGauge, changerPickingMode, changerSignature,
         changerSpeedTrainer, changerStrumSpeed, changerSwing, changerTempo, changerTheme,
         changerTypeExerciceManche, changerUniteMetronome, chargerSlot,
-        copierAccordSurMesuresSuivantes, copierMesureSurSuivante, couperToutesVoixBatterie,
+        copierAccordSurMesuresSuivantes, copierMesureSurSuivante, copierMotifActuelDansEditeur, couperToutesVoixBatterie,
         couperToutesVoixGuitare, creerReponseImpulsionnelleReverbe, cyclerTypePasScore,
         cyclerVelocitePasSelectionne, declencherAutoSave, definirModeProgression,
         demarrerAudio, demarrerChrono, deselectionnerPasActif, detecterAccordDominantMesure,
         detecterAccordTemps, determinerToniqueActiveGamme, dragStart, dropSurPas,
-        ecouterRenversement, effacerNotesManche, effacerSlot, encodeWAV,
-        enregistrerVoixBatterie, estDansPositionManche, estMesureEnGap, exporterAudioWAV,
-        exporterBanqueSlots, exporterJSON, extraireNomAccordPourSelect, extraireToniqueAccord, fermerModalChoixProgression,
-        fermerModalRenversements, fermerPopoverAccord, filtrerCordesDisponibles,
+        ecouterRenversement, effacerNotesManche, effacerMotifEditeur, effacerSlot, encodeWAV,
+        enregistrerMotifPersonnalise, enregistrerVoixBatterie, estDansPositionManche, estMesureEnGap, exporterAudioWAV,
+        exporterBanqueSlots, exporterJSON, extraireNomAccordPourSelect, extraireToniqueAccord,
+        fermerEditeurBatterie, fermerModalChoixProgression, fermerModalRenversements, fermerPopoverAccord, filtrerCordesDisponibles,
         flasherCaseMetronome, floatTo16BitPCMWav, formaterNoteCodeManche, formaterPitchManche,
         genererAleatoire, genererAleatoireMesure, genererDiagrammeAccordSVG,
         genererMotifAleatoirePourMesure, genererNoteSlashSVG, genererNouvelleQuestionEntrainement,
@@ -11334,7 +11723,7 @@
         mettreAJourVolumeReverbe, montrerIndicesBonnesReponses, nettoyerIndicesEntrainement,
         normaliserPitchEnDemiTon, obtenirCourbeSaturation, obtenirDateFormatee,
         obtenirNotesAccord, obtenirRenversementsAccord, obtenirStudioBus,
-        ouvrirInversionsDepuisPopover, ouvrirMancheDepuisPopover, ouvrirModalChoixProgression, ouvrirModalRenversements,
+        ouvrirEditeurBatterie, ouvrirInversionsDepuisPopover, ouvrirMancheDepuisPopover, ouvrirModalChoixProgression, ouvrirModalRenversements,
         ouvrirPopoverAccord, passerQuestionEntrainement, programmerPas,
         propagerAccordDepuisPopover, propagerAccordPas, rafraichirContenuModalRenversements,
         rafraichirManche, rafraichirMancheGammes, rafraichirMenuSlots,

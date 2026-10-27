@@ -10,7 +10,7 @@ Application 100 % autonome : un seul fichier, aucune installation, fonctionne ho
 ## Fonctionnalités principales
 
 - **Séquenceur pas-à-pas** (résolution double-croche) : 1 à 12 mesures, signatures 4/4, 3/4, 6/8, 12/8, boucle A/B, swing, liaison, triolets, ghost notes, vélocité
-- **Batterie synthétisée** : 8 motifs studio (rock, funk, blues, reggae, bossa…)
+- **Batterie synthétisée** : 8 motifs studio (rock, funk, blues, reggae, bossa…) + **éditeur de motifs personnalisés** (v1.1) : créez votre propre motif sur grille 3 instruments × 32 pas, avec notes fortes/fantômes, aperçu audio et sauvegarde automatique
 - **Guitare synthétisée** : 4 profils sonores (Folk, Clean, Jazz, Crunch lampe), médiator réglable, fingerpicking P-I-M-A, réverbe studio
 - **Métronome avancé** : unités multiples, Gap Click (travail du tempo intérieur), Speed Trainer (accélération progressive), décompte
 - **Manche interactif 24 cases** : notation notes ou degrés, banque d'accords, ~50 gammes et modes, mode entraînement (quiz notes, degrés, dictée à l'oreille)
@@ -58,10 +58,11 @@ Résultat visible dans l'onglet **Actions** du dépôt (coche verte ✔ = tout v
 | Version | Contenu |
 |---|---|
 | v1.0 | Mise en place du dépôt et du pipeline (application inchangée) |
-| v1.1 | Éditeur de motifs de batterie + mode application installable (PWA, hors-ligne) |
+| v1.1 | ✅ Éditeur de motifs de batterie (grille personnalisée, aperçu, sauvegarde) |
 | v1.2 | Undo / Redo complet de l'édition |
 | v1.3 | Basse automatique suivant la grille d'accords |
 | v1.4 | Statistiques de pratique (temps de jeu, BPM max, historique) |
+| À venir | Mode application installable (PWA, hors-ligne complet) |
 
 ## Licence
 
