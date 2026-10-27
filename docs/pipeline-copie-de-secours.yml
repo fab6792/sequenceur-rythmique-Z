@@ -1,0 +1,156 @@
+name: Pipeline Séquenceur Rythmique
+
+# Ce pipeline s'exécute à chaque dépôt sur la branche principale.
+# Il vérifie l'application, teste son démarrage dans un navigateur fantôme,
+# publie le site en ligne et crée automatiquement la release téléchargeable.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pipeline-sequencer
+  cancel-in-progress: false
+
+jobs:
+  # ------------------------------------------------------------------
+  # 1. VÉRIFICATION : les fichiers essentiels sont présents et le
+  #    JavaScript de l'application est syntaxiquement valide.
+  # ------------------------------------------------------------------
+  verification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Vérifier la présence des fichiers essentiels
+        run: |
+          test -f index.html || { echo "::error::index.html est manquant"; exit 1; }
+          grep -q "btnPlay" index.html || { echo "::error::marqueurs de l'application absents de index.html"; exit 1; }
+          test -f CHANGELOG.md || { echo "::error::CHANGELOG.md est manquant"; exit 1; }
+          echo "Fichiers essentiels OK"
+
+      - name: Vérifier la syntaxe du JavaScript de l'application
+        run: |
+          sed -n '/^<script>$/,/^<\/script>$/p' index.html | sed '1d;$d' > /tmp/app-extrait.js
+          wc -l /tmp/app-extrait.js
+          node --check /tmp/app-extrait.js
+          echo "Syntaxe JavaScript valide"
+
+  # ------------------------------------------------------------------
+  # 2. TEST FANTÔME : un vrai navigateur (sans écran) ouvre l'application
+  #    et vérifie qu'elle démarre sans aucune erreur.
+  # ------------------------------------------------------------------
+  test-fantome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installer le navigateur fantôme (Playwright)
+        run: |
+          npm install playwright@1 --no-fund --no-audit
+          npx playwright install --with-deps chromium
+
+      - name: Démarrer un mini-serveur local
+        run: |
+          mkdir -p site-test
+          cp index.html site-test/
+          cp favicon.ico site-test/ || true
+          cd site-test
+          nohup python3 -m http.server 8080 > /dev/null 2>&1 &
+          sleep 2
+
+      - name: Ouvrir l'application et vérifier son démarrage
+        run: node tests/smoke.mjs
+
+  # ------------------------------------------------------------------
+  # 3. PUBLICATION EN LIGNE (GitHub Pages) : l'application devient
+  #    accessible sur https://fab6792.github.io/sequenceur-rythmique-Z/
+  # ------------------------------------------------------------------
+  publication-pages:
+    needs: [ verification, test-fantome ]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Préparer le dossier du site
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp favicon.ico _site/ || true
+
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empaqueter le site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Mettre en ligne
+        id: deploiement
+        uses: actions/deploy-pages@v4
+
+  # ------------------------------------------------------------------
+  # 4. RELEASE AUTOMATIQUE : si une nouvelle version est détectée dans
+  #    CHANGELOG.md, une "release" GitHub est créée avec le fichier
+  #    de l'application en pièce jointe (machine à remonter le temps).
+  # ------------------------------------------------------------------
+  creation-release:
+    needs: [ verification, test-fantome ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Détecter la version annoncée dans CHANGELOG.md
+        id: version
+        run: |
+          VERSION=$(grep -m1 '^## v' CHANGELOG.md | grep -oE 'v[0-9.]+' | head -1)
+          if [ -z "$VERSION" ]; then
+            echo "::error::Aucune ligne '## vX.Y' trouvée en tête de CHANGELOG.md"
+            exit 1
+          fi
+          echo "Version annoncée : $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" > /dev/null 2>&1; then
+            echo "nouvelle=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "nouvelle=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Créer la release et joindre l'application
+        if: steps.version.outputs.nouvelle == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          NOTES=$(awk "/^## ${VERSION}/{flag=1;next} /^## v/{flag=0} flag" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then NOTES="Version $VERSION"; fi
+          zip -q "sequenceur-rythmique-${VERSION}.zip" index.html favicon.ico README.md CHANGELOG.md LICENSE 2>/dev/null || \
+            zip -q "sequenceur-rythmique-${VERSION}.zip" index.html README.md CHANGELOG.md LICENSE
+          gh release create "$VERSION" "sequenceur-rythmique-${VERSION}.zip" \
+            --title "Séquenceur Rythmique $VERSION" \
+            --notes "$NOTES"
+          echo "Release $VERSION créée"
