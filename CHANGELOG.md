@@ -3,6 +3,17 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.2.2 (2026-10-29)
+
+Correction : **Croche et double croche maintenant bien distinctes** 🎼
+
+- Dans la portée de la partition, les deux notes étaient dessinées avec le même symbole : impossible de les distinguer
+- **Double croche seule dans son temps** : elle reçoit désormais ses **2 crochets** caractéristiques (la croche n'en a qu'un)
+- **Double croche dans un groupe mixte** (ex : double-double-croche, syncopette, shuffle) : elle reçoit une **demi-ligature** (petit second trait horizontal sur la hampe, orienté vers la double croche voisine), comme dans une vraie partition — le groupe 100 % double croches garde sa double barre complète
+- Bonus au passage : la croche pointée isolée affiche maintenant son crochet (elle ressemblait à une noire pointée)
+- Les notes fantômes (×), silences, accents et le reste du rendu sont inchangés
+- Aucun changement du moteur audio ni du format de sauvegarde
+
 ## v1.2.1 (2026-10-28)
 
 Correction : **Glisser-déposer disponible dans toutes les vues** 🖱️

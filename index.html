@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.2.1</title>
+    <title>Séquenceur Rythmique v1.2.2</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.2.1" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.2.2" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3329,7 +3329,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.1</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.2</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -9795,10 +9795,31 @@
         return svg;
     }
 
-    function genererNoteSlashSVG(isGhost, isTied, isDotted, isUnbeamed) {
+    // v1.2.2 : nombre de crochets d'une note isolée selon sa durée
+    // (2 = double croche / double croche pointée, 1 = croche / croche pointée)
+    function nombreCrochets(duree) {
+        if (duree <= 4) return (duree <= 3) ? 2 : 1;
+        if (duree === 6) return 1;
+        return 0;
+    }
+
+    function genererNoteSlashSVG(isGhost, isTied, isDotted, crochets = 0, crochetPartiel = null) {
+        // v1.2.2 : crochets = nombre de crochets pleins quand la note est seule
+        // dans son temps (croche = 1, double croche = 2 — avant, les deux étaient
+        // identiques). crochetPartiel ("droite" / "gauche") = demi-ligature d'une
+        // double croche noyée dans un groupe de croches : un petit second trait
+        // horizontal sur la hampe, comme dans une vraie partition.
         let flagHTML = "";
-        if (isUnbeamed) {
-            flagHTML = `<path d="M 15 4 C 19 8 21 14 16 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
+        if (crochets >= 1) {
+            flagHTML += `<path d="M 15 4 C 19 8 21 14 16 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
+        }
+        if (crochets >= 2) {
+            flagHTML += `<path d="M 15 12 C 19 16 20.5 21 16 25.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
+        }
+        if (crochetPartiel === "droite") {
+            flagHTML += `<line x1="15" y1="11.5" x2="23" y2="11.5" stroke="currentColor" stroke-width="3" stroke-linecap="butt"/>`;
+        } else if (crochetPartiel === "gauche") {
+            flagHTML += `<line x1="7" y1="11.5" x2="15" y2="11.5" stroke="currentColor" stroke-width="3" stroke-linecap="butt"/>`;
         }
         let tieHTML = "";
         if (isTied) {
@@ -10196,10 +10217,24 @@
                 let noteSVGHTML = "";
                 if (estSilence) {
                     noteSVGHTML = genererRestSVG(ev.duree);
-                } else if (estGhost) {
-                    noteSVGHTML = genererNoteSlashSVG(true, ev.etat.liee, ev.duree % 3 === 0, !aPlusieursNotes && ev.duree <= 4);
                 } else {
-                    noteSVGHTML = genererNoteSlashSVG(false, ev.etat.liee, ev.duree % 3 === 0, !aPlusieursNotes && ev.duree <= 4);
+                    // v1.2.2 : croche et double croche maintenant visuellement distinctes
+                    let crochetsNote = 0;
+                    let crochetPartiel = null;
+                    if (!aPlusieursNotes) {
+                        // Note seule dans son temps : crochets pleins (croche = 1, double croche = 2)
+                        crochetsNote = estGhost ? 1 : nombreCrochets(ev.duree);
+                    } else if (!estGhost && !toutesDoubles && ev.duree <= 3) {
+                        // Double croche noyée dans un groupe où il y a des croches :
+                        // demi-ligature sur la hampe, orientée vers la double croche voisine
+                        const posDansGroupe = notesActives.indexOf(ev);
+                        const suivante = notesActives[posDansGroupe + 1];
+                        const precedente = notesActives[posDansGroupe - 1];
+                        const estDeFamilleDouble = (x) => x && x.etat.type !== "ghost" && x.duree <= 3;
+                        crochetPartiel = estDeFamilleDouble(suivante) ? "droite"
+                                       : (estDeFamilleDouble(precedente) ? "gauche" : "droite");
+                    }
+                    noteSVGHTML = genererNoteSlashSVG(estGhost, ev.etat.liee, ev.duree % 3 === 0, crochetsNote, crochetPartiel);
                 }
 
                 rhythmSlotsHTML += `
