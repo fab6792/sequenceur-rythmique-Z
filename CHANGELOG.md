@@ -3,6 +3,17 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.2.1 (2026-10-28)
+
+Correction : **Glisser-déposer disponible dans toutes les vues** 🖱️
+
+- Jusqu'ici, déposer un motif de la palette (Noire, Croche, Triolet…) sur une case ne fonctionnait qu'en vue « Grille Séquenceur »
+- Désormais, le glisser-déposer fonctionne aussi dans les vues **Partition** (vue par défaut) et **Mixte** : déposez un motif directement sur la portée rythmique ou sur la tablature
+- Retour visuel : la case survolée s'illumine en orange pendant le glissement, pour voir exactement où la note va atterrir
+- L'info-bulle des cases de partition mentionne désormais le glisser-déposer
+- Compatibilité Annuler / Rétablir (v1.2) : un dépôt accidentel s'annule avec Ctrl+Z comme n'importe quelle autre action
+- Aucun changement du moteur audio ni du format de sauvegarde
+
 ## v1.2 (2026-10-27)
 
 Nouvelle fonctionnalité : **Annuler / Rétablir (Undo / Redo)** ↩️↪️

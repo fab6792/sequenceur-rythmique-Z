@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.2</title>
+    <title>Séquenceur Rythmique v1.2.1</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.2" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.2.1" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -2599,6 +2599,13 @@
             background: rgba(251, 191, 36, 0.28) !important;
             box-shadow: 0 0 8px rgba(245, 158, 11, 0.6) !important;
         }
+        /* v1.2.1 : retour visuel quand on survole une case avec un motif
+           de la palette en cours de glissement (vues Partition et Mixte) */
+        .rhythm-step-slot.drop-hover,
+        .tab-step-slot.drop-hover {
+            background: rgba(245, 158, 11, 0.22) !important;
+            box-shadow: inset 0 0 0 2px #f59e0b;
+        }
 
         /* Hampe de note droite connectée à la ligature */
         .rhythm-note-stem {
@@ -3322,7 +3329,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.1</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -10201,7 +10208,7 @@
                          onclick="selectionnerPasScore(${ev.indexGlobal})"
                          ondblclick="cyclerTypePasScore(event, ${ev.indexGlobal})"
                          oncontextmenu="basculerSilencePasScore(event, ${ev.indexGlobal})"
-                         title="Pas ${ev.pDansMesure + 1} (${ev.etat.type}) • ${ev.accord}\n• Clic : Écouter / Sélectionner\n• Double-clic : Note ↔ Étouffé ↔ Silence\n• Clic droit : Basculer Silence">
+                         title="Pas ${ev.pDansMesure + 1} (${ev.etat.type}) • ${ev.accord}\n• Clic : Écouter / Sélectionner\n• Double-clic : Note ↔ Étouffé ↔ Silence\n• Clic droit : Basculer Silence\n• Glisser-déposer : déposer un motif de la palette ici (v1.2.1)">
                         ${noteSVGHTML}
                     </div>
                 `;
@@ -10811,6 +10818,49 @@
             }
         }
     }
+
+    // --- v1.2.1 : DRAG & DROP DANS LES VUES PARTITION ET MIXTE ---
+    // En mode grille, chaque case (step-cell) possède ses propres handlers
+    // ondragover / ondrop. En mode partition / mixte, les cases sont
+    // reconstruites à chaque rendu : on écoute donc au niveau du document et
+    // on reconnaît les zones de dépôt à leur classe CSS, l'index du pas étant
+    // lu dans l'attribut data-score-index (déjà présent sur les deux types de
+    // cases). Le dépôt réutilise dropSurPas, donc la même logique que la
+    // grille, y compris l'intégration à l'historique Annuler / Rétablir.
+    let slotDropSurvole = null;
+
+    document.addEventListener("dragover", (e) => {
+        const cible = (e.target instanceof Element) ? e.target : null;
+        const slot = cible ? cible.closest(".rhythm-step-slot, .tab-step-slot") : null;
+        if (!slot) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+        if (slotDropSurvole && slotDropSurvole !== slot) slotDropSurvole.classList.remove("drop-hover");
+        slot.classList.add("drop-hover");
+        slotDropSurvole = slot;
+    });
+
+    document.addEventListener("dragleave", (e) => {
+        // relatedTarget est null quand le curseur quitte la fenêtre :
+        // on éteint alors le surlignage pour ne pas laisser de trace.
+        if (!e.relatedTarget && slotDropSurvole) {
+            slotDropSurvole.classList.remove("drop-hover");
+            slotDropSurvole = null;
+        }
+    });
+
+    document.addEventListener("drop", (e) => {
+        if (slotDropSurvole) {
+            slotDropSurvole.classList.remove("drop-hover");
+            slotDropSurvole = null;
+        }
+        const cible = (e.target instanceof Element) ? e.target : null;
+        const slot = cible ? cible.closest(".rhythm-step-slot, .tab-step-slot") : null;
+        if (!slot) return;
+        e.preventDefault();
+        const idx = parseInt(slot.getAttribute("data-score-index"), 10);
+        if (!Number.isNaN(idx)) dropSurPas(e, idx);
+    });
 
     function copierMesureSurSuivante(indexMesureSource) {
         const offsetSource = indexMesureSource * pasParMesure;
