@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.1</title>
+    <title>Séquenceur Rythmique v1.2</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.1" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.2" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3304,6 +3304,16 @@
             }
         }
 
+        /* --- v1.2 : boutons Annuler / Rétablir --- */
+        .btn-historique {
+            font-weight: bold;
+        }
+        .btn-historique:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            filter: grayscale(0.7);
+        }
+
 
 </style>
 </head>
@@ -3312,7 +3322,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.1</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -3596,6 +3606,8 @@
         <div class="transport-strip" id="transportBar">
             <!-- GAUCHE : ÉDITION RAPIDE -->
             <div class="transport-group-left">
+                <button id="btnAnnuler" type="button" class="btn-v2 btn-historique" onclick="annulerAction()" title="Annuler [Ctrl+Z] — rien à annuler pour le moment" disabled>↩️ Annuler</button>
+                <button id="btnRetablir" type="button" class="btn-v2 btn-historique" onclick="retablirAction()" title="Rétablir [Ctrl+Y] — rien à rétablir pour le moment" disabled>↪️ Rétablir</button>
                 <button class="btn-v2 btn-reset" onclick="resetTout()" title="Réinitialiser toutes les mesures [R]">🔄 Reset</button>
                 <button class="btn-v2 btn-random" onclick="genererAleatoire()" title="Générer un rythme aléatoire">🎲 Aléatoire</button>
                 <button id="btnToggleManche" class="btn-v2" onclick="toggleMancheGuitare()" title="Afficher ou masquer le manche de guitare interactif [F]" style="color: #81c784; font-weight: bold;">🎸 Manche</button>
@@ -6909,6 +6921,9 @@
         if (btn1M) btn1M.classList.toggle("active", modeProgressionHarmonique === "1mesure_temps");
 
         rafraichirMenuSlots();
+
+        // v1.2 : démarre la surveillance de l'historique une fois la session restaurée
+        initialiserHistorique();
     }
 
     // --- MOTEUR DE SATURATION & COURBE ANALOGIQUE TUBE DRIVE ---
@@ -7202,6 +7217,14 @@
         const motif = lireMotifPersonnalise();
         if (!motif) return;
         enregistrerMotifPersonnaliseSilencieux(motif);
+    }
+
+    function supprimerMotifPersonnaliseSilencieux() {
+        // v1.2 : efface le motif personnalisé (mémoire vive + navigateur) sans notification,
+        // utilisé par l'annulation (Ctrl+Z) d'un enregistrement de motif dans l'éditeur v1.1
+        delete motifsBatterie.personnalise;
+        try { localStorage.removeItem(CLE_STOCKAGE_MOTIF_PERSO); } catch (e) {}
+        return true;
     }
 
     function ouvrirEditeurBatterie() {
@@ -10953,6 +10976,11 @@
         // v1.1 : restaure le motif de batterie personnalisé inclus dans le projet importé
         if (data.motifBatteriePerso) {
             enregistrerMotifPersonnaliseSilencieux(data.motifBatteriePerso);
+        } else if ("motifBatteriePerso" in data) {
+            // v1.2 : champ présent mais vide → efface le motif personnalisé
+            // (annulation d'un motif créé dans l'éditeur). Les anciens projets
+            // (version 2.1, sans ce champ) ne touchent pas au motif existant.
+            supprimerMotifPersonnaliseSilencieux();
         }
         if (data.guitarMode) {
             const selectGuitar = document.getElementById("selectGuitarMode");
@@ -10995,6 +11023,172 @@
             }
         }, 350);
     }
+
+    // ========================================================
+    // --- v1.2 : HISTORIQUE — ANNULER / RÉTABLIR (UNDO / REDO) ---
+    // Toute modification du projet (cases, accords, tempo, motif de
+    // batterie personnalisé, chargement de slot, import JSON...) est
+    // détectée automatiquement puis mémorisée : Ctrl+Z annule,
+    // Ctrl+Y (ou Ctrl+Shift+Z) rétablit, jusqu'à 50 étapes.
+    // Principe : une sonde compare l'état du projet 4 fois par
+    // seconde ; dès qu'un changement est stabilisé (400 ms sans
+    // nouveauté), l'état précédent est archivé. Les rafales
+    // (glissés, presets, progressions) forment donc UNE seule étape.
+    // ========================================================
+    const HISTORIQUE_TAILLE_MAX = 50;        // nombre maximal d'étapes mémorisées
+    const HISTORIQUE_PERIODE_SONDE_MS = 250; // fréquence de surveillance des changements
+    const HISTORIQUE_QUIETUDE_MS = 400;      // stabilité requise pour archiver une étape
+
+    let pileAnnuler = [];                    // états antérieurs (chaînes JSON)
+    let pileRetablir = [];                   // états annulés prêts à être rétablis
+    let etatReference = "";                  // dernier état stable connu du projet
+    let minuteurSondeHistorique = null;      // intervalle de surveillance
+    let minuteurQuietudeHistorique = null;   // minuterie de regroupement des rafales
+    let restaurationHistorique = false;      // verrou pendant un annuler/rétablir
+    let dernierEtatSonde = "";               // dernier état observé par la sonde
+
+    function instantaneProjetHistorique() {
+        // Sérialise le projet complet en neutralisant les champs volatils
+        // (date, nom) afin que deux états identiques donnent la même chaîne.
+        try {
+            const donnees = capturerDonneesSequencer("");
+            donnees.nom = "";
+            donnees.date = "";
+            return JSON.stringify(donnees);
+        } catch (e) {
+            return "";
+        }
+    }
+
+    function initialiserHistorique() {
+        etatReference = instantaneProjetHistorique();
+        if (minuteurSondeHistorique) clearInterval(minuteurSondeHistorique);
+        minuteurSondeHistorique = setInterval(surveillerChangementsHistorique, HISTORIQUE_PERIODE_SONDE_MS);
+        majBoutonsHistorique();
+    }
+
+    function surveillerChangementsHistorique() {
+        if (restaurationHistorique) return;
+        const etatActuel = instantaneProjetHistorique();
+        if (!etatActuel) return;
+        if (etatActuel === etatReference) {
+            dernierEtatSonde = etatActuel;
+            return;
+        }
+        // Ici l'état diffère de la référence : une édition est en cours.
+        // On ne réarme la minuterie de quiétude QUE si l'état a encore
+        // bougé depuis la sonde précédente — sinon la minuterie courante
+        // continue et l'étape sera figée 400 ms après la dernière variation.
+        if (etatActuel !== dernierEtatSonde) {
+            dernierEtatSonde = etatActuel;
+            if (minuteurQuietudeHistorique) clearTimeout(minuteurQuietudeHistorique);
+            minuteurQuietudeHistorique = setTimeout(figerEtapeHistorique, HISTORIQUE_QUIETUDE_MS);
+        }
+    }
+
+    function figerEtapeHistorique() {
+        minuteurQuietudeHistorique = null;
+        if (restaurationHistorique) return;
+        const etatActuel = instantaneProjetHistorique();
+        if (!etatActuel || etatActuel === etatReference) return;
+        pileAnnuler.push(etatReference);
+        if (pileAnnuler.length > HISTORIQUE_TAILLE_MAX) pileAnnuler.shift();
+        pileRetablir = [];               // nouvelle édition : plus rien à rétablir
+        etatReference = etatActuel;
+        dernierEtatSonde = etatActuel;
+        majBoutonsHistorique();
+    }
+
+    function figerSiNecessaireHistorique() {
+        // Archive immédiatement un changement détecté mais pas encore figé
+        // (utile quand l'utilisateur annule très vite après une édition).
+        const etatActuel = instantaneProjetHistorique();
+        if (!etatActuel || etatActuel === etatReference) return false;
+        pileAnnuler.push(etatReference);
+        if (pileAnnuler.length > HISTORIQUE_TAILLE_MAX) pileAnnuler.shift();
+        etatReference = etatActuel;
+        dernierEtatSonde = etatActuel;
+        return true;
+    }
+
+    function appliquerEtatHistorique(etatJson, libelle) {
+        if (minuteurQuietudeHistorique) {
+            clearTimeout(minuteurQuietudeHistorique);
+            minuteurQuietudeHistorique = null;
+        }
+        restaurationHistorique = true;
+        try {
+            const ok = appliquerDonneesSequencer(JSON.parse(etatJson));
+            if (ok === false) {
+                afficherToast("Impossible de restaurer cet état.", "error");
+            } else {
+                etatReference = etatJson;
+                dernierEtatSonde = etatJson;
+                declencherAutoSave();
+                afficherToast(libelle, "info");
+            }
+        } catch (e) {
+            console.warn("Historique : restauration impossible :", e);
+            afficherToast("Erreur lors de la restauration.", "error");
+        }
+        restaurationHistorique = false;
+        majBoutonsHistorique();
+    }
+
+    function annulerAction() {
+        if (restaurationHistorique) return;
+        figerSiNecessaireHistorique();
+        if (pileAnnuler.length === 0) { majBoutonsHistorique(); return; }
+        pileRetablir.push(etatReference);
+        if (pileRetablir.length > HISTORIQUE_TAILLE_MAX) pileRetablir.shift();
+        const etatPrecedent = pileAnnuler.pop();
+        appliquerEtatHistorique(etatPrecedent, "↩️ Annulé — rétablir possible (Ctrl+Y)");
+    }
+
+    function retablirAction() {
+        if (restaurationHistorique) return;
+        // Si l'utilisateur a re-modifié le projet depuis l'annulation,
+        // cette nouvelle édition devient l'étape à annuler (comportement standard).
+        if (figerSiNecessaireHistorique()) pileRetablir = [];
+        if (pileRetablir.length === 0) { majBoutonsHistorique(); return; }
+        const etatSuivant = pileRetablir.pop();
+        pileAnnuler.push(etatReference);
+        if (pileAnnuler.length > HISTORIQUE_TAILLE_MAX) pileAnnuler.shift();
+        appliquerEtatHistorique(etatSuivant, "↪️ Rétabli");
+    }
+
+    function majBoutonsHistorique() {
+        const btnA = document.getElementById("btnAnnuler");
+        const btnR = document.getElementById("btnRetablir");
+        if (btnA) {
+            btnA.disabled = pileAnnuler.length === 0;
+            btnA.title = pileAnnuler.length > 0
+                ? `Annuler la dernière modification [Ctrl+Z] — ${pileAnnuler.length} étape(s) en mémoire`
+                : "Annuler [Ctrl+Z] — rien à annuler pour le moment";
+        }
+        if (btnR) {
+            btnR.disabled = pileRetablir.length === 0;
+            btnR.title = pileRetablir.length > 0
+                ? `Rétablir la dernière modification annulée [Ctrl+Y] — ${pileRetablir.length} étape(s) annulée(s)`
+                : "Rétablir [Ctrl+Y] — rien à rétablir pour le moment";
+        }
+    }
+
+    // Raccourcis clavier : Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y (Cmd sur Mac).
+    // Désactivé pendant la saisie dans un champ texte (le navigateur
+    // y gère son propre annuler pour le texte).
+    window.addEventListener("keydown", function(e) {
+        if (!(e.ctrlKey || e.metaKey)) return;
+        if (document.activeElement && ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+        const k = (e.key || "").toLowerCase();
+        if (k === "z") {
+            e.preventDefault();
+            if (e.shiftKey) { retablirAction(); } else { annulerAction(); }
+        } else if (k === "y") {
+            e.preventDefault();
+            retablirAction();
+        }
+    });
 
     // --- GESTION DES SLOTS MÉMOIRE (10 Slots persistants dans localStorage) ---
     function rafraichirMenuSlots() {
@@ -11686,7 +11880,8 @@
     // --- EXPOSITION GLOBALE SUR WINDOW (POUR LES HANDLERS HTML) ---
     // ========================================================
     const GLOBAL_FUNCTIONS = {
-        accordPrefereBemols, afficherToast, ajusterTempoDelta, appliquerAccordDepuisPopover,
+        accordPrefereBemols, afficherToast, ajusterTempoDelta, annulerAction,
+        appliquerAccordDepuisPopover,
         appliquerAccordMesure, appliquerAccordTemps, appliquerDonneesSequencer, appliquerPreset,
         appliquerPresetMesure, appliquerProgressionHarmonique, appliquerProgressionSur4Mesures,
         appliquerProgressionSurTempsMesure, appliquerRenversement, appliquerTypeAuPas,
@@ -11717,9 +11912,9 @@
         genererOptionsAccordsHTML, genererOptionsPresetsHTML, genererPillulesTempsHTML,
         genererRenversementsAutomatiques, genererRestSVG, genererTableauVide,
         glisserManchePourcent, glisserVersCases, importerBanqueSlots, importerJSON,
-        imprimerPartition, init, initialiserMancheGuitare, interleaveWav, jouerGammeAudioDemo,
+        imprimerPartition, init, initialiserHistorique, initialiserMancheGuitare, interleaveWav, jouerGammeAudioDemo,
         jouerGuitare, jouerHiHat, jouerKick, jouerMetronome, jouerNoteSynthetique,
-        jouerSnare, mettreAJourBadgeScoreEntrainement, mettreAJourCurseurGlissement,
+        jouerSnare, majBoutonsHistorique, mettreAJourBadgeScoreEntrainement, mettreAJourCurseurGlissement,
         mettreAJourVolumeReverbe, montrerIndicesBonnesReponses, nettoyerIndicesEntrainement,
         normaliserPitchEnDemiTon, obtenirCourbeSaturation, obtenirDateFormatee,
         obtenirNotesAccord, obtenirRenversementsAccord, obtenirStudioBus,
@@ -11729,7 +11924,7 @@
         rafraichirManche, rafraichirMancheGammes, rafraichirMenuSlots,
         rafraichirSelecteurPresetCible, rafraichirSelecteursBoucle,
         reinitialiserPlanificationAudioALaVolee, reinitialiserScoreEntrainement,
-        rejouerAudioCibleEntrainement, renderMesure, renderPartitionMesure, renderTout,
+        rejouerAudioCibleEntrainement, renderMesure, renderPartitionMesure, renderTout, retablirAction,
         resetTout, sauvegarderSlot, selectionnerPas, selectionnerPasScore, setNombreMesures,
         stopperChrono, stopperLecture, supprimerPasSelectionne, surClicNoteManche, tapTempo,
         testerAudioAccordPopover, toggleAffichageDiagrammes, toggleAffichageTablature,
