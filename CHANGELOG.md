@@ -3,6 +3,17 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.2.5 (2026-10-29)
+
+Correction : **le glisser-déposer devient insensible au défilement de la page** 🖱️
+
+- Un cas délicat du navigateur pouvait faire échouer un glisser-déposer : si la page défile entre le moment où l'on **appuie** sur un motif de la palette (molette effleurée par accident, pavé tactile sensible, case cible hors écran) et le début du glissement, le navigateur **abandonne silencieusement** le démarrage du déplacement — plus rien ne suit le curseur et le dépôt ne se fait pas, sans aucun message d'erreur
+- Désormais, un **mécanisme de secours intégré** prend automatiquement le relais dans ce cas : un **fantôme du bouton** de la palette suit le curseur, la case survolée s'illumine en orange (même retour visuel que d'habitude), et le dépôt s'effectue normalement — y compris son annulation par **Ctrl+Z**
+- Ce secours est **invisible quand tout se passe bien** : dès que le glisser-déposer standard du navigateur démarre (cas habituel), il s'efface et le comportement est strictement identique aux versions précédentes
+- Un simple **clic** sur un motif de la palette reste un clic (aucun fantôme ne peut apparaître par erreur), et la touche **Échap** permet d'abandonner un glisser de secours en cours
+- Fiabilisation au passage : le dépôt dans les vues Partition et Mixte reconnaît désormais la case visée **par ses coordonnées** en complément de l'élément survolé — plus robuste si un élément de décor s'interpose
+- Aucun changement du moteur audio, du rendu de la partition (triolet v1.2.4 inchangé) ni du format de sauvegarde
+
 ## v1.2.4 (2026-10-29)
 
 Amélioration : **le triolet est maintenant dessiné comme sur une vraie partition** 🎼

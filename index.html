@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.2.4</title>
+    <title>Séquenceur Rythmique v1.2.5</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.2.4" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.2.5" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -2610,6 +2610,28 @@
             background: rgba(245, 158, 11, 0.22) !important;
             box-shadow: inset 0 0 0 2px #f59e0b;
         }
+        /* v1.2.5 : glisser de secours par événements souris — fantôme du
+           bouton de la palette qui suit le curseur quand le drag HTML5 n'a
+           pas pu démarrer (ex. la page a défilé pendant l'appui). */
+        .drag-fantome {
+            position: fixed;
+            z-index: 2147483000;
+            pointer-events: none !important;
+            opacity: 0.88;
+            transform: translate(-50%, -55%) scale(1.05) rotate(-2deg);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4) !important;
+            border-color: #f59e0b !important;
+            background: #fff8ec !important;
+            margin: 0 !important;
+        }
+        body.glisser-secours-actif {
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: grabbing !important;
+        }
+        body.glisser-secours-actif * {
+            cursor: grabbing !important;
+        }
 
         /* Hampe de note droite connectée à la ligature */
         .rhythm-note-stem {
@@ -3342,7 +3364,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.4</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.5</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -10909,7 +10931,12 @@
     function dropSurPas(event, indexGlobal) {
         event.preventDefault();
         const type = event.dataTransfer.getData("text/plain");
+        appliquerDepotSurPas(indexGlobal, type);
+    }
 
+    // v1.2.5 : logique de dépôt partagée par le drag&drop HTML5 (dropSurPas)
+    // et par le glisser de secours souris (voir « GLISSER DE SECOURS »).
+    function appliquerDepotSurPas(indexGlobal, type) {
         if (type && NOTE_TYPES && NOTE_TYPES[type]) {
             pasSelectionneIndex = indexGlobal;
             if (typeof appliquerTypeAuPas === "function") {
@@ -10919,6 +10946,14 @@
                 renderTout();
             }
         }
+    }
+
+    // v1.2.5 : retrouve la case de dépôt sous un point (x, y) du viewport.
+    // Complète closest() quand l'événement visé n'est pas un descendant direct
+    // d'une case (éléments recouvrants, nœuds détachés, etc.).
+    function slotSousPoint(x, y) {
+        const el = document.elementFromPoint(x, y);
+        return el ? el.closest(".rhythm-step-slot, .tab-step-slot") : null;
     }
 
     // --- v1.2.1 : DRAG & DROP DANS LES VUES PARTITION ET MIXTE ---
@@ -10933,7 +10968,9 @@
 
     document.addEventListener("dragover", (e) => {
         const cible = (e.target instanceof Element) ? e.target : null;
-        const slot = cible ? cible.closest(".rhythm-step-slot, .tab-step-slot") : null;
+        let slot = cible ? cible.closest(".rhythm-step-slot, .tab-step-slot") : null;
+        // v1.2.5 : repli par coordonnées si l'élément visé n'est pas dans une case
+        if (!slot && Number.isFinite(e.clientX)) slot = slotSousPoint(e.clientX, e.clientY);
         if (!slot) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";
@@ -10957,12 +10994,158 @@
             slotDropSurvole = null;
         }
         const cible = (e.target instanceof Element) ? e.target : null;
-        const slot = cible ? cible.closest(".rhythm-step-slot, .tab-step-slot") : null;
+        let slot = cible ? cible.closest(".rhythm-step-slot, .tab-step-slot") : null;
+        // v1.2.5 : repli par coordonnées (même logique que dragover)
+        if (!slot && Number.isFinite(e.clientX)) slot = slotSousPoint(e.clientX, e.clientY);
         if (!slot) return;
         e.preventDefault();
         const idx = parseInt(slot.getAttribute("data-score-index"), 10);
         if (!Number.isNaN(idx)) dropSurPas(e, idx);
     });
+
+    // --- v1.2.5 : GLISSER DE SECOURS PAR ÉVÉNEMENTS SOURIS ---
+    // Constaté en conditions réelles : si la page défile entre l'appui sur un
+    // bouton de la palette et le début du glissement (molette maladroite,
+    // pavé tactile, cible hors écran), le navigateur abandonne l'initiation du
+    // drag HTML5 : plus aucune image ne suit le curseur et le dépôt échoue.
+    // Ce mécanisme de secours prend le relais dans ce cas uniquement :
+    // un « fantôme » du bouton suit la souris et le dépôt est résolu par
+    // coordonnées. Si le drag HTML5 démarre normalement (dragstart reçu), le
+    // secours s'efface immédiatement et tout se passe comme avant.
+    const secoursDrag = {
+        actif: false,
+        engage: false,
+        choixEnCours: false,
+        type: null,
+        bouton: null,
+        fantome: null,
+        x0: 0,
+        y0: 0
+    };
+
+    document.addEventListener("mousedown", (e) => {
+        // On ne surveille que les boutons de la palette (porteurs d'un motif)
+        const bouton = (e.target instanceof Element) ? e.target.closest(".palette-btn") : null;
+        if (!bouton || e.button !== 0) return;
+        const attr = bouton.getAttribute("ondragstart") || "";
+        const m = attr.match(/dragStart\(\s*event\s*,\s*'([^']+)'\s*\)/);
+        if (!m) return;
+        secoursDrag.actif = true;
+        secoursDrag.engage = false;
+        secoursDrag.type = m[1];
+        secoursDrag.bouton = bouton;
+        secoursDrag.x0 = e.clientX;
+        secoursDrag.y0 = e.clientY;
+    }, true);
+
+    // Dès que le drag HTML5 prend la main, le secours se retire (dans tous les
+    // cas : s’il démarre alors que le fantôme est déjà apparu, on efface le
+    // fantôme pour laisser le navigateur conduire seule la suite du geste).
+    document.addEventListener("dragstart", () => {
+        if (secoursDrag.actif) terminerSecours(false);
+    }, true);
+
+    document.addEventListener("mousemove", (e) => {
+        // Fantôme engagé : il suit le curseur (et met à jour la surbrillance)
+        if (secoursDrag.engage) {
+            deplacerSecours(e.clientX, e.clientY);
+            return;
+        }
+        if (!secoursDrag.actif) return;
+        const dx = e.clientX - secoursDrag.x0;
+        const dy = e.clientY - secoursDrag.y0;
+        if (dx * dx + dy * dy < 100) return; // seuil : 10 px — un simple clic reste un clic
+        // Délai de grâce : le dragstart du navigateur arrive juste après le
+        // premier mouvement significatif. On lui laisse 60 ms avant de
+        // s'engager, pour ne jamais concurrencer un drag HTML5 qui démarre.
+        if (secoursDrag.choixEnCours) return;
+        secoursDrag.choixEnCours = true;
+        const x = e.clientX, y = e.clientY;
+        setTimeout(() => {
+            secoursDrag.choixEnCours = false;
+            if (!secoursDrag.actif || secoursDrag.engage) return;
+            demarrerSecours();
+            deplacerSecours(x, y);
+        }, 60);
+    });
+
+    document.addEventListener("mouseup", (e) => {
+        if (!secoursDrag.actif) return;
+        if (secoursDrag.engage) {
+            e.preventDefault();
+            const slot = slotSousPoint(e.clientX, e.clientY);
+            if (slot) {
+                const idx = parseInt(slot.getAttribute("data-score-index"), 10);
+                if (!Number.isNaN(idx)) appliquerDepotSurPas(idx, secoursDrag.type);
+            }
+            terminerSecours(true);
+            // Un glisser terminé ne doit pas déclencher le clic du bouton
+            supprimerProchainClic();
+        } else {
+            secoursDrag.actif = false;
+        }
+    }, true);
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && secoursDrag.engage) terminerSecours(true);
+    });
+
+    window.addEventListener("blur", () => {
+        if (secoursDrag.engage) terminerSecours(true);
+        secoursDrag.actif = false;
+    });
+
+    function demarrerSecours() {
+        secoursDrag.engage = true;
+        try { window.getSelection()?.removeAllRanges(); } catch {}
+        const source = secoursDrag.bouton;
+        const fantome = source ? source.cloneNode(true) : null;
+        if (fantome) {
+            fantome.classList.add("drag-fantome");
+            fantome.style.width = source.offsetWidth + "px";
+            fantome.style.height = source.offsetHeight + "px";
+            document.body.appendChild(fantome);
+            secoursDrag.fantome = fantome;
+        }
+        document.body.classList.add("glisser-secours-actif");
+    }
+
+    function deplacerSecours(x, y) {
+        if (secoursDrag.fantome) {
+            secoursDrag.fantome.style.left = x + "px";
+            secoursDrag.fantome.style.top = y + "px";
+        }
+        const slot = slotSousPoint(x, y);
+        if (slotDropSurvole && slotDropSurvole !== slot) slotDropSurvole.classList.remove("drop-hover");
+        if (slot) slot.classList.add("drop-hover");
+        slotDropSurvole = slot;
+    }
+
+    function terminerSecours(avecNettoyage) {
+        secoursDrag.actif = false;
+        secoursDrag.engage = false;
+        if (secoursDrag.fantome) {
+            secoursDrag.fantome.remove();
+            secoursDrag.fantome = null;
+        }
+        document.body.classList.remove("glisser-secours-actif");
+        if (avecNettoyage && slotDropSurvole) {
+            slotDropSurvole.classList.remove("drop-hover");
+            slotDropSurvole = null;
+        }
+    }
+
+    // Après un glisser de secours, le navigateur émettrait un « clic » si le
+    // curseur relâche sur le bouton d'origine : on l'annule une seule fois.
+    function supprimerProchainClic() {
+        const annuler = (ev) => {
+            ev.stopImmediatePropagation();
+            ev.preventDefault();
+        };
+        document.addEventListener("click", annuler, { capture: true, once: true });
+        // Si aucun clic n'arrive (relâchement ailleurs), on se désarme tout seul
+        setTimeout(() => document.removeEventListener("click", annuler, { capture: true }), 150);
+    }
 
     function copierMesureSurSuivante(indexMesureSource) {
         const offsetSource = indexMesureSource * pasParMesure;
