@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.2.3</title>
+    <title>Séquenceur Rythmique v1.2.4</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.2.3" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.2.4" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3126,6 +3126,15 @@
         body.theme-studio .score-beam-bar.double-beam::after {
             background: #f8fafc;
         }
+        /* v1.2.4 : en Studio, les notes et silences de la portée restaient bleu
+           nuit sur le fond sombre de la carte (comme les barres de ligature
+           avant v1.2.3) — crochets, demi-ligatures, triolet et têtes de notes
+           étaient donc presque invisibles. Ils suivent désormais la même couleur
+           blanche que les barres de ligature du thème. */
+        body.theme-studio .rhythm-note-svg,
+        body.theme-studio .rhythm-rest-svg {
+            color: #f8fafc;
+        }
         body.theme-studio .rhythm-rest-glyph {
             color: #94a3b8;
         }
@@ -3333,7 +3342,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.3</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.4</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -9807,14 +9816,49 @@
         return 0;
     }
 
-    function genererNoteSlashSVG(isGhost, isTied, isDotted, crochets = 0, crochetPartiel = null, estTriolet = false) {
+    // v1.2.4 : triolet dessiné « comme sur une vraie partition » — les 3 notes
+    // sont reliées par une ligature continue et le chiffre 3, en italique, est
+    // placé au-dessus du groupe (avant : une simple note avec un petit « 3 »
+    // dessous, peu lisible).
+    // « largeur » : largeur réelle du temps une fois mesurée dans le DOM
+    // (voir l'ajustement dans renderPartitionMesure) — les coordonnées sont
+    // alors recalculées pour que la ligature traverse tout le temps, comme sur
+    // une vraie gravure ; sinon gabarit 160. Les têtes de notes gardent la même
+    // hauteur (y 28-45) que la note standard et la ligature interne (y 11-15)
+    // se place au même endroit que les barres de ligature des temps voisins.
+    function genererTrioletSVG(estGhost = false, largeur = null) {
+        const W = Math.max(60, Math.min(320, Math.round(largeur || 160)));
+        const m = Math.max(10, Math.min(16, W * 0.08)); // marge latérale
+        const xs = [m, W / 2, W - m]; // positions des 3 hampes
+        let tetesHTML = "";
+        xs.forEach(x => {
+            tetesHTML += estGhost
+                ? `<path d="M ${x - 9} 30.5 L ${x + 3} 42.5 M ${x + 3} 30.5 L ${x - 9} 42.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/>`
+                : `<polygon points="${x - 10},42 ${x - 1},28 ${x + 4},31 ${x - 5},45" fill="currentColor"/>`;
+        });
+        const hampesHTML = xs.map(x =>
+            `<line x1="${x}" y1="13" x2="${x}" y2="38" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`
+        ).join("");
+        const ligatureHTML = `<line x1="${xs[0]}" y1="13" x2="${xs[2]}" y2="13" stroke="currentColor" stroke-width="4" stroke-linecap="butt"/>`;
+        const chiffreHTML = `<text x="${W / 2}" y="10" text-anchor="middle" font-size="12" font-weight="800" font-style="italic" fill="currentColor" font-family="inherit">3</text>`;
+        return `<svg width="100%" height="52" viewBox="0 0 ${W} 52" preserveAspectRatio="xMidYMax meet" class="rhythm-note-svg triolet-svg" data-ghost="${estGhost ? 1 : 0}" data-w="${W}">
+            ${hampesHTML}
+            ${ligatureHTML}
+            ${tetesHTML}
+            ${chiffreHTML}
+        </svg>`;
+    }
+
+    function genererNoteSlashSVG(isGhost, isTied, isDotted, crochets = 0, crochetPartiel = null) {
         // v1.2.2 : crochets = nombre de crochets pleins quand la note est seule
         // dans son temps (croche = 1, double croche = 2 — avant, les deux étaient
         // identiques). crochetPartiel ("droite" / "gauche") = demi-ligature d'une
         // double croche noyée dans un groupe de croches : un petit second trait
         // horizontal sur la hampe, comme dans une vraie partition.
-        // v1.2.3 : estTriolet ajoute le chiffre « 3 » sous la note, sans quoi un
-        // triolet était indistinguable d'une noire dans la portée.
+        // v1.2.4 : le triolet n'utilise plus cette fonction — il est dessiné par
+        // genererTrioletSVG() : 3 notes reliées par une ligature continue et le
+        // chiffre « 3 » placé au-dessus du groupe, comme sur une vraie partition
+        // (l'ancien petit « 3 » sous une note unique était peu lisible).
         let flagHTML = "";
         if (crochets >= 1) {
             flagHTML += `<path d="M 15 4 C 19 8 21 14 16 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
@@ -9832,7 +9876,6 @@
             tieHTML = `<path d="M 10 44 Q 24 53 38 44" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>`;
         }
         let dotHTML = isDotted ? `<circle cx="21" cy="36" r="2" fill="currentColor"/>` : "";
-        const trioletHTML = estTriolet ? `<text x="12" y="51" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="inherit">3</text>` : "";
 
         return `<svg width="24" height="52" viewBox="0 0 24 52" class="rhythm-note-svg">
             <line x1="15" y1="4" x2="15" y2="38" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -9842,7 +9885,6 @@
                 `<polygon points="5,42 14,28 19,31 10,45" fill="currentColor"/>`
             }
             ${dotHTML}
-            ${trioletHTML}
             ${tieHTML}
         </svg>`;
     }
@@ -10225,6 +10267,10 @@
                 let noteSVGHTML = "";
                 if (estSilence) {
                     noteSVGHTML = genererRestSVG(ev.duree);
+                } else if (ev.etat.type === "triolet") {
+                    // v1.2.4 : vraie notation du triolet — 3 notes reliées par une
+                    // ligature continue, chiffre « 3 » au-dessus du groupe
+                    noteSVGHTML = genererTrioletSVG(estGhost);
                 } else {
                     // v1.2.2 : croche et double croche maintenant visuellement distinctes
                     let crochetsNote = 0;
@@ -10242,7 +10288,7 @@
                         crochetPartiel = estDeFamilleDouble(suivante) ? "droite"
                                        : (estDeFamilleDouble(precedente) ? "gauche" : "droite");
                     }
-                    noteSVGHTML = genererNoteSlashSVG(estGhost, ev.etat.liee, ev.duree % 3 === 0, crochetsNote, crochetPartiel, ev.etat.type === "triolet");
+                    noteSVGHTML = genererNoteSlashSVG(estGhost, ev.etat.liee, ev.duree % 3 === 0, crochetsNote, crochetPartiel);
                 }
 
                 rhythmSlotsHTML += `
@@ -10389,6 +10435,19 @@
                 </div>
             </div>
         `;
+
+        // v1.2.4 : ajuste chaque triolet à la largeur réelle de son temps —
+        // le dessin est régénéré aux bonnes coordonnées (aucun étirement),
+        // la ligature traverse tout le temps comme sur une vraie gravure.
+        wrapper.querySelectorAll("svg.triolet-svg").forEach(svg => {
+            const slotTriolet = svg.closest(".rhythm-step-slot");
+            const wReel = slotTriolet ? Math.round(slotTriolet.clientWidth) : 0;
+            if (wReel >= 60 && Math.abs(wReel - (parseFloat(svg.dataset.w) || 0)) >= 6) {
+                const conteneur = document.createElement("span");
+                conteneur.innerHTML = genererTrioletSVG(svg.dataset.ghost === "1", wReel);
+                svg.replaceWith(conteneur.firstElementChild);
+            }
+        });
     }
 
     function renderTout() {

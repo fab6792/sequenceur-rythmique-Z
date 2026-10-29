@@ -3,6 +3,18 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.2.4 (2026-10-29)
+
+Amélioration : **le triolet est maintenant dessiné comme sur une vraie partition** 🎼
+
+- Jusqu'ici, le triolet apparaissait dans la portée comme une simple note surmontée d'un petit « 3 » peu lisible
+- Désormais, le triolet est noté selon la convention musicale : **les 3 notes sont reliées par une ligature continue** qui traverse tout le temps, et le chiffre **« 3 » en italique est placé au-dessus du groupe**, bien visible
+- La ligature du triolet se place à la même hauteur que les barres de ligature des temps voisins, et les 3 têtes de notes restent alignées sur la ligne de portée comme les autres figures ; le dessin s'adapte à la largeur réelle du temps (aucun étirement)
+- Correction importante au passage : **en thème Studio, toutes les notes de la portée étaient bleu nuit sur le fond sombre** — crochets, demi-ligatures, triolet et têtes de notes étaient presque invisibles (c'est ce qui rendait la distinction croche / double croche si difficile à voir). Elles sont maintenant **blanches comme les barres de ligature** du thème
+- Le dessin du triolet suit le thème actif (Studio en blanc, Vintage en doré, Neon en cyan), et le rendu vaut pour les vues **Partition** et **Mixte**
+- L'ancien petit « 3 » sous la note (v1.2.3) disparaît au profit de cette notation complète
+- Aucun changement du moteur audio (le triolet sonne toujours 3 frappes régulières), ni du format de sauvegarde
+
 ## v1.2.3 (2026-10-29)
 
 Corrections : **thème Vintage / Neon — la double barre des doubles croches était invisible** 🎨
