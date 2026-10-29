@@ -3,6 +3,29 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.3 (2026-10-30)
+
+Nouvelle fonctionnalité : **Basse automatique suivant la grille d'accords** 🎸
+
+- Nouvelle ligne « 🎸 Basse Automatique » dans les réglages, juste sous le Motif de Batterie : une **vraie ligne de basse synthétisée** accompagne le jeu en suivant **automatiquement les accords posés sur la grille** — aucun réglage note par note, la fondamentale (tonique) est déduite de chaque accord
+- **3 modes de jeu au choix** :
+  - **𝅗𝅥 Tonique tenue par mesure** : la fondamentale sonne au 1ᵉʳ temps de chaque mesure et se soutient jusqu'à la suivante — un ancrage harmonique posé, idéal pour travailler un rythme
+  - **𝅘𝅥 Tonique à chaque temps** : la fondamentale marque tous les temps — un guide rythmique permanent, même sur une grille pleine de silences
+  - **🤠 Tonique – Quinte alternée** : la classique basse alternée (tonique sur un temps, quinte sur le suivant) — un véritable accompagnement folk/country
+- **Volume dédié** : un 5ᵉ curseur « Basse » rejoint le mixeur (Guitare, Basse, Batterie, Clic, Réverbe)
+- La basse est **indépendante du rythme joué** : elle suit la grille d'accords et les temps, pas les cases — elle continue de guider même quand la grille est vide de notes
+- **Aperçu immédiat** : changer un accord (mesure, temps ou pastille) fait instantanément entendre la basse correspondante sous l'accord de guitare
+- Son grave réaliste (plage C2 → B2, comme le bas du manche d'une basse) : synthèse triangle + sinus avec filtre passe-bas chaud et enveloppe « pincée »
+- La basse est incluse dans l'**export WAV**, respecte le tempo et le swing, est coupée net à l'arrêt de la lecture et lors des changements à la volée, sans jamais superposer de notes
+- Elle **survit à la fermeture du navigateur** (auto-save) et **voyage dans les projets sauvegardés** (format 2.3 — les anciens fichiers restent 100 % compatibles)
+- Le mode de basse est couvert par l'historique **Annuler/Rétablir** (Ctrl+Z)
+
+Interface : **boutons Annuler / Rétablir épurés** ↩️↪️
+
+- Les deux boutons de la barre de transport ne conservent désormais que leurs **icônes flèche** — les textes « Annuler » et « Rétablir » disparaissent au profit d'une barre plus compacte
+- L'info-bulle au survol rappelle toujours l'action, le raccourci clavier et le nombre d'étapes en mémoire ; des libellés d'accessibilité (aria-label) sont ajoutés pour les lecteurs d'écran
+- Aucun changement de comportement : Ctrl+Z / Ctrl+Y fonctionnent exactement comme avant
+
 ## v1.2.5 (2026-10-29)
 
 Correction : **le glisser-déposer devient insensible au défilement de la page** 🖱️

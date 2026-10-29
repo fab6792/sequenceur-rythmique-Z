@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.2.5</title>
+    <title>Séquenceur Rythmique v1.3</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.2.5" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.3" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3346,9 +3346,12 @@
             }
         }
 
-        /* --- v1.2 : boutons Annuler / Rétablir --- */
+        /* --- v1.2 : boutons Annuler / Rétablir (v1.3 : icône seule, texte retiré) --- */
         .btn-historique {
             font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1;
+            min-width: 44px;
         }
         .btn-historique:disabled {
             opacity: 0.35;
@@ -3364,7 +3367,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.5</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.3</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -3573,10 +3576,14 @@
 
                     <div class="control-group">
                         <span class="control-label">Mixeur Niveaux</span>
-                        <div class="mixer-group" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 6px 4px;">
+                        <div class="mixer-group" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 6px 4px;">
                             <div class="fader-box" style="padding: 3px;">
                                 <span>Guitare</span>
                                 <input type="range" id="volGuitar" min="0" max="1" step="0.05" value="0.7">
+                            </div>
+                            <div class="fader-box" style="padding: 3px;">
+                                <span>Basse</span>
+                                <input type="range" id="volBass" min="0" max="1" step="0.05" value="0.5" title="Volume de la basse automatique (v1.3) : suit la grille d'accords">
                             </div>
                             <div class="fader-box" style="padding: 3px;">
                                 <span>Batterie</span>
@@ -3610,6 +3617,19 @@
                                 <option value="personnalise">✨ Mon motif personnalisé…</option>
                             </select>
                             <button type="button" id="btnEditerBatterie" onclick="ouvrirEditeurBatterie()" title="Créer ou modifier votre propre motif de batterie (v1.1)" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; border: none; border-radius: 8px; padding: 0 13px; font-size: 1.05rem; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.35);">✏️</button>
+                        </div>
+                    </div>
+
+                    <!-- LIGNE BASSE AUTOMATIQUE (v1.3) : suit la grille d'accords, indépendante du rythme joué -->
+                    <div class="control-group">
+                        <span class="control-label">🎸 Basse Automatique</span>
+                        <div style="display: flex; gap: 6px; align-items: stretch;">
+                            <select id="selectBasseAuto" class="select-v2" onchange="changerModeBasse(this.value)" style="flex: 1; min-width: 0;" title="Ajoute une vraie ligne de basse qui suit automatiquement les accords posés sur la grille (aperçu immédiat au changement d'accord, incluse dans l'export WAV)">
+                                <option value="off" selected>🚫 Off (Désactivée)</option>
+                                <option value="mesure">𝅗𝅥 Tonique tenue par mesure</option>
+                                <option value="temps">𝅘𝅥 Tonique à chaque temps</option>
+                                <option value="altern">🤠 Tonique – Quinte alternée</option>
+                            </select>
                         </div>
                     </div>
 
@@ -3648,8 +3668,8 @@
         <div class="transport-strip" id="transportBar">
             <!-- GAUCHE : ÉDITION RAPIDE -->
             <div class="transport-group-left">
-                <button id="btnAnnuler" type="button" class="btn-v2 btn-historique" onclick="annulerAction()" title="Annuler [Ctrl+Z] — rien à annuler pour le moment" disabled>↩️ Annuler</button>
-                <button id="btnRetablir" type="button" class="btn-v2 btn-historique" onclick="retablirAction()" title="Rétablir [Ctrl+Y] — rien à rétablir pour le moment" disabled>↪️ Rétablir</button>
+                <button id="btnAnnuler" type="button" class="btn-v2 btn-historique" onclick="annulerAction()" title="Annuler [Ctrl+Z] — rien à annuler pour le moment" aria-label="Annuler la dernière modification (Ctrl+Z)" disabled>↩️</button>
+                <button id="btnRetablir" type="button" class="btn-v2 btn-historique" onclick="retablirAction()" title="Rétablir [Ctrl+Y] — rien à rétablir pour le moment" aria-label="Rétablir la dernière modification annulée (Ctrl+Y)" disabled>↪️</button>
                 <button class="btn-v2 btn-reset" onclick="resetTout()" title="Réinitialiser toutes les mesures [R]">🔄 Reset</button>
                 <button class="btn-v2 btn-random" onclick="genererAleatoire()" title="Générer un rythme aléatoire">🎲 Aléatoire</button>
                 <button id="btnToggleManche" class="btn-v2" onclick="toggleMancheGuitare()" title="Afficher ou masquer le manche de guitare interactif [F]" style="color: #81c784; font-weight: bold;">🎸 Manche</button>
@@ -7964,6 +7984,140 @@
         }
     }
 
+    // ========================================================
+    // --- v1.3 : BASSE AUTOMATIQUE SUIVANT LA GRILLE D'ACCORDS ---
+    // Une vraie ligne de basse synthétisée qui joue la tonique (et la
+    // quinte) des accords posés sur la grille, sans toucher au rythme :
+    //   - "mesure" : tonique tenue sur toute la mesure (1ʳᵉ note → fin)
+    //   - "temps"  : tonique à chaque temps (guide rythmique permanent)
+    //   - "altern" : tonique / quinte alternées (basse folk-country)
+    // La basse est indépendante des cases jouées : même sur une grille
+    // pleine de silences, elle reste le repère harmonique et du tempo.
+    // Elle est incluse dans l'export WAV (programmerPas reçoit le
+    // contexte offline) et coupée net à l'arrêt / à la reprogrammation.
+    // ========================================================
+    let modeBasse = "off";
+
+    function changerModeBasse(val) {
+        modeBasse = ["off", "mesure", "temps", "altern"].includes(val) ? val : "off";
+        const sel = document.getElementById("selectBasseAuto");
+        if (sel && sel.value !== modeBasse) sel.value = modeBasse;
+        if (playing) {
+            // Reprogramme à la volée : la nouvelle basse démarre au prochain temps, sans superposition
+            reinitialiserPlanificationAudioALaVolee();
+        }
+    }
+
+    // Fréquences de basse pour un accord : tonique dans la plage C2 (65.4 Hz)
+    // → B2 (123.5 Hz), registre d'une basse réelle sur haut-parleurs d'ordinateur.
+    function frequencesBassePourAccord(nomAccord, veutQuinte = false) {
+        const tonique = extraireToniqueAccord(nomAccord);      // "G", "Bb", "F#"…
+        const semiTonique = normaliserPitchEnDemiTon(tonique); // 0 (Do) … 11 (Si)
+        // Référence : Mi grave E2 = 82.41 Hz (indice 4 de la gamme chromatique)
+        const freqDepuisSemi = (semi) => 82.41 * Math.pow(2, (semi - 4) / 12);
+        const resultat = { tonique: freqDepuisSemi(semiTonique) };
+        if (veutQuinte) resultat.quinte = freqDepuisSemi((semiTonique + 7) % 12);
+        return resultat;
+    }
+
+    // --- GESTION DES VOIX DE BASSE & COUPE NETTE À LA VOLÉE ---
+    let voixBasseActives = [];
+
+    function enregistrerVoixBasse(c, gainNode, nodesArray) {
+        if (!c || c === audioCtx) {
+            voixBasseActives.push({ gain: gainNode, nodes: nodesArray });
+            if (voixBasseActives.length > 24) {
+                const now = audioCtx ? audioCtx.currentTime : 0;
+                voixBasseActives = voixBasseActives.filter(v => (v.stopTime || now) > now);
+                if (voixBasseActives.length > 24) voixBasseActives.shift();
+            }
+        }
+    }
+
+    function couperToutesVoixBasse(dureeFade = 0.005) {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        for (let i = 0; i < voixBasseActives.length; i++) {
+            const v = voixBasseActives[i];
+            try {
+                v.gain.gain.cancelScheduledValues(now);
+                v.gain.gain.setValueAtTime(Math.max(0.0001, v.gain.gain.value), now);
+                v.gain.gain.linearRampToValueAtTime(0.00001, now + dureeFade);
+                setTimeout(() => {
+                    try { v.gain.disconnect(); } catch(e) {}
+                    if (v.nodes) v.nodes.forEach(o => { try { o.stop(); } catch(e){} });
+                }, Math.round((dureeFade + 0.006) * 1000));
+            } catch(e) {}
+        }
+        voixBasseActives = [];
+    }
+
+    // Synthèse basse : triangle (harmoniques audibles sur petits haut-parleurs)
+    // + sinus (corps grave), filtre passe-bas chaud, enveloppe "pincée"
+    // (attaque franche, léger décrut, tenue, relâche douce).
+    window.__statsBasse = { jouees: 0, derniereFreq: 0 }; // compteur d'inspection / tests
+
+    function jouerNoteBasse(freq, tempsAttaque, dureeTotale, vol, ctx = null) {
+        const c = ctx || audioCtx;
+        if (!c || vol <= 0 || !freq || freq <= 0) return;
+        window.__statsBasse.jouees++;
+        window.__statsBasse.derniereFreq = freq;
+
+        const bus = obtenirStudioBus(c);
+
+        const oscTri = c.createOscillator();
+        oscTri.type = "triangle";
+        oscTri.frequency.setValueAtTime(freq, tempsAttaque);
+
+        const oscSin = c.createOscillator();
+        oscSin.type = "sine";
+        oscSin.frequency.setValueAtTime(freq, tempsAttaque);
+
+        const gainTri = c.createGain();
+        gainTri.gain.value = 0.65;
+        const gainSin = c.createGain();
+        gainSin.gain.value = 0.5;
+
+        const filtre = c.createBiquadFilter();
+        filtre.type = "lowpass";
+        filtre.frequency.setValueAtTime(650, tempsAttaque);
+        filtre.Q.value = 0.7;
+
+        const gainSortie = c.createGain();
+        const pic = vol * 0.9;
+        const tenue = vol * 0.55;
+        const fin = tempsAttaque + Math.max(0.08, dureeTotale);
+
+        gainSortie.gain.setValueAtTime(0.0001, tempsAttaque);
+        gainSortie.gain.linearRampToValueAtTime(pic, tempsAttaque + 0.012);
+        gainSortie.gain.exponentialRampToValueAtTime(Math.max(0.0002, tenue), tempsAttaque + 0.09);
+        gainSortie.gain.setValueAtTime(Math.max(0.0002, tenue), Math.max(tempsAttaque + 0.1, fin - 0.06));
+        gainSortie.gain.exponentialRampToValueAtTime(0.0001, fin + 0.05);
+
+        oscTri.connect(gainTri);
+        oscSin.connect(gainSin);
+        gainTri.connect(filtre);
+        gainSin.connect(filtre);
+        filtre.connect(gainSortie);
+        gainSortie.connect(bus.dryGain);
+
+        enregistrerVoixBasse(c, gainSortie, [oscTri, oscSin]);
+
+        oscTri.start(tempsAttaque);
+        oscSin.start(tempsAttaque);
+        oscTri.stop(fin + 0.09);
+        oscSin.stop(fin + 0.09);
+    }
+
+    // Aperçu immédiat quand un accord change (mesure, temps ou pastille) :
+    // la tonique de basse sonne sous l'accord de guitare, si la basse est active.
+    function jouerApercuBasse(accordNom) {
+        const volBasse = parseFloat(document.getElementById("volBass")?.value || 0.5);
+        if (modeBasse === "off" || volBasse <= 0 || !audioCtx || !accordNom) return;
+        const freqsBasse = frequencesBassePourAccord(accordNom, false);
+        jouerNoteBasse(freqsBasse.tonique, audioCtx.currentTime + 0.02, 0.8, volBasse * 0.85, audioCtx);
+    }
+
     // --- MÉTRONOME STUDIO (WOODBLOCK NET & PRÉCIS) ---
     function jouerMetronome(tempsDepart, fort, volume, ctx = null) {
         const c = ctx || audioCtx;
@@ -8039,6 +8193,46 @@
                     }
                 } else {
                     jouerGuitare(etat.chord, tempsExact, dureeTotale, etat.fx || "normal", volAjuste, styleGuitare, ctx, indexPas);
+                }
+            }
+        }
+
+        // 1bis. BASSE AUTOMATIQUE (v1.3) : suit la grille d'accords, indépendamment
+        // du rythme joué. Elle ne s'exprime qu'au début de chaque temps
+        // (chaque index multiple de subdivisionsParTemps, planifié exactement une fois).
+        const volBasse = parseFloat(document.getElementById("volBass")?.value || 0.5);
+        if (modeBasse !== "off" && volBasse > 0) {
+            const pasDansMesureBasse = indexPas % pasParMesure;
+            const subParTempsBasse = (subdivisionsParTemps && subdivisionsParTemps > 0) ? subdivisionsParTemps : 8;
+
+            if (pasDansMesureBasse % subParTempsBasse === 0) {
+                const indexTempsBasse = pasDansMesureBasse / subParTempsBasse;
+                const numMesureBasse = Math.floor(indexPas / pasParMesure) + 1;
+                const nbTempsMesure = Math.max(1, Math.round(pasParMesure / subParTempsBasse));
+                const accordBasse = detecterAccordTemps(numMesureBasse, indexTempsBasse);
+
+                if (accordBasse) {
+                    let freqBasse = null;
+                    let dureeEnTempsBasse = 1;
+
+                    if (modeBasse === "mesure") {
+                        // Tonique tenue du 1er temps de la mesure jusqu'au suivant
+                        if (pasDansMesureBasse === 0) {
+                            freqBasse = frequencesBassePourAccord(accordBasse, false).tonique;
+                            dureeEnTempsBasse = nbTempsMesure;
+                        }
+                    } else if (modeBasse === "altern") {
+                        // Basse alternée : tonique sur les temps impairs (1er, 3e…), quinte entre deux
+                        const freqsBasse = frequencesBassePourAccord(accordBasse, true);
+                        freqBasse = (indexTempsBasse % 2 === 1) ? freqsBasse.quinte : freqsBasse.tonique;
+                    } else { // "temps"
+                        freqBasse = frequencesBassePourAccord(accordBasse, false).tonique;
+                    }
+
+                    if (freqBasse) {
+                        // 0.96 : micro-respiration avant la note suivante (articulation)
+                        jouerNoteBasse(freqBasse, tempsExact, dureeEnTempsBasse * subParTempsBasse * secondesParPas * 0.96, volBasse * 0.9, ctx);
+                    }
                 }
             }
         }
@@ -8166,9 +8360,10 @@
     function reinitialiserPlanificationAudioALaVolee() {
         if (!playing || !audioCtx) return;
 
-        // 1. Coupe immédiatement toutes les voix de guitare et de batterie (extinction douce pour l'actif, déconnexion immédiate du futur)
+        // 1. Coupe immédiatement toutes les voix de guitare, de basse et de batterie (extinction douce pour l'actif, déconnexion immédiate du futur)
         couperToutesVoixGuitare(0.005);
         couperToutesVoixBatterie(0.004);
+        couperToutesVoixBasse(0.004);
 
         // 2. Détermine le pas en cours d'écoute pour repartir sans rupture ni décalage de tempo
         const now = audioCtx.currentTime;
@@ -8245,6 +8440,7 @@
         }
         couperToutesVoixGuitare();
         couperToutesVoixBatterie();
+        couperToutesVoixBasse();
         pasProgrammesRecents = [];
         stopperChrono();
         secondsElapsed = 0;
@@ -8960,11 +9156,12 @@
         if (playing) reinitialiserPlanificationAudioALaVolee();
         declencherAutoSave();
 
-        // Pré-écoute sonore immédiate
+        // Pré-écoute sonore immédiate (guitare + basse si active)
         demarrerAudio();
         const volG = parseFloat(document.getElementById("volGuitar")?.value || 0.7);
         const styleG = document.getElementById("selectGuitarMode")?.value || "folk";
         jouerGuitare(accordNom, audioCtx.currentTime, 0.8, "normal", volG, styleG, audioCtx, startPas);
+        jouerApercuBasse(accordNom);
 
         afficherToast(`Mesure ${numMesure} harmonisée en ${accordNom} (${notesModifiees} note${notesModifiees > 1 ? 's' : ''})`, "success");
     }
@@ -8991,11 +9188,12 @@
         if (playing) reinitialiserPlanificationAudioALaVolee();
         declencherAutoSave();
 
-        // Pré-écoute sonore
+        // Pré-écoute sonore (guitare + basse si active)
         demarrerAudio();
         const volG = parseFloat(document.getElementById("volGuitar")?.value || 0.7);
         const styleG = document.getElementById("selectGuitarMode")?.value || "folk";
         jouerGuitare(accordNom, audioCtx.currentTime, 0.6, "normal", volG, styleG, audioCtx, beatStart);
+        jouerApercuBasse(accordNom);
 
         afficherToast(`M${numMesure} - Temps ${indexTemps + 1} réglé sur ${accordNom}`, "info");
     }
@@ -9351,6 +9549,7 @@
         const volG = parseFloat(document.getElementById("volGuitar")?.value || 0.7);
         const styleG = document.getElementById("selectGuitarMode")?.value || "folk";
         jouerGuitare(accordNom, audioCtx.currentTime, 0.8, "normal", volG, styleG, audioCtx, pasEnCoursPopover);
+        jouerApercuBasse(accordNom);
 
         afficherToast(`Accord ${accordNom} appliqué au temps`, "success");
         fermerPopoverAccord();
@@ -9360,10 +9559,15 @@
         if (pasEnCoursPopover === null || !etatsCases[pasEnCoursPopover]) return;
         const select = document.getElementById("popoverSelectAccordComplet");
         const accordNom = (select && select.value) ? select.value : etatsCases[pasEnCoursPopover].chord;
+        testerAudioAccordPopoverBase(accordNom);
+    }
+
+    function testerAudioAccordPopoverBase(accordNom) {
         demarrerAudio();
         const volG = parseFloat(document.getElementById("volGuitar")?.value || 0.7);
         const styleG = document.getElementById("selectGuitarMode")?.value || "folk";
         jouerGuitare(accordNom, audioCtx.currentTime, 0.8, "normal", volG, styleG, audioCtx, pasEnCoursPopover);
+        jouerApercuBasse(accordNom);
     }
 
     function propagerAccordDepuisPopover() {
@@ -11215,7 +11419,7 @@
         const motifPersoCapture = lireMotifPersonnalise();
         return {
             app: "GuitarRhythmSequencer",
-            version: "2.2",
+            version: "2.3",
             date: obtenirDateFormatee(),
             nom: nom,
             bpm: tempo,
@@ -11233,7 +11437,9 @@
             drumPattern: document.getElementById("selectDrumPattern")?.value || "off",
             motifBatteriePerso: motifPersoCapture ? JSON.parse(JSON.stringify(motifPersoCapture)) : null,
             guitarMode: document.getElementById("selectGuitarMode")?.value || "folk",
+            modeBasse: modeBasse,
             volGuitar: parseFloat(document.getElementById("volGuitar")?.value || 0.7),
+            volBass: parseFloat(document.getElementById("volBass")?.value || 0.5),
             volClick: parseFloat(document.getElementById("volClick")?.value || 0.2),
             volDrums: parseFloat(document.getElementById("volDrums")?.value || 0.7),
             volReverb: parseFloat(document.getElementById("volReverb")?.value || 0.25),
@@ -11320,6 +11526,14 @@
         if (data.guitarMode) {
             const selectGuitar = document.getElementById("selectGuitarMode");
             if (selectGuitar) selectGuitar.value = data.guitarMode;
+        }
+        // v1.3 : restaure le mode de basse automatique et son volume
+        if (data.modeBasse !== undefined) {
+            changerModeBasse(data.modeBasse);
+        }
+        if (data.volBass !== undefined) {
+            const vb = document.getElementById("volBass");
+            if (vb) vb.value = data.volBass;
         }
         if (data.volGuitar !== undefined) {
             const vg = document.getElementById("volGuitar");
@@ -12228,11 +12442,12 @@
         changerBoucleDebut, changerBoucleFin, changerDivision, changerFiltreCordesExercice,
         changerGammeMode, changerGammePosition, changerGammeTonique, changerGapClick,
         changerModeAffichageAccord, changerModeAffichageAccords, changerModeAffichageMesures,
-        changerModeAlterationManche, changerModeGuitare, changerModeNotationManche,
+        changerModeAlterationManche, changerModeBasse, changerModeGuitare, changerModeNotationManche,
         changerPatternBatterie, changerPickGauge, changerPickingMode, changerSignature,
         changerSpeedTrainer, changerStrumSpeed, changerSwing, changerTempo, changerTheme,
         changerTypeExerciceManche, changerUniteMetronome, chargerSlot,
-        copierAccordSurMesuresSuivantes, copierMesureSurSuivante, copierMotifActuelDansEditeur, couperToutesVoixBatterie,
+        copierAccordSurMesuresSuivantes, copierMesureSurSuivante, copierMotifActuelDansEditeur, couperToutesVoixBasse,
+        couperToutesVoixBatterie,
         couperToutesVoixGuitare, creerReponseImpulsionnelleReverbe, cyclerTypePasScore,
         cyclerVelocitePasSelectionne, declencherAutoSave, definirModeProgression,
         demarrerAudio, demarrerChrono, deselectionnerPasActif, detecterAccordDominantMesure,
@@ -12241,14 +12456,14 @@
         enregistrerMotifPersonnalise, enregistrerVoixBatterie, estDansPositionManche, estMesureEnGap, exporterAudioWAV,
         exporterBanqueSlots, exporterJSON, extraireNomAccordPourSelect, extraireToniqueAccord,
         fermerEditeurBatterie, fermerModalChoixProgression, fermerModalRenversements, fermerPopoverAccord, filtrerCordesDisponibles,
-        flasherCaseMetronome, floatTo16BitPCMWav, formaterNoteCodeManche, formaterPitchManche,
+        flasherCaseMetronome, floatTo16BitPCMWav, formaterNoteCodeManche, formaterPitchManche, frequencesBassePourAccord,
         genererAleatoire, genererAleatoireMesure, genererDiagrammeAccordSVG,
         genererMotifAleatoirePourMesure, genererNoteSlashSVG, genererNouvelleQuestionEntrainement,
         genererOptionsAccordsHTML, genererOptionsPresetsHTML, genererPillulesTempsHTML,
         genererRenversementsAutomatiques, genererRestSVG, genererTableauVide,
         glisserManchePourcent, glisserVersCases, importerBanqueSlots, importerJSON,
-        imprimerPartition, init, initialiserHistorique, initialiserMancheGuitare, interleaveWav, jouerGammeAudioDemo,
-        jouerGuitare, jouerHiHat, jouerKick, jouerMetronome, jouerNoteSynthetique,
+        imprimerPartition, init, initialiserHistorique, initialiserMancheGuitare, interleaveWav, jouerApercuBasse, jouerGammeAudioDemo,
+        jouerGuitare, jouerHiHat, jouerKick, jouerMetronome, jouerNoteBasse, jouerNoteSynthetique,
         jouerSnare, majBoutonsHistorique, mettreAJourBadgeScoreEntrainement, mettreAJourCurseurGlissement,
         mettreAJourVolumeReverbe, montrerIndicesBonnesReponses, nettoyerIndicesEntrainement,
         normaliserPitchEnDemiTon, obtenirCourbeSaturation, obtenirDateFormatee,
