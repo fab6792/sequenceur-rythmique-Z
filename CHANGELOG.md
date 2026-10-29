@@ -3,6 +3,16 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.2.3 (2026-10-29)
+
+Corrections : **thème Vintage / Neon — la double barre des doubles croches était invisible** 🎨
+
+- Sur les thèmes **Vintage** et **Neon**, la 2ᵉ barre de ligature d'un groupe de doubles croches gardait une couleur bleu nuit codée en dur, invisible sur le fond sombre : le groupe de doubles croches paraissait identique à un groupe de croches (le thème Studio, par défaut, n'était pas concerné)
+- La 2ᵉ barre hérite désormais automatiquement de la couleur de la barre du thème actif (dorée en Vintage, cyan en Neon) — le réglage est valable pour tous les thèmes actuels et futurs
+- **Le triolet est maintenant marqué d'un « 3 »** sous la note dans la portée de la partition : auparavant il se dessinait comme une noire ordinaire, impossible à reconnaître
+- Les correctifs v1.2.2 (crochets des notes isolées, demi-ligatures) s'appliquaient déjà sur ces thèmes : seule la double barre et le triolet faisaient défaut
+- Aucun changement du moteur audio ni du format de sauvegarde
+
 ## v1.2.2 (2026-10-29)
 
 Correction : **Croche et double croche maintenant bien distinctes** 🎼

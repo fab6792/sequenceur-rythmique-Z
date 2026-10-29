@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.2.2</title>
+    <title>Séquenceur Rythmique v1.2.3</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.2.2" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.2.3" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -2570,7 +2570,11 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: #0f172a;
+            /* v1.2.3 : hérite de la couleur de la barre du thème actif.
+               Avant : bleu nuit codé en dur (#0f172a), invisible sur les fonds
+               sombres des thèmes Vintage et Neon — un groupe de doubles croches
+               semblait alors identique à un groupe de croches. */
+            background: inherit;
         }
 
         /* Emplacement de pas rythmique */
@@ -3329,7 +3333,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.2</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.2.3</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -9803,12 +9807,14 @@
         return 0;
     }
 
-    function genererNoteSlashSVG(isGhost, isTied, isDotted, crochets = 0, crochetPartiel = null) {
+    function genererNoteSlashSVG(isGhost, isTied, isDotted, crochets = 0, crochetPartiel = null, estTriolet = false) {
         // v1.2.2 : crochets = nombre de crochets pleins quand la note est seule
         // dans son temps (croche = 1, double croche = 2 — avant, les deux étaient
         // identiques). crochetPartiel ("droite" / "gauche") = demi-ligature d'une
         // double croche noyée dans un groupe de croches : un petit second trait
         // horizontal sur la hampe, comme dans une vraie partition.
+        // v1.2.3 : estTriolet ajoute le chiffre « 3 » sous la note, sans quoi un
+        // triolet était indistinguable d'une noire dans la portée.
         let flagHTML = "";
         if (crochets >= 1) {
             flagHTML += `<path d="M 15 4 C 19 8 21 14 16 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
@@ -9826,6 +9832,7 @@
             tieHTML = `<path d="M 10 44 Q 24 53 38 44" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>`;
         }
         let dotHTML = isDotted ? `<circle cx="21" cy="36" r="2" fill="currentColor"/>` : "";
+        const trioletHTML = estTriolet ? `<text x="12" y="51" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="inherit">3</text>` : "";
 
         return `<svg width="24" height="52" viewBox="0 0 24 52" class="rhythm-note-svg">
             <line x1="15" y1="4" x2="15" y2="38" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -9835,6 +9842,7 @@
                 `<polygon points="5,42 14,28 19,31 10,45" fill="currentColor"/>`
             }
             ${dotHTML}
+            ${trioletHTML}
             ${tieHTML}
         </svg>`;
     }
@@ -10234,7 +10242,7 @@
                         crochetPartiel = estDeFamilleDouble(suivante) ? "droite"
                                        : (estDeFamilleDouble(precedente) ? "gauche" : "droite");
                     }
-                    noteSVGHTML = genererNoteSlashSVG(estGhost, ev.etat.liee, ev.duree % 3 === 0, crochetsNote, crochetPartiel);
+                    noteSVGHTML = genererNoteSlashSVG(estGhost, ev.etat.liee, ev.duree % 3 === 0, crochetsNote, crochetPartiel, ev.etat.type === "triolet");
                 }
 
                 rhythmSlotsHTML += `
