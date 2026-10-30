@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.4.1</title>
+    <title>Séquenceur Rythmique v1.4.2</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.4.1" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.4.2" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3259,6 +3259,133 @@
             color: #00e5ff;
         }
 
+
+        /* ======================================================== */
+        /* --- v1.4.2 : PORTÉE PAPIER DANS TOUS LES THÈMES --- */
+        /* La partition se lit comme une feuille de musique imprimée :
+           fond blanc, encre sombre, mêmes lignes que le thème Jour.
+           La déco autour de la feuille (barres, boutons, réglages)
+           conserve l'identité du thème actif. Placé APRÈS les thèmes pour
+           gagner la cascade sans réécrire leurs définitions. */
+        /* ======================================================== */
+        body.theme-studio .score-measure-card,
+        body.theme-vintage .score-measure-card,
+        body.theme-neon .score-measure-card {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        /* Barres verticales du système (début, fin, double barre finale) */
+        body.theme-studio .score-lead-col,
+        body.theme-vintage .score-lead-col,
+        body.theme-neon .score-lead-col { border-right-color: #334155; }
+        body.theme-studio .score-tail-col,
+        body.theme-vintage .score-tail-col,
+        body.theme-neon .score-tail-col { border-left-color: #334155; }
+        body.theme-studio .score-tail-col.is-final-bar,
+        body.theme-vintage .score-tail-col.is-final-bar,
+        body.theme-neon .score-tail-col.is-final-bar {
+            border-left-color: #334155;
+            border-right-color: #334155;
+        }
+        body.theme-studio .score-end-bar-line,
+        body.theme-vintage .score-end-bar-line,
+        body.theme-neon .score-end-bar-line {
+            border-left-color: #334155;
+            border-right-color: #334155;
+        }
+        /* Lignes horizontales de la portée rythmique (identiques au thème Jour) */
+        body.theme-studio .score-rhythm-clef-box,
+        body.theme-vintage .score-rhythm-clef-box,
+        body.theme-neon .score-rhythm-clef-box {
+            border-top-color: #334155;
+            border-bottom-color: #334155;
+        }
+        body.theme-studio .score-beat-rhythm-cell,
+        body.theme-vintage .score-beat-rhythm-cell,
+        body.theme-neon .score-beat-rhythm-cell {
+            border-top-color: #334155;
+            border-bottom-color: #334155;
+            background-color: transparent;
+        }
+        body.theme-studio .rhythm-continuous-baseline,
+        body.theme-vintage .rhythm-continuous-baseline,
+        body.theme-neon .rhythm-continuous-baseline { background: #94a3b8; }
+        /* Clef de percussion et chiffrage (4/4…) en encre sombre */
+        body.theme-studio .clef-neutral-glyph,
+        body.theme-vintage .clef-neutral-glyph,
+        body.theme-neon .clef-neutral-glyph,
+        body.theme-studio .clef-time-signature,
+        body.theme-vintage .clef-time-signature,
+        body.theme-neon .clef-time-signature { color: #1e293b; }
+        /* Petits textes d'accompagnement (Accords, Médiator, TEMPS 1…) */
+        body.theme-studio .score-row-type-label,
+        body.theme-vintage .score-row-type-label,
+        body.theme-neon .score-row-type-label,
+        body.theme-studio .score-beat-tag,
+        body.theme-vintage .score-beat-tag,
+        body.theme-neon .score-beat-tag,
+        body.theme-studio .tab-vertical-letters,
+        body.theme-vintage .tab-vertical-letters,
+        body.theme-neon .tab-vertical-letters,
+        body.theme-studio .tab-string-name,
+        body.theme-vintage .tab-string-name,
+        body.theme-neon .tab-string-name { color: #64748b; }
+        /* Noms d'accords + diagrammes : grille et nom suivent currentColor */
+        body.theme-studio .score-chord-name-btn,
+        body.theme-vintage .score-chord-name-btn,
+        body.theme-neon .score-chord-name-btn {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+        body.theme-studio .score-beat-chord-cell,
+        body.theme-vintage .score-beat-chord-cell,
+        body.theme-neon .score-beat-chord-cell { color: #0f172a; }
+        /* Notes et slashes en encre noire (plus de néon ni de lueur sur papier) */
+        body.theme-studio .rhythm-slash-svg,
+        body.theme-vintage .rhythm-slash-svg,
+        body.theme-neon .rhythm-slash-svg,
+        body.theme-studio .rhythm-note-svg,
+        body.theme-vintage .rhythm-note-svg,
+        body.theme-neon .rhythm-note-svg { color: #0f172a; filter: none; }
+        body.theme-studio .rhythm-rest-svg,
+        body.theme-vintage .rhythm-rest-svg,
+        body.theme-neon .rhythm-rest-svg,
+        body.theme-studio .rhythm-rest-glyph,
+        body.theme-vintage .rhythm-rest-glyph,
+        body.theme-neon .rhythm-rest-glyph,
+        body.theme-studio .rhythm-ghost-svg,
+        body.theme-vintage .rhythm-ghost-svg,
+        body.theme-neon .rhythm-ghost-svg { color: #64748b; filter: none; }
+        body.theme-studio .rhythm-note-stem,
+        body.theme-vintage .rhythm-note-stem,
+        body.theme-neon .rhythm-note-stem,
+        body.theme-studio .score-beam-bar,
+        body.theme-vintage .score-beam-bar,
+        body.theme-neon .score-beam-bar,
+        body.theme-studio .score-beam-bar.double-beam::after,
+        body.theme-vintage .score-beam-bar.double-beam::after,
+        body.theme-neon .score-beam-bar.double-beam::after {
+            background: #0f172a;
+            box-shadow: none;
+        }
+        /* Tablature : cordes claires et cases à frettes lisibles */
+        body.theme-studio .tab-continuous-line,
+        body.theme-vintage .tab-continuous-line,
+        body.theme-neon .tab-continuous-line { background: #cbd5e1; }
+        body.theme-studio .tab-fret-badge,
+        body.theme-vintage .tab-fret-badge,
+        body.theme-neon .tab-fret-badge {
+            background: #ffffff;
+            color: #0f172a;
+        }
+        body.theme-studio .tab-fret-badge.is-open,
+        body.theme-vintage .tab-fret-badge.is-open,
+        body.theme-neon .tab-fret-badge.is-open { color: #2563eb; }
+        body.theme-studio .score-med-unit,
+        body.theme-vintage .score-med-unit,
+        body.theme-neon .score-med-unit { color: #0f172a; }
         /* ======================================================== */
         /* --- IMPRESSION / EXPORTATION PDF PROFESSIONNELLE --- */
         /* ======================================================== */
@@ -3492,7 +3619,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.4.1</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.4.2</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -8632,6 +8759,13 @@
         const select = document.getElementById("selectNbMesures");
         if (select) select.value = nbInt;
 
+        // v1.4.2 : une boucle qui couvrait tout le morceau s'étend aux nouvelles
+        // mesures — avec une seule mesure, la boucle par défaut M1-M1 EST tout le
+        // morceau : ajouter des mesures doit la faire suivre (M1-M2, M1-M3…).
+        // Une boucle partielle (ex. M2-M3 sur 4 mesures) n'est pas modifiée.
+        if (nbInt > ancienNb && boucleDebutMesure === 1 && boucleFinMesure >= ancienNb) {
+            boucleFinMesure = nbInt;
+        }
         if (boucleFinMesure > nbInt) boucleFinMesure = nbInt;
         if (boucleDebutMesure > nbInt) boucleDebutMesure = 1;
 

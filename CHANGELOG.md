@@ -3,6 +3,16 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.4.2 (2026-10-30)
+
+Interface : **portée papier dans tous les thèmes** 📄 + correction du bouclage des mesures
+
+- La partition se lit désormais comme une **feuille de musique imprimée dans les 4 thèmes** (Jour, Studio, Vintage et Neon) : fond blanc, notation en encre sombre — un contraste net pour travailler confortablement, même dans les thèmes sombres où les notes étaient parfois peu lisibles
+- Dans Studio, Vintage et Neon, **tout l'intérieur de la feuille** repasse en « papier » : notes, slashes, silences, barres de ligature, hampes, barres de mesure, double barre finale, clef de percussion, chiffrage (4/4…), noms d'accords, diagrammes, tablature (cordes claires, cases à frettes lisibles) et symboles de médiator — les néons et les lueurs disparaissent à l'intérieur de la feuille, tandis que **la décoration autour** (barres, boutons, réglages) garde toute l'identité du thème
+- Les couleurs de la feuille sont **identiques au thème Jour** (mêmes lignes de portée, même encre) : on passe d'un thème à l'autre sans réapprendre à lire la partition
+- **Correction du bouclage** : avec une seule mesure, la boucle par défaut est M1-M1 — c'est tout le morceau. En ajoutant des mesures, elle **s'étend automatiquement aux nouvelles mesures** (M1-M2, M1-M3…) au lieu de laisser la mesure 1 « bouclée seule » et les nouvelles hors boucle. Une boucle **partielle** (ex. M2-M3 sur 4 mesures) n'est pas modifiée, et le bouton « 🔁 Boucler M1 » d'une mesure permet toujours de la boucler seule volontairement
+- Aucun changement du moteur audio, du rendu pendant la lecture, du format des projets (2.3), des statistiques v1.4 ni de l'historique Annuler/Rétablir
+
 ## v1.4.1 (2026-10-30)
 
 Interface : **boutons compacts en icônes — lisible sur mobile** 📱
