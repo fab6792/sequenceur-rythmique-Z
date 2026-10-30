@@ -3,6 +3,19 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.4.3 (2026-10-30)
+
+Interface : **la palette des notes reste sous la main** 🎚️
+
+- Problème signalé : avec plusieurs mesures, il fallait **descendre jusqu'à la palette de notes puis remonter** en permanence pour choisir une durée — alors que le bandeau de commandes, lui, restait toujours visible en haut
+- La palette (Blanche, Noire, Croche, Triolet…) devient un **dock collé en bas de l'écran**, à l'image d'une barre d'outils de logiciel audio : visible en permanence pendant qu'on édite les mesures, en complément du bandeau de commandes qui reste collé en haut
+- Dès qu'on arrive **en bas de la page**, le dock se repose à sa place habituelle : le titre d'instruction et les raccourcis clavier redeviennent visibles — rien n'est masqué ni supprimé
+- Quand le dock est collé, il se **compacte** : le long titre d'instruction (« 👉 CLIQUEZ puis CHOISISSEZ… ») s'efface au profit des seuls boutons (il reste visible à sa place en bas de page et dans l'Aide)
+- **Sur mobile**, le dock se replie sur une seule rangée à faire glisser horizontalement (environ 50 px de haut)
+- Au passage, le glisser-déposer de secours (v1.2.5) est **durci pour l'ère du dock** : un défilement de page pendant l'appui sur un bouton du dock ne peut plus laisser le navigateur dans un état intermédiaire qui faisait échouer le dépôt sans explication — le fantôme de secours prend le relais de façon déterministe
+- Les 4 thèmes conservent leur identité : le dock reprend les couleurs de la palette du thème actif ; l'impression / l'export PDF ne contient pas le dock (c'est de l'interface, pas de la musique)
+- Glisser-déposer depuis le dock et raccourcis clavier (1 à 0, G, L) inchangés ; aucun changement du moteur audio, du rendu de la partition ni du format des projets (2.3)
+
 ## v1.4.2 (2026-10-30)
 
 Interface : **portée papier dans tous les thèmes** 📄 + correction du bouclage des mesures

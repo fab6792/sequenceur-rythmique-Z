@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.4.2</title>
+    <title>Séquenceur Rythmique v1.4.3</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.4.2" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.4.3" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3613,13 +3613,56 @@
             .main-header { margin-bottom: 10px; }
         }
     </style>
+    <style id="dock-v143">
+        /* --- v1.4.3 : LA PALETTE DES NOTES RESTE SOUS LA MAIN (DOCK) --- */
+        .palette-container {
+            position: sticky;
+            bottom: 8px;
+            z-index: 95; /* sous le bandeau de commandes (100), au-dessus du contenu */
+            box-shadow: 0 -3px 18px rgba(0, 0, 0, 0.22);
+        }
+
+        /* Quand le dock est collé à l'écran, il se compacte :
+           le long titre d'instruction s'efface au profit des seuls boutons. */
+        body.palette-fixee .palette-container {
+            padding: 8px 12px;
+            gap: 8px;
+        }
+
+        body.palette-fixee #paletteTitle {
+            display: none;
+        }
+
+        /* Sur petit écran, le dock devient une rangée à faire glisser horizontalement */
+        @media (max-width: 720px) {
+            body.palette-fixee .palette-container {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding: 7px 10px;
+            }
+
+            body.palette-fixee .palette-btn {
+                flex: 0 0 auto;
+                padding: 5px 9px;
+                font-size: 0.72rem;
+                white-space: nowrap;
+            }
+        }
+
+        /* L'impression / l'export PDF ne contient pas le dock (interface, pas musique) */
+        @media print {
+            .palette-container {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.4.2</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.4.3</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -11884,6 +11927,11 @@
     // un « fantôme » du bouton suit la souris et le dépôt est résolu par
     // coordonnées. Si le drag HTML5 démarre normalement (dragstart reçu), le
     // secours s'efface immédiatement et tout se passe comme avant.
+    // v1.4.3 (palette en dock) : le dock reste sous le curseur quand la page
+    // défile, mais le navigateur peut alors émettre un dragstart « à moitié
+    // mort » (aucun dragover/drop derrière : le dépôt échoue sans explication).
+    // On mémorise donc le défilement au moment de l'appui : si la page a bougé,
+    // le dragstart est annulé explicitement et le secours conduit le geste.
     const secoursDrag = {
         actif: false,
         engage: false,
@@ -11892,7 +11940,8 @@
         bouton: null,
         fantome: null,
         x0: 0,
-        y0: 0
+        y0: 0,
+        scrollY0: 0
     };
 
     document.addEventListener("mousedown", (e) => {
@@ -11908,13 +11957,22 @@
         secoursDrag.bouton = bouton;
         secoursDrag.x0 = e.clientX;
         secoursDrag.y0 = e.clientY;
+        secoursDrag.scrollY0 = window.scrollY;
     }, true);
 
     // Dès que le drag HTML5 prend la main, le secours se retire (dans tous les
     // cas : s’il démarre alors que le fantôme est déjà apparu, on efface le
     // fantôme pour laisser le navigateur conduire seule la suite du geste).
-    document.addEventListener("dragstart", () => {
-        if (secoursDrag.actif) terminerSecours(false);
+    // Exception v1.4.3 : si la page a défilé pendant l’appui, le dragstart du
+    // navigateur est « à moitié mort » (aucun dragover/drop derrière). On
+    // l’annule alors explicitement et le secours reste aux commandes.
+    document.addEventListener("dragstart", (e) => {
+        if (!secoursDrag.actif) return;
+        if (window.scrollY !== secoursDrag.scrollY0) {
+            e.preventDefault();
+            return;
+        }
+        terminerSecours(false);
     }, true);
 
     document.addEventListener("mousemove", (e) => {
@@ -13173,6 +13231,26 @@
     } else {
         init();
     }
+
+    // ========================================================
+    // --- v1.4.3 : LA PALETTE DES NOTES RESTE SOUS LA MAIN (DOCK) ---
+    // ========================================================
+    // La palette est collée en bas de l'écran tant qu'on est loin de sa place
+    // naturelle (tout en bas de la page) ; arrivé en bas de page, elle se
+    // « repose » à son endroit habituel et redevient exactement comme avant.
+    (function () {
+        const palette = document.querySelector(".palette-container");
+        if (!palette) return;
+        const majDockPalette = () => {
+            // Collée = son bord bas est plaqué contre le bas de l'écran
+            // (bottom: 8px posé par le CSS de la v1.4.3).
+            const fixee = palette.getBoundingClientRect().bottom > window.innerHeight - 10;
+            document.body.classList.toggle("palette-fixee", fixee);
+        };
+        window.addEventListener("scroll", majDockPalette, { passive: true });
+        window.addEventListener("resize", majDockPalette);
+        majDockPalette();
+    })();
 
 
 
