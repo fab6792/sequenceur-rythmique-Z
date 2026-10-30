@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.4</title>
+    <title>Séquenceur Rythmique v1.4.1</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.4" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.4.1" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3467,26 +3467,45 @@
         }
 
 </style>
+    <style id="compact-v141">
+        /* --- v1.4.1 : boutons compacts en icônes (variante B) --- */
+        .btn-historique, .btn-reset, .btn-random, #btnToggleManche, #btnTransportEntrainement { padding: 8px 10px; font-size: 1rem; }
+        .btn-transport-play { min-width: 0 !important; padding: 8px 14px !important; font-size: 1.1rem !important; }
+        .btn-transport-stop { padding: 8px 13px !important; font-size: 1.05rem !important; }
+        #btnCountIn { padding: 8px 11px; font-size: 1rem; }
+        .btn-view-mode { padding: 7px 11px !important; }
+        .btn-score-toggle, .btn-score-action { padding: 7px 10px !important; }
+        .btn-toggle-sub { padding: 6px 9px !important; font-size: 0.75rem !important; }
+        @media (max-width: 720px) {
+            .container { padding: 12px; }
+            .transport-strip { padding: 8px 10px; gap: 8px; }
+            .btn-v2 { padding: 7px 9px; }
+            .chrono-led { font-size: 1.05rem; padding: 6px 10px; }
+            .harmony-toolbar, .score-mode-toolbar { padding: 6px 8px; gap: 6px; }
+            .harmony-toolbar-left, .harmony-toolbar-right, .score-mode-left, .score-mode-right { gap: 6px; }
+            .main-header { margin-bottom: 10px; }
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.4</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.4.1</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
                 </button>
                 <button id="btnToggleSettings" class="btn-v2" onclick="togglePanelSettings()" title="Afficher ou masquer les panneaux de réglages" style="font-size: 0.8rem; padding: 7px 14px; background: #e8f0fe; color: #1967d2; border-color: #aecbfa;">
-                    <span id="iconToggleSettings">▲</span> <span id="labelToggleSettings">Masquer Réglages</span>
+                    <span id="iconToggleSettings">⚙️</span> <span id="labelToggleSettings">Réglages</span>
                 </button>
                 <div style="display: flex; align-items: center; gap: 5px;">
                     <select id="selectTheme" class="select-v2" onchange="changerTheme(this.value)" title="Choisir la charte visuelle" style="padding: 7px 10px; font-size: 0.8rem; font-weight: bold;">
-                        <option value="light">☀️ Jour (Clair)</option>
-                        <option value="studio" selected>🎛️ 1. Studio DAW Pro</option>
-                        <option value="vintage">🎸 2. Vintage Lutherie</option>
-                        <option value="neon">⚡ 3. Neon Pedalboard</option>
+                        <option value="light">☀️ Jour</option>
+                        <option value="studio" selected>🎛️ Studio</option>
+                        <option value="vintage">🎸 Vintage</option>
+                        <option value="neon">⚡ Neon</option>
                     </select>
                 </div>
             </div>
@@ -3502,7 +3521,7 @@
                     <div class="control-group">
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                             <span class="control-label">BPM : <span id="labelTempo" style="font-family: monospace; font-size: 0.85rem; font-weight: 800;">120</span></span>
-                            <button id="btnTapTempo" class="btn-v2" style="padding: 2px 7px; font-size: 0.7rem; background: #e8f0fe; color: #1967d2; border-color: #aecbfa; border-radius: 4px;" onclick="tapTempo()" title="Cliquer en rythme ou appuyer sur [T] pour ajuster le tempo">TAP [T]</button>
+                            <button id="btnTapTempo" class="btn-v2" style="padding: 2px 7px; font-size: 0.7rem; background: #e8f0fe; color: #1967d2; border-color: #aecbfa; border-radius: 4px;" onclick="tapTempo()" title="Cliquer en rythme ou appuyer sur [T] pour ajuster le tempo">TAP</button>
                         </div>
                         <input type="range" id="inputTempo" min="60" max="220" value="120" oninput="changerTempo(this.value)">
                     </div>
@@ -3776,17 +3795,17 @@
             <div class="transport-group-left">
                 <button id="btnAnnuler" type="button" class="btn-v2 btn-historique" onclick="annulerAction()" title="Annuler [Ctrl+Z] — rien à annuler pour le moment" aria-label="Annuler la dernière modification (Ctrl+Z)" disabled>↩️</button>
                 <button id="btnRetablir" type="button" class="btn-v2 btn-historique" onclick="retablirAction()" title="Rétablir [Ctrl+Y] — rien à rétablir pour le moment" aria-label="Rétablir la dernière modification annulée (Ctrl+Y)" disabled>↪️</button>
-                <button class="btn-v2 btn-reset" onclick="resetTout()" title="Réinitialiser toutes les mesures [R]">🔄 Reset</button>
-                <button class="btn-v2 btn-random" onclick="genererAleatoire()" title="Générer un rythme aléatoire">🎲 Aléatoire</button>
-                <button id="btnToggleManche" class="btn-v2" onclick="toggleMancheGuitare()" title="Afficher ou masquer le manche de guitare interactif [F]" style="color: #81c784; font-weight: bold;">🎸 Manche</button>
-                <button id="btnTransportEntrainement" class="btn-v2" onclick="basculerModeEntrainementManche()" title="Activer / Désactiver le mode entraînement interactif au manche [E]" style="color: #ffd54f; font-weight: bold;">🎓 Entraînement</button>
+                <button class="btn-v2 btn-reset" onclick="resetTout()" title="Réinitialiser toutes les mesures [R]" aria-label="Réinitialiser toutes les mesures (R)">🔄</button>
+                <button class="btn-v2 btn-random" onclick="genererAleatoire()" title="Générer un rythme aléatoire" aria-label="Générer un rythme aléatoire">🎲</button>
+                <button id="btnToggleManche" class="btn-v2" onclick="toggleMancheGuitare()" title="Afficher ou masquer le manche de guitare interactif [F]" aria-label="Afficher ou masquer le manche de guitare (F)" style="color: #81c784; font-weight: bold;">🎸</button>
+                <button id="btnTransportEntrainement" class="btn-v2" onclick="basculerModeEntrainementManche()" title="Activer / Désactiver le mode entraînement interactif au manche [E]" aria-label="Mode entraînement interactif au manche (E)" style="color: #ffd54f; font-weight: bold;">🎓</button>
             </div>
 
             <!-- CENTRE : COMMANDES DE LECTURE PRIORITAIRES -->
             <div class="transport-group-center">
-                <button id="btnPlay" class="btn-v2 btn-play btn-transport-play" onclick="basculerLecture()" title="Lancer / Mettre en pause la lecture [Espace]">▶ Lecture</button>
-                <button class="btn-v2 btn-stop btn-transport-stop" onclick="stopperLecture()" title="Arrêter la lecture et revenir au début">⏹ Stop</button>
-                <button id="btnCountIn" class="btn-v2 btn-toggle active" onclick="toggleDecompte()" title="Activer / Désactiver le décompte 1-2-3-4">⏳:ON</button>
+                <button id="btnPlay" class="btn-v2 btn-play btn-transport-play" onclick="basculerLecture()" title="Lancer / Mettre en pause la lecture [Espace]" aria-label="Lecture / pause (Espace)">▶</button>
+                <button class="btn-v2 btn-stop btn-transport-stop" onclick="stopperLecture()" title="Arrêter la lecture et revenir au début" aria-label="Arrêter la lecture et revenir au début">⏹</button>
+                <button id="btnCountIn" class="btn-v2 btn-toggle active" onclick="toggleDecompte()" title="Activer / Désactiver le décompte 1-2-3-4" aria-label="Décompte 1-2-3-4" aria-pressed="true">⏳</button>
             </div>
 
             <!-- DROITE : STATISTIQUES DE PRATIQUE (v1.4) + CHRONOMÈTRE DE TRAVAIL -->
@@ -3799,33 +3818,33 @@
         <!-- BARRE D'HARMONISATION & PROGRESSIONS GLOBALES -->
         <div class="harmony-toolbar" id="harmonyToolbar">
             <div class="harmony-toolbar-left">
-                <span class="harmony-title">🎶 Grilles & Progressions Rapides :</span>
+                <span class="harmony-title">🎶 Progressions :</span>
                 <select id="selectProgressionHarmonique" class="select-progression" onchange="appliquerProgressionHarmonique(this.value)" title="Harmoniser automatiquement toutes les mesures actives selon une grille d'accords classique">
                     <option value="">-- Choisir une progression d'accords --</option>
-                    <option value="pop_am_f_c_g">✨ Pop Épique (Am - F - C - G)</option>
-                    <option value="folk_g_em_c_d">🌲 Folk Classique (G - Em - C - D)</option>
-                    <option value="rock_e_g_a_c">⚡ Rock Énergique (E - G - A - C)</option>
-                    <option value="blues_e7_a7_b7">🎷 Blues en Mi (E7 - A7 - E7 - B7)</option>
-                    <option value="jazz_dm7_g7_cmaj7">🎺 Jazz II-V-I (Dm7 - G7 - CMaj7 - Am7)</option>
-                    <option value="flamenco_am_g_f_e">💃 Flamenco Andalou (Am - G - F - E)</option>
-                    <option value="ballade_c_am_f_g">🎹 Ballade 50s (C - Am - F - G)</option>
-                    <option value="soul_fmaj7_em7_dm7">☕ Soul Lo-Fi (FMaj7 - Em7 - Dm7 - CMaj7)</option>
-                    <option value="power_e5_d5_c5_d5">🎸 Powerchords Rock (E5 - D5 - C5 - D5)</option>
+                    <option value="pop_am_f_c_g">✨ Pop (Am-F-C-G)</option>
+                    <option value="folk_g_em_c_d">🌲 Folk (G-Em-C-D)</option>
+                    <option value="rock_e_g_a_c">⚡ Rock (E-G-A-C)</option>
+                    <option value="blues_e7_a7_b7">🎷 Blues Mi (E7-A7-B7)</option>
+                    <option value="jazz_dm7_g7_cmaj7">🎺 Jazz II-V-I</option>
+                    <option value="flamenco_am_g_f_e">💃 Flamenco (Am-G-F-E)</option>
+                    <option value="ballade_c_am_f_g">🎹 Ballade (C-Am-F-G)</option>
+                    <option value="soul_fmaj7_em7_dm7">☕ Soul Lo-Fi</option>
+                    <option value="power_e5_d5_c5_d5">🎸 Powerchords (E5-D5-C5-D5)</option>
                 </select>
 
                 <!-- SÉLECTEUR DE MODE DE RÉPARTITION -->
                 <div class="progression-mode-group" title="Mode d'application de la progression d'accords">
                     <span class="progression-mode-label">Mode :</span>
-                    <button id="btnProgMode4M" type="button" class="btn-toggle-sub active" onclick="definirModeProgression('4mesures')" title="1 accord par mesure (étend automatiquement le morceau à 4 mesures et propage votre rythme)">🎼 4 Mesures (1/mesure)</button>
-                    <button id="btnProgMode1M" type="button" class="btn-toggle-sub" onclick="definirModeProgression('1mesure_temps')" title="Répartir les 4 accords sur les 4 temps de chaque mesure (T1, T2, T3, T4)">⏱️ 1 Mesure (1/temps)</button>
+                    <button id="btnProgMode4M" type="button" class="btn-toggle-sub active" onclick="definirModeProgression('4mesures')" title="1 accord par mesure (étend automatiquement le morceau à 4 mesures et propage votre rythme)">🎼 1/mes.</button>
+                    <button id="btnProgMode1M" type="button" class="btn-toggle-sub" onclick="definirModeProgression('1mesure_temps')" title="Répartir les 4 accords sur les 4 temps de chaque mesure (T1, T2, T3, T4)">⏱️ 1/temps</button>
                 </div>
             </div>
 
             <div class="harmony-toolbar-right">
-                <span class="view-toggle-label">👁️ Vue des accords sous les pas :</span>
+                <span class="view-toggle-label">Accords :</span>
                 <div class="view-toggle-group">
-                    <button id="btnVueAccordsPastilles" type="button" class="btn-toggle-sub active" onclick="changerModeAffichageAccords('pastilles')" title="Affichage épuré moderne avec pastilles d'accords cliquables (Recommandé)">🏷️ Pastilles Épurées</button>
-                    <button id="btnVueAccordsSelects" type="button" class="btn-toggle-sub" onclick="changerModeAffichageAccords('selects')" title="Affichage classique avec menus déroulants sous chaque pas">📋 Menus Complets</button>
+                    <button id="btnVueAccordsPastilles" type="button" class="btn-toggle-sub active" onclick="changerModeAffichageAccords('pastilles')" title="Affichage épuré moderne avec pastilles d'accords cliquables (Recommandé)">🏷️ Pastilles</button>
+                    <button id="btnVueAccordsSelects" type="button" class="btn-toggle-sub" onclick="changerModeAffichageAccords('selects')" title="Affichage classique avec menus déroulants sous chaque pas">📋 Menus</button>
                 </div>
             </div>
         </div>
@@ -3833,16 +3852,16 @@
         <!-- BARRE DE MODE DE PRÉSENTATION : GRILLE VS PARTITION / TABLATURE RYTHMIQUE (PROPOSITION 4) -->
         <div class="score-mode-toolbar" id="scoreModeToolbar">
             <div class="score-mode-left">
-                <span class="score-toolbar-label">👁️ Mode de Présentation :</span>
+                <span class="score-toolbar-label">Vue :</span>
                 <div class="score-view-selector">
                     <button id="btnModeGrille" type="button" class="btn-view-mode" onclick="changerModeAffichageMesures('grille')" title="Afficher la grille classique de cases pas-à-pas">
-                        <span class="icon">🔲</span> Grille Séquenceur
+                        <span class="icon">🔲</span> Grille
                     </button>
                     <button id="btnModePartition" type="button" class="btn-view-mode active" onclick="changerModeAffichageMesures('partition')" title="Proposition 4 : Mode Partition & Tablature Rythmique Simplifiée">
-                        <span class="icon">🎼</span> Partition / Tablature Rythmique
+                        <span class="icon">🎼</span> Partition
                     </button>
                     <button id="btnModeMixte" type="button" class="btn-view-mode" onclick="changerModeAffichageMesures('mixte')" title="Afficher la partition et la grille ensemble pour chaque mesure">
-                        <span class="icon">📑</span> Vue Mixte
+                        <span class="icon">📑</span> Mixte
                     </button>
                 </div>
             </div>
@@ -3850,16 +3869,16 @@
             <div class="score-mode-right">
                 <div class="score-toggles-group" id="scoreTogglesGroup">
                     <button id="btnToggleTablature" type="button" class="btn-score-toggle active" onclick="toggleAffichageTablature()" title="Afficher ou masquer la tablature 6 cordes sous la portée">
-                        🎸 Tab 6 cordes
+                        🎸 Tab
                     </button>
                     <button id="btnToggleDiagrammes" type="button" class="btn-score-toggle active" onclick="toggleAffichageDiagrammes()" title="Afficher ou masquer les diagrammes d'accords au-dessus des temps">
-                        📐 Diagrammes
+                        📐 Fig.
                     </button>
                     <button id="btnOpenInversions" type="button" class="btn-score-toggle" onclick="ouvrirModalRenversements()" title="Fenêtre fantôme : Explorer les diagrammes et voicings des renversements d'accords les plus courants (Fondamentale, 1er, 2ème, 3ème renversements, Drop 2)">
-                        👻 Renversements d'accords
+                        👻 Inv.
                     </button>
                     <button id="btnPrintPartition" type="button" class="btn-score-action" onclick="imprimerPartition()" title="Imprimer ou exporter la partition / tablature propre au format papier ou PDF">
-                        🖨️ Imprimer / PDF
+                        🖨️ PDF
                     </button>
                 </div>
             </div>
@@ -4309,24 +4328,24 @@
 
                     <input type="text" id="slotCustomName" placeholder="Titre du motif (ex: Bossa)" style="padding: 6px 9px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.8rem; width: 145px;" title="Nommez votre motif avant d'enregistrer">
 
-                    <button type="button" onclick="sauvegarderSlot()" style="background: #4caf50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Enregistrer la séquence courante dans le slot sélectionné">💾 Enregistrer</button>
-                    <button type="button" onclick="chargerSlot()" style="background: #2196f3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Charger la séquence de ce slot">📂 Charger</button>
-                    <button type="button" onclick="effacerSlot()" style="background: #e53935; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;" title="Effacer ce slot">🗑️</button>
+                    <button type="button" onclick="sauvegarderSlot()" style="background: #4caf50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Enregistrer la séquence courante dans le slot sélectionné" aria-label="Enregistrer dans le slot">💾</button>
+                    <button type="button" onclick="chargerSlot()" style="background: #2196f3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Charger la séquence de ce slot" aria-label="Charger le slot">📂</button>
+                    <button type="button" onclick="effacerSlot()" style="background: #e53935; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;" title="Effacer ce slot" aria-label="Effacer ce slot">🗑️</button>
 
                     <span style="display: inline-block; width: 1px; height: 22px; background: #ccc; margin: 0 4px;"></span>
 
-                    <button type="button" onclick="exporterBanqueSlots()" style="background: #5c6bc0; color: white; border: none; padding: 6px 11px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-weight: bold;" title="Télécharger un fichier de sauvegarde (.json) contenant l'ensemble de vos 10 mémoires pour les conserver sur votre ordinateur">💾 Sauvegarder Banque (10 slots)</button>
-                    <button type="button" onclick="document.getElementById('inputImportBanqueJSON').click()" style="background: #00897b; color: white; border: none; padding: 6px 11px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-weight: bold;" title="Restaurer l'intégralité de vos 10 slots depuis un fichier de sauvegarde">📥 Restaurer Banque</button>
+                    <button type="button" onclick="exporterBanqueSlots()" style="background: #5c6bc0; color: white; border: none; padding: 6px 11px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-weight: bold;" title="Télécharger un fichier de sauvegarde (.json) contenant l'ensemble de vos 10 mémoires pour les conserver sur votre ordinateur" aria-label="Exporter la banque de 10 slots">📤</button>
+                    <button type="button" onclick="document.getElementById('inputImportBanqueJSON').click()" style="background: #00897b; color: white; border: none; padding: 6px 11px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-weight: bold;" title="Restaurer l'intégralité de vos 10 slots depuis un fichier de sauvegarde" aria-label="Importer la banque de 10 slots">📥</button>
                     <input type="file" id="inputImportBanqueJSON" accept=".json" style="display: none;" onchange="importerBanqueSlots(event)">
                 </div>
 
                 <!-- FICHIERS & AUDIO WAV -->
                 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                     <span style="font-weight: bold; font-size: 0.92rem;">📦 Partage & Audio :</span>
-                    <button onclick="exporterJSON()" style="background: #673ab7; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Télécharger la séquence actuelle au format fichier .json">⬇️ Export JSON</button>
-                    <button onclick="document.getElementById('inputImportJSON').click()" style="background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Ouvrir une séquence .json depuis votre ordinateur">⬆️ Import JSON</button>
+                    <button onclick="exporterJSON()" style="background: #673ab7; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Télécharger la séquence actuelle au format fichier .json" aria-label="Exporter en JSON">⬇️</button>
+                    <button onclick="document.getElementById('inputImportJSON').click()" style="background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Ouvrir une séquence .json depuis votre ordinateur" aria-label="Importer un JSON">⬆️</button>
                     <input type="file" id="inputImportJSON" accept=".json" style="display: none;" onchange="importerJSON(event)">
-                    <button id="btnExportWav" onclick="exporterAudioWAV()" style="background: #00897b; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Générer et télécharger un fichier audio .wav studio de la séquence">🎵 Export Audio (WAV)</button>
+                    <button id="btnExportWav" onclick="exporterAudioWAV()" style="background: #00897b; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Générer et télécharger un fichier audio .wav studio de la séquence" aria-label="Exporter l'audio WAV">🎵</button>
                 </div>
             </div>
         </div>
@@ -4640,7 +4659,7 @@
             <div class="chord-popover-footer">
                 <button type="button" class="btn-v2" onclick="testerAudioAccordPopover()" title="Écouter le son de cet accord">🔊 Écouter</button>
                 <button type="button" class="btn-v2" onclick="propagerAccordDepuisPopover()" title="Appliquer cet accord à tous les pas suivants de la même mesure">➡️ Remplir mesure</button>
-                <button type="button" class="btn-v2" onclick="ouvrirMancheDepuisPopover()" title="Ouvrir le manche interactif pour cet accord">🎸 Manche</button>
+                <button type="button" class="btn-v2" onclick="ouvrirMancheDepuisPopover()" title="Ouvrir le manche interactif pour cet accord" aria-label="Ouvrir le manche pour cet accord">🎸</button>
                 <button type="button" class="btn-v2" onclick="ouvrirInversionsDepuisPopover()" title="Fenêtre fantôme : Explorer les diagrammes et voicings des renversements de cet accord" style="background: #fef3c7; border-color: #f59e0b; color: #b45309; font-weight: bold;">👻 Renversements</button>
                 <button type="button" class="btn-v2" onclick="fermerPopoverAccord()" style="background: #e2e8f0; border-color: #cbd5e1; color: #334155;">Fermer</button>
             </div>
@@ -5056,8 +5075,9 @@
         utiliserDecompte = !utiliserDecompte;
         const btn = document.getElementById("btnCountIn");
         if (btn) {
-            btn.textContent = utiliserDecompte ? "⏳:ON" : "⏳:OFF";
+            btn.textContent = "⏳";
             btn.classList.toggle("active", utiliserDecompte);
+            btn.setAttribute("aria-pressed", utiliserDecompte ? "true" : "false");
         }
     }
 
@@ -8546,14 +8566,14 @@
 
                 for (let beat = 1; beat <= 4; beat++) {
                     if (!playing) return;
-                    btnPlay.textContent = `⏳ ${beat}...`;
+                    btnPlay.textContent = "⏳";
                     jouerMetronome(audioCtx.currentTime + 0.02, beat === 1, volClic);
                     await new Promise(resolve => setTimeout(resolve, msParTemps));
                 }
             }
 
             if (!playing) return;
-            btnPlay.textContent = "⏸ Pause";
+            btnPlay.textContent = "⏸";
 
             // Démarre au premier pas de la boucle sélectionnée
             indexSequenceur = (boucleDebutMesure - 1) * pasParMesure;
@@ -8598,7 +8618,7 @@
 
         const btnPlay = document.getElementById("btnPlay");
         if (btnPlay) {
-            btnPlay.textContent = "▶ Lecture";
+            btnPlay.textContent = "▶";
             btnPlay.style.background = "linear-gradient(180deg, #c8e6c9 0%, #81c784 100%)";
         }
     }
@@ -12781,7 +12801,7 @@
 
         const isCollapsed = panel.classList.toggle("is-collapsed");
         if (icon) icon.textContent = isCollapsed ? "▼" : "▲";
-        if (label) label.textContent = isCollapsed ? "Afficher Réglages" : "Masquer Réglages";
+        if (label) label.textContent = "Réglages";
         if (btn) {
             btn.style.background = isCollapsed ? "#fff" : "#e8f0fe";
             btn.style.color = isCollapsed ? "#495057" : "#1967d2";

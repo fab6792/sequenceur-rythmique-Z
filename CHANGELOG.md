@@ -3,6 +3,17 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.4.1 (2026-10-30)
+
+Interface : **boutons compacts en icônes — lisible sur mobile** 📱
+
+- Barre de transport **à nouveau sur une seule ligne** (même sur un écran 1280 px, où elle débordait auparavant) : ▶ Lecture, ⏹ Stop, ⏳ décompte, 🔄 Reset, 🎲 Aléatoire, 🎸 Manche et 🎓 Entraînement deviennent des **icônes seules** — l'explication complète reste dans l'info-bulle au survol et en aria-label pour les lecteurs d'écran
+- Les barres secondaires conservent des **micro-libellés** explicites : Grille / Partition / Mixte, Tab / Fig. / Inv. / PDF, Pastilles / Menus, 1/mes. / 1/temps, Aide, Réglages
+- **Sur mobile (390 px)**, les barres de boutons passent d'environ 930 px à 550 px de haut avant la partition : paddings et marges réduits (media query ≤ 720 px), chronomètre plus compact
+- Sélecteur de thème raccourci (Studio / Vintage / Neon / Jour) et noms des progressions compactés (ex. « ✨ Pop (Am-F-C-G) »)
+- Boutons des mémoires et des exports en icônes (💾 📂 🗑️ 📤 📥 ⬇️ ⬆️ 🎵) avec aria-labels ; le bouton décompte expose son état via aria-pressed (fond bleu = actif)
+- Aucun changement fonctionnel : moteur audio, partition, format des projets (2.3), statistiques v1.4 et basse v1.3 inchangés
+
 ## v1.4 (2026-10-30)
 
 Nouvelle fonctionnalité : **Statistiques de pratique** 📊
