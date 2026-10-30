@@ -3,6 +3,21 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.4 (2026-10-30)
+
+Nouvelle fonctionnalité : **Statistiques de pratique** 📊
+
+- Nouveau bouton **📊** dans la barre de transport (juste à gauche du chronomètre) : ouvre la fenêtre « Statistiques de pratique » — tout est compté **automatiquement pendant la lecture**, rien à noter, tout se calcule tout seul
+- **Temps de jeu** : compté à la seconde pendant la lecture (bouton Lecture / Espace), avec les totaux **du jour**, des **7 derniers jours** et **depuis le début** — une séance qui traverse minuit est répartie sur les deux jours
+- **BPM maximum** ⚡ : un tempo entre au palmarès s'il est joué **10 secondes de suite sans pause** ; un toast « 🏆 Nouveau record » célèbre chaque nouveau palmarès ; le Speed Trainer est respecté (dès que le tempo change, le chrono du tempo repart de zéro)
+- **Série de jours** 🔥 : le nombre de jours consécutifs avec pratique, record à l'appui — la série ne casse que si un jour entier passe sans jouer
+- **Historique des séances** : les 20 dernières séances (date, heure de début, durée, BPM max atteint) ; une reprise de lecture moins de 10 minutes après un arrêt **continue la même séance** ; les prises de moins de 15 secondes ne sont pas listées dans l'historique (leur temps compte quand même dans les totaux)
+- **Graphique 14 derniers jours** en barres (dessiné en CSS pur, aucune dépendance), et fenêtre **rafraîchie en direct** pendant la lecture
+- **Réinitialisation protégée** : le bouton demande une confirmation en deux clics (sinon retour automatique au bouton normal après 4 s)
+- **Sur cet appareil uniquement** : les statistiques survivent à la fermeture du navigateur (sauvegarde espacée toutes les 10 s : au plus ~10 s perdues en cas de fermeture brutale de l'onglet) mais ne font partie ni des projets sauvegardés ou partagés, ni de l'historique Annuler/Rétablir (Ctrl+Z ne les touche pas, et jouer ne crée aucune étape d'annulation), ni des exports
+- La barre de transport conserve **exactement sa hauteur d'origine** : le bouton est une icône compacte, dans l'esprit des boutons ↩️/↪️ épurés — l'info-bulle au survol rappelle tout ce que la fenêtre contient, et un libellé d'accessibilité (aria-label) est prévu pour les lecteurs d'écran
+- Aucun changement du moteur audio, du rendu de la partition ni du format de sauvegarde des projets (2.3 inchangé)
+
 ## v1.3 (2026-10-30)
 
 Nouvelle fonctionnalité : **Basse automatique suivant la grille d'accords** 🎸

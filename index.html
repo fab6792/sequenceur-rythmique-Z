@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.3</title>
+    <title>Séquenceur Rythmique v1.4</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.3" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.4" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3359,6 +3359,112 @@
             filter: grayscale(0.7);
         }
 
+        /* --- v1.4 : Statistiques de pratique --- */
+        .stats-cartes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .stats-carte {
+            background: var(--panel-bg, #e9ecef);
+            border: 1px solid var(--panel-border, #ced4da);
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .stats-valeur { font-weight: 900; font-size: 1.12rem; letter-spacing: -0.3px; white-space: nowrap; }
+        .stats-libelle {
+            font-size: 0.62rem;
+            color: var(--text-gray, #6c757d);
+            margin-top: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .stats-seance-live {
+            background: linear-gradient(135deg, rgba(67,160,71,0.16), rgba(46,125,50,0.10));
+            border: 1.5px solid rgba(67,160,71,0.5);
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #2e7d32;
+        }
+        .stats-bpm-bandeau {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, rgba(255,152,0,0.14), rgba(255,193,7,0.10));
+            border: 1.5px solid rgba(255,152,0,0.45);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 4px;
+        }
+        .stats-section-titre { font-weight: 800; font-size: 0.85rem; margin: 14px 0 6px 0; color: var(--text-dark, #343a40); }
+        .stats-graphique {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 104px;
+            background: var(--panel-bg, #e9ecef);
+            border: 1px solid var(--panel-border, #ced4da);
+            border-radius: 10px;
+            padding: 8px 10px 5px 10px;
+        }
+        .stats-barre-jour {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            gap: 3px;
+            min-width: 0;
+        }
+        .stats-barre {
+            width: 100%;
+            max-width: 28px;
+            background: linear-gradient(180deg, #ffb300, #f57c00);
+            border-radius: 4px 4px 2px 2px;
+        }
+        .stats-barre-vide { background: rgba(108,117,125,0.30); }
+        .stats-barre-jour.stats-jour-actuel .stats-barre { box-shadow: 0 0 7px rgba(255,152,0,0.65); }
+        .stats-barre-label { font-size: 0.62rem; color: var(--text-gray, #6c757d); font-weight: 700; line-height: 1; }
+        .stats-jour-actuel .stats-barre-label { color: #f57c00; }
+        .stats-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .stats-table th, .stats-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--panel-border, #e9ecef); }
+        .stats-table th {
+            font-size: 0.66rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-gray, #6c757d);
+        }
+        #btnResetStatsPratique {
+            background: var(--bg-card, #fff);
+            color: var(--text-dark, #212529);
+            border: 1.5px solid var(--panel-border, #ced4da);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        #btnResetStatsPratique.btn-stats-reset-confirme {
+            background: #b91c1c;
+            color: #fff;
+            border-color: #ef4444;
+        }
+        .stats-vide {
+            font-size: 0.8rem;
+            color: var(--text-gray, #6c757d);
+            background: var(--panel-bg, #e9ecef);
+            border: 1px dashed var(--panel-border, #ced4da);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
 
 </style>
 </head>
@@ -3367,7 +3473,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.3</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.4</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -3683,8 +3789,9 @@
                 <button id="btnCountIn" class="btn-v2 btn-toggle active" onclick="toggleDecompte()" title="Activer / Désactiver le décompte 1-2-3-4">⏳:ON</button>
             </div>
 
-            <!-- DROITE : CHRONOMÈTRE DE TRAVAIL -->
+            <!-- DROITE : STATISTIQUES DE PRATIQUE (v1.4) + CHRONOMÈTRE DE TRAVAIL -->
             <div class="transport-group-right">
+                <button id="btnStatsPratique" class="btn-v2" onclick="ouvrirStatsPratique()" title="Statistiques de pratique : temps de jeu, BPM maximum tenu, série de jours, historique des séances" aria-label="Ouvrir les statistiques de pratique" style="font-weight: bold; font-size: 1rem; padding: 6px 10px; min-width: 38px;">📊</button>
                 <div id="chronoDisplay" class="chrono-led" title="Chronomètre de travail">00:00</div>
             </div>
         </div>
@@ -4651,6 +4758,33 @@
                 <button type="button" onclick="effacerMotifEditeur()" title="Vider toute la grille" style="background: var(--bg-card, #fff); color: var(--text-dark, #212529); border: 1.5px solid var(--panel-border, #ced4da); border-radius: 8px; padding: 9px 14px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">🧹 Tout effacer</button>
                 <div style="flex: 1;"></div>
                 <button type="button" onclick="enregistrerMotifPersonnalise()" title="Sauvegarder votre motif et l'utiliser dans la lecture" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-weight: 900; cursor: pointer; font-size: 0.9rem; box-shadow: 0 2px 8px rgba(245, 124, 0, 0.4);">💾 Enregistrer &amp; utiliser</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FENÊTRE STATISTIQUES DE PRATIQUE (v1.4) -->
+    <div id="modalStatsPratique" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px);">
+        <div style="background: var(--bg-card, #ffffff); border-radius: 12px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35); border: 1px solid var(--panel-border, #ced4da); position: relative; color: var(--text-dark, #212529); font-size: 0.9rem; line-height: 1.5;">
+
+            <!-- EN-TÊTE MODAL -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--panel-border, #e9ecef); padding-bottom: 10px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem;">📊</span>
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.2rem;">Statistiques de pratique</h2>
+                        <div style="font-size: 0.72rem; color: var(--text-gray, #6c757d); margin-top: 2px;">Suivi automatique pendant la lecture — rien à noter, tout se calcule tout seul.</div>
+                    </div>
+                </div>
+                <button onclick="fermerStatsPratique()" style="background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-gray, #6c757d); padding: 4px 8px; border-radius: 4px; line-height: 1;" title="Fermer (Échap)">✕</button>
+            </div>
+
+            <!-- CONTENU (construit dynamiquement) -->
+            <div id="contenuStatsPratique"></div>
+
+            <!-- PIED : NOTE DE CONFIDENTIALITÉ + RÉINITIALISATION -->
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; border-top: 1px solid var(--panel-border, #e9ecef); margin-top: 14px; padding-top: 10px; flex-wrap: wrap;">
+                <div style="font-size: 0.7rem; color: var(--text-gray, #6c757d); max-width: 420px;">💾 Conservé sur cet appareil uniquement : les statistiques ne font partie ni des projets sauvegardés, ni de l'historique Annuler/Rétablir, ni des exports.</div>
+                <button type="button" id="btnResetStatsPratique" onclick="reinitialiserStatsPratique()" title="Effacer tout l'historique de pratique sur cet appareil (double clic de confirmation)">🧹 Réinitialiser les statistiques</button>
             </div>
         </div>
     </div>
@@ -6986,6 +7120,9 @@
 
         // v1.2 : démarre la surveillance de l'historique une fois la session restaurée
         initialiserHistorique();
+
+        // v1.4 : charge les statistiques de pratique de cet appareil
+        initialiserStatsPratique();
     }
 
     // --- MOTEUR DE SATURATION & COURBE ANALOGIQUE TUBE DRIVE ---
@@ -8428,7 +8565,10 @@
             schedulerTimerId = setInterval(boucleScheduler, checkIntervalMs);
             boucleScheduler();
 
-            demarrerChrono(true); 
+            demarrerChrono(true);
+
+            // v1.4 : comptage automatique du temps de pratique pendant la lecture
+            demarrerStatsLecture();
         }
     }
 
@@ -8443,6 +8583,7 @@
         couperToutesVoixBasse();
         pasProgrammesRecents = [];
         stopperChrono();
+        arreterStatsLecture(); // v1.4 : archivage de la séance de pratique
         secondsElapsed = 0;
         compteurBouclesSpeedTrainer = 0;
         mesureCompteurGlobal = 1;
@@ -11127,6 +11268,379 @@
         clearInterval(timerInterval);
     }
 
+    // ========================================================
+    // --- v1.4 : STATISTIQUES DE PRATIQUE ---
+    // Suivi automatique du temps de jeu, du BPM maximum tenu
+    // 10 secondes consécutives, de la série de jours et des
+    // dernières séances. Tout est compté pendant la lecture
+    // (bouton Lecture / Espace) et stocké sur CET appareil :
+    // les statistiques ne font partie ni des projets
+    // sauvegardés, ni de l'historique Annuler / Rétablir
+    // (aucun impact sur la sonde v1.2), ni des exports JSON.
+    // ========================================================
+    const CLE_STATS_PRATIQUE = "sequenceur_stats_pratique";
+    const SEUIL_QUALIF_BPM = 10;              // secondes consécutives au même tempo pour valider un BPM
+    const REPRISE_SEANCE_MS = 10 * 60 * 1000; // reprise de séance si la lecture reprend moins de 10 min après l'arrêt
+    const DUREE_MIN_SEANCE = 15;              // durée minimale (s) pour apparaître dans l'historique des séances
+    const MAX_SEANCES_HISTORIQUE = 20;        // séances conservées dans l'historique
+
+    let statsPratique = creerStatsVides();
+    let statsTimer = null;                // tick 1 s pendant la lecture
+    let statsDebutSeance = 0;             // timestamp du début de la séance en cours
+    let statsSecondesSeance = 0;          // secondes cumulées de la séance en cours (reprises incluses)
+    let statsBpmSeance = 0;               // meilleur BPM qualifié pendant la séance en cours
+    let statsTempoPrecedent = null;       // tempo au tick précédent (détection des changements, Speed Trainer inclus)
+    let statsSecondesTempoCourant = 0;    // ancienneté (s) du tempo courant sans interruption
+    let statsDerniereActivite = 0;        // timestamp du dernier tick de lecture
+    let statsTicksDepuisSauvegarde = 0;   // pour espacer les écritures localStorage (toutes les 10 s)
+    let statsModalRafraichi = null;       // rafraîchissement en direct quand la fenêtre stats est ouverte
+    let statsConfirmationReset = false;   // double confirmation de la réinitialisation
+    let statsTimerReset = null;
+
+    function creerStatsVides() {
+        return {
+            version: 1,
+            totalSecondes: 0,
+            parJour: {},        // temps de lecture (s) par jour "YYYY-MM-DD" (heure locale)
+            bpmMax: 0,
+            bpmMaxDate: null,
+            serieActuelle: 0,   // jours consécutifs de pratique
+            meilleureSerie: 0,
+            dernierJourPratique: null,
+            totalSeances: 0,
+            sessions: []        // { debut: ISO, duree: s, bpmMax } les plus récentes d'abord
+        };
+    }
+
+    function cleJourPratique(date = new Date()) {
+        return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+    }
+
+    function hierPratique() {
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+        return cleJourPratique(d);
+    }
+
+    function sauvegarderStatsPratique() {
+        try {
+            localStorage.setItem(CLE_STATS_PRATIQUE, JSON.stringify(statsPratique));
+            statsTicksDepuisSauvegarde = 0;
+        } catch (e) {
+            console.warn("Statistiques de pratique non sauvegardées :", e);
+        }
+    }
+
+    function initialiserStatsPratique() {
+        try {
+            const brut = localStorage.getItem(CLE_STATS_PRATIQUE);
+            if (brut) {
+                const data = JSON.parse(brut);
+                if (data && typeof data === "object") {
+                    statsPratique = Object.assign(creerStatsVides(), data);
+                    if (!statsPratique.parJour || typeof statsPratique.parJour !== "object") statsPratique.parJour = {};
+                    if (!Array.isArray(statsPratique.sessions)) statsPratique.sessions = [];
+                }
+            }
+        } catch (e) {
+            console.warn("Statistiques de pratique illisibles, remise à zéro :", e);
+            statsPratique = creerStatsVides();
+        }
+        // Une série de jours ne survit à l'ouverture que si la pratique date d'hier ou d'aujourd'hui
+        const jour = cleJourPratique();
+        if (statsPratique.dernierJourPratique && statsPratique.dernierJourPratique !== jour && statsPratique.dernierJourPratique !== hierPratique()) {
+            statsPratique.serieActuelle = 0;
+            sauvegarderStatsPratique();
+        }
+        window.__statsPratique = statsPratique; // accès diagnostic / tests
+    }
+
+    function demarrerStatsLecture() {
+        const maintenant = Date.now();
+        // Nouvelle séance si première lecture, si la pause a dépassé 10 min
+        // ou si la séance précédente vient d'être archivée (compteurs remis à zéro)
+        if (!statsDebutSeance || (statsDerniereActivite && (maintenant - statsDerniereActivite) > REPRISE_SEANCE_MS)) {
+            statsDebutSeance = maintenant;
+            statsSecondesSeance = 0;
+            statsBpmSeance = 0;
+        }
+        // Le chrono de qualification du tempo repart de zéro à chaque lecture :
+        // un BPM doit être tenu 10 s CONSÉCUTIVES dans une même prise
+        statsTempoPrecedent = null;
+        statsSecondesTempoCourant = 0;
+        statsDerniereActivite = maintenant;
+        if (statsTimer) clearInterval(statsTimer);
+        statsTimer = setInterval(tickStatsLecture, 1000);
+        if (statsModalRafraichi) rafraichirContenuStatsPratique(); // fenêtre stats ouverte pendant la lecture
+    }
+
+    function tickStatsLecture() {
+        const jour = cleJourPratique();
+
+        // 1. Temps de jeu (attribué au jour réel de chaque seconde : une séance
+        //    qui traverse minuit est correctement répartie sur les deux jours)
+        statsSecondesSeance++;
+        statsDerniereActivite = Date.now();
+        statsPratique.totalSecondes++;
+        statsPratique.parJour[jour] = (statsPratique.parJour[jour] || 0) + 1;
+
+        // 2. Série de jours (mise à jour à la première seconde de pratique du jour)
+        if (statsPratique.dernierJourPratique !== jour) {
+            statsPratique.serieActuelle = (statsPratique.dernierJourPratique === hierPratique()) ? statsPratique.serieActuelle + 1 : 1;
+            statsPratique.dernierJourPratique = jour;
+            if (statsPratique.serieActuelle > statsPratique.meilleureSerie) statsPratique.meilleureSerie = statsPratique.serieActuelle;
+        }
+
+        // 3. Qualification du BPM : 10 s consécutives au même tempo
+        //    (changement de tempo, même par le Speed Trainer, remet le chrono à zéro)
+        if (statsTempoPrecedent === tempo) {
+            statsSecondesTempoCourant++;
+        } else {
+            statsTempoPrecedent = tempo;
+            statsSecondesTempoCourant = 1;
+        }
+        if (statsSecondesTempoCourant === SEUIL_QUALIF_BPM && tempo > statsBpmSeance) {
+            statsBpmSeance = tempo;
+            if (tempo > statsPratique.bpmMax) {
+                statsPratique.bpmMax = tempo;
+                statsPratique.bpmMaxDate = jour;
+                afficherToast("🏆 Nouveau record : " + tempo + " BPM tenu 10 s !", "success");
+            }
+        }
+
+        // 4. Écriture espacée (toutes les 10 s) : en cas de fermeture brutale de
+        //    l'onglet, au plus ~10 s de pratique sont perdues
+        statsTicksDepuisSauvegarde++;
+        if (statsTicksDepuisSauvegarde >= 10) sauvegarderStatsPratique();
+    }
+
+    function arreterStatsLecture() {
+        if (statsTimer) { clearInterval(statsTimer); statsTimer = null; }
+        statsDerniereActivite = Date.now();
+        if (statsSecondesSeance >= DUREE_MIN_SEANCE) {
+            statsPratique.sessions.unshift({
+                debut: new Date(statsDebutSeance).toISOString(),
+                duree: statsSecondesSeance,
+                bpmMax: statsBpmSeance
+            });
+            if (statsPratique.sessions.length > MAX_SEANCES_HISTORIQUE) statsPratique.sessions.length = MAX_SEANCES_HISTORIQUE;
+            statsPratique.totalSeances++;
+            // Séance archivée : une prochaine lecture (même < 10 min après) ouvrira une nouvelle séance
+            statsDebutSeance = 0;
+            statsSecondesSeance = 0;
+            statsBpmSeance = 0;
+        }
+        sauvegarderStatsPratique();
+        if (statsModalRafraichi) rafraichirContenuStatsPratique();
+    }
+
+    // Pertes minimisées si l'onglet est fermé ou masqué pendant la lecture
+    window.addEventListener("pagehide", () => { if (statsTimer) sauvegarderStatsPratique(); });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden" && statsTimer) sauvegarderStatsPratique();
+    });
+
+    function formaterDureeStats(secondes) {
+        const s = Math.max(0, Math.round(secondes));
+        if (s < 60) return s + " s";
+        const minutes = Math.floor(s / 60);
+        if (minutes < 60) return minutes + " min";
+        return Math.floor(minutes / 60) + " h " + String(minutes % 60).padStart(2, "0");
+    }
+
+    function partiesDateStats(iso) {
+        try {
+            const d = new Date(iso);
+            return {
+                date: d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" }),
+                heure: d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+            };
+        } catch (e) {
+            return { date: "—", heure: "—" };
+        }
+    }
+
+    function carteStatsPratique(valeur, libelle) {
+        return '<div class="stats-carte"><div class="stats-valeur">' + valeur + '</div><div class="stats-libelle">' + libelle + '</div></div>';
+    }
+
+    function rafraichirContenuStatsPratique() {
+        const conteneur = document.getElementById("contenuStatsPratique");
+        if (!conteneur) return;
+
+        const jour = cleJourPratique();
+        const secondesAujourdhui = statsPratique.parJour[jour] || 0;
+
+        let secondesSemaine = 0;
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            secondesSemaine += statsPratique.parJour[cleJourPratique(d)] || 0;
+        }
+
+        let html = "";
+
+        // Bandeau « séance en cours » (lecture active)
+        if (statsTimer) {
+            html += '<div class="stats-seance-live">▶ Séance en cours : ' + formaterDureeStats(statsSecondesSeance)
+                 + ' — le comptage tourne automatiquement pendant la lecture</div>';
+        }
+
+        // Cartes de synthèse
+        html += '<div class="stats-cartes">';
+        html += carteStatsPratique(formaterDureeStats(secondesAujourdhui), "Aujourd'hui");
+        html += carteStatsPratique(formaterDureeStats(secondesSemaine), "7 derniers jours");
+        html += carteStatsPratique(formaterDureeStats(statsPratique.totalSecondes), "Temps total");
+        html += carteStatsPratique(String(statsPratique.totalSeances), "Séances");
+        html += carteStatsPratique(statsPratique.serieActuelle > 0 ? "🔥 " + statsPratique.serieActuelle + " j" : "—",
+            "Série (record : " + statsPratique.meilleureSerie + " j)");
+        html += '</div>';
+
+        // Bandeau BPM record
+        if (statsPratique.bpmMax > 0) {
+            let dateRecord = "";
+            if (statsPratique.bpmMaxDate) {
+                try {
+                    dateRecord = new Date(statsPratique.bpmMaxDate + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+                } catch (e) { dateRecord = ""; }
+            }
+            html += '<div class="stats-bpm-bandeau"><span style="font-size: 1.7rem;">⚡</span><div>'
+                 + '<div style="font-weight: 900; font-size: 1.3rem; line-height: 1.1;">' + statsPratique.bpmMax + ' BPM</div>'
+                 + '<div style="font-size: 0.72rem; color: var(--text-gray, #6c757d);">Record : tempo tenu 10 s de suite sans pause'
+                 + (dateRecord ? ' · le ' + dateRecord : '') + '</div></div></div>';
+        } else {
+            html += '<div class="stats-bpm-bandeau"><span style="font-size: 1.7rem;">⚡</span><div>'
+                 + '<div style="font-weight: 900; font-size: 1.02rem; line-height: 1.2;">Pas encore de record de tempo</div>'
+                 + '<div style="font-size: 0.72rem; color: var(--text-gray, #6c757d);">Jouez 10 s de suite au même tempo pendant la lecture pour l\'inscrire ici</div></div></div>';
+        }
+
+        // Graphique des 14 derniers jours (barres CSS, aucune dépendance)
+        const jours = [];
+        for (let i = 13; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const cle = cleJourPratique(d);
+            jours.push({
+                cle: cle,
+                secondes: statsPratique.parJour[cle] || 0,
+                lettre: d.toLocaleDateString("fr-FR", { weekday: "narrow" }),
+                titre: d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
+            });
+        }
+        const maxJour = Math.max(1, ...jours.map(j => j.secondes));
+        const aucuneDonnee = jours.every(j => j.secondes === 0);
+
+        html += '<div class="stats-section-titre">📅 14 derniers jours</div>';
+        if (aucuneDonnee) {
+            html += '<div class="stats-vide">🎛️ Lancez la lecture et travaillez vos rythmes : vos temps de jeu apparaîtront ici automatiquement.</div>';
+        } else {
+            html += '<div class="stats-graphique">';
+            jours.forEach(j => {
+                const estAujourdhui = j.cle === jour;
+                const hauteurPx = j.secondes > 0 ? Math.max(6, Math.round((j.secondes / maxJour) * 66)) : 3;
+                html += '<div class="stats-barre-jour' + (estAujourdhui ? ' stats-jour-actuel' : '') + '"'
+                     + ' title="' + j.titre + ' — ' + formaterDureeStats(j.secondes) + '">'
+                     + '<div class="stats-barre' + (j.secondes > 0 ? '' : ' stats-barre-vide') + '" style="height: ' + hauteurPx + 'px"></div>'
+                     + '<div class="stats-barre-label">' + j.lettre + '</div>'
+                     + '</div>';
+            });
+            html += '</div>';
+        }
+
+        // Historique des séances
+        html += '<div class="stats-section-titre">🕘 Dernières séances'
+             + (statsPratique.totalSeances > 0 ? ' — ' + statsPratique.totalSeances + ' au total' : '') + '</div>';
+        if (statsPratique.sessions.length === 0) {
+            html += '<div class="stats-vide">Aucune séance enregistrée pour le moment (les prises de moins de ' + DUREE_MIN_SEANCE
+                 + ' s ne sont pas listées).<br>Lancez la lecture quelques dizaines de secondes, puis revenez ici !</div>';
+        } else {
+            html += '<table class="stats-table"><thead><tr><th>Date</th><th>Début</th><th>Durée</th><th>BPM max</th></tr></thead><tbody>';
+            statsPratique.sessions.forEach(s => {
+                const p = partiesDateStats(s.debut);
+                html += '<tr><td>' + p.date + '</td><td>' + p.heure + '</td><td>' + formaterDureeStats(s.duree) + '</td><td>'
+                     + (s.bpmMax > 0 ? s.bpmMax : '—') + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            html += '<div style="font-size: 0.68rem; color: var(--text-gray, #6c757d); margin-top: 4px;">Les '
+                 + MAX_SEANCES_HISTORIQUE + ' séances les plus récentes sont conservées.</div>';
+        }
+
+        conteneur.innerHTML = html;
+    }
+
+    function ouvrirStatsPratique() {
+        const modal = document.getElementById("modalStatsPratique");
+        if (!modal) return;
+        rafraichirContenuStatsPratique();
+        modal.style.display = "flex";
+        // Rafraîchissement en direct (1 fois par seconde) pendant la lecture
+        if (statsModalRafraichi) clearInterval(statsModalRafraichi);
+        statsModalRafraichi = setInterval(() => {
+            if (statsTimer) rafraichirContenuStatsPratique();
+        }, 1000);
+    }
+
+    function fermerStatsPratique() {
+        const modal = document.getElementById("modalStatsPratique");
+        if (modal) modal.style.display = "none";
+        if (statsModalRafraichi) { clearInterval(statsModalRafraichi); statsModalRafraichi = null; }
+    }
+
+    // Clic sur le fond (hors carte) : ferme la fenêtre
+    document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("modalStatsPratique");
+        if (modal) {
+            modal.addEventListener("click", function(e) {
+                if (e.target === this) fermerStatsPratique();
+            });
+        }
+    });
+
+    // Réinitialisation à double confirmation (pas de boîte système, mobile friendly)
+    function reinitialiserStatsPratique() {
+        const btn = document.getElementById("btnResetStatsPratique");
+        if (!statsConfirmationReset) {
+            statsConfirmationReset = true;
+            if (btn) {
+                btn.textContent = "⚠️ Vraiment tout effacer ?";
+                btn.classList.add("btn-stats-reset-confirme");
+            }
+            if (statsTimerReset) clearTimeout(statsTimerReset);
+            statsTimerReset = setTimeout(() => {
+                statsConfirmationReset = false;
+                statsTimerReset = null;
+                const b = document.getElementById("btnResetStatsPratique");
+                if (b) {
+                    b.textContent = "🧹 Réinitialiser les statistiques";
+                    b.classList.remove("btn-stats-reset-confirme");
+                }
+            }, 4000);
+            return;
+        }
+        if (statsTimerReset) { clearTimeout(statsTimerReset); statsTimerReset = null; }
+        statsConfirmationReset = false;
+        statsPratique = creerStatsVides();
+        window.__statsPratique = statsPratique;
+        sauvegarderStatsPratique();
+        afficherToast("Statistiques de pratique réinitialisées", "info");
+        rafraichirContenuStatsPratique();
+        const b = document.getElementById("btnResetStatsPratique");
+        if (b) {
+            b.textContent = "🧹 Réinitialiser les statistiques";
+            b.classList.remove("btn-stats-reset-confirme");
+        }
+    }
+
+    // Accès diagnostic / tests (état interne vivant)
+    window.__statsPratiqueDebug = {
+        seuilBpm: SEUIL_QUALIF_BPM,
+        secondesSeance: () => statsSecondesSeance,
+        secondesTempoCourant: () => statsSecondesTempoCourant,
+        lectureEnCours: () => !!statsTimer,
+        bpmSeance: () => statsBpmSeance
+    };
+
+
     function dragStart(event, type) {
         event.dataTransfer.setData("text/plain", type);
         event.dataTransfer.effectAllowed = "copy";
@@ -12327,6 +12841,11 @@
                 fermerEditeurBatterie();
                 return;
             }
+            const modalStatsEl = document.getElementById("modalStatsPratique");
+            if (modalStatsEl && modalStatsEl.style.display === "flex") {
+                fermerStatsPratique();
+                return;
+            }
             const modalInversionsEl = document.getElementById("chordInversionsModal");
             if (modalInversionsEl && modalInversionsEl.style.display === "flex") {
                 fermerModalRenversements();
@@ -12455,25 +12974,25 @@
         ecouterRenversement, effacerNotesManche, effacerMotifEditeur, effacerSlot, encodeWAV,
         enregistrerMotifPersonnalise, enregistrerVoixBatterie, estDansPositionManche, estMesureEnGap, exporterAudioWAV,
         exporterBanqueSlots, exporterJSON, extraireNomAccordPourSelect, extraireToniqueAccord,
-        fermerEditeurBatterie, fermerModalChoixProgression, fermerModalRenversements, fermerPopoverAccord, filtrerCordesDisponibles,
+        fermerEditeurBatterie, fermerModalChoixProgression, fermerModalRenversements, fermerPopoverAccord, fermerStatsPratique, filtrerCordesDisponibles,
         flasherCaseMetronome, floatTo16BitPCMWav, formaterNoteCodeManche, formaterPitchManche, frequencesBassePourAccord,
         genererAleatoire, genererAleatoireMesure, genererDiagrammeAccordSVG,
         genererMotifAleatoirePourMesure, genererNoteSlashSVG, genererNouvelleQuestionEntrainement,
         genererOptionsAccordsHTML, genererOptionsPresetsHTML, genererPillulesTempsHTML,
         genererRenversementsAutomatiques, genererRestSVG, genererTableauVide,
         glisserManchePourcent, glisserVersCases, importerBanqueSlots, importerJSON,
-        imprimerPartition, init, initialiserHistorique, initialiserMancheGuitare, interleaveWav, jouerApercuBasse, jouerGammeAudioDemo,
+        imprimerPartition, init, initialiserHistorique, initialiserMancheGuitare, initialiserStatsPratique, interleaveWav, jouerApercuBasse, jouerGammeAudioDemo,
         jouerGuitare, jouerHiHat, jouerKick, jouerMetronome, jouerNoteBasse, jouerNoteSynthetique,
         jouerSnare, majBoutonsHistorique, mettreAJourBadgeScoreEntrainement, mettreAJourCurseurGlissement,
         mettreAJourVolumeReverbe, montrerIndicesBonnesReponses, nettoyerIndicesEntrainement,
         normaliserPitchEnDemiTon, obtenirCourbeSaturation, obtenirDateFormatee,
         obtenirNotesAccord, obtenirRenversementsAccord, obtenirStudioBus,
         ouvrirEditeurBatterie, ouvrirInversionsDepuisPopover, ouvrirMancheDepuisPopover, ouvrirModalChoixProgression, ouvrirModalRenversements,
-        ouvrirPopoverAccord, passerQuestionEntrainement, programmerPas,
+        ouvrirPopoverAccord, ouvrirStatsPratique, passerQuestionEntrainement, programmerPas,
         propagerAccordDepuisPopover, propagerAccordPas, rafraichirContenuModalRenversements,
         rafraichirManche, rafraichirMancheGammes, rafraichirMenuSlots,
         rafraichirSelecteurPresetCible, rafraichirSelecteursBoucle,
-        reinitialiserPlanificationAudioALaVolee, reinitialiserScoreEntrainement,
+        reinitialiserPlanificationAudioALaVolee, reinitialiserScoreEntrainement, reinitialiserStatsPratique,
         rejouerAudioCibleEntrainement, renderMesure, renderPartitionMesure, renderTout, retablirAction,
         resetTout, sauvegarderSlot, selectionnerPas, selectionnerPasScore, setNombreMesures,
         stopperChrono, stopperLecture, supprimerPasSelectionne, surClicNoteManche, tapTempo,
