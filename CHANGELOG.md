@@ -3,6 +3,21 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.5.1 (2026-11-04)
+
+Bibliothèque d'accords : **le grand catalogue** 🎸 — CAGED complet, couleurs blues, jazz dans les 12 tonalités
+
+- La section « Formes barrées » (2 formes) devient **« 🔒 Formes CAGED transposables » avec les 5 formes du système CAGED** : Mi (E), La (A), Sol (G), Do (C) et Ré (D) — chaque forme est décalée automatiquement dans la tonalité courante, sa case affichée en chiffre romain, et les doublons avec la position ouverte sont écartés
+- Nouvelle section **« 🎸 Blues & couleurs »** : sur un accord de dominante, la 9ᵉ (formes Mi et La, façon Chuck Berry) et le 7♯9 « Hendrix » ; sur un majeur, les 6ᵉs (rock'n'roll/country) ; sur un m7, la m9 (funk) ; sur un Maj7, la Maj9 (bossa) — jouées **sur l'accord écrit**, sans changer la grille
+- La section jazz passe de **6 exemples écrits à la main** à **des voicings générés dans les 12 tonalités** : shell « l'essentiel » et drop 2 pour tous les Maj7, m7 et 7, triades compactes pour les majeurs/mineurs — plus aucune section jazz vide
+- **Correction d'un défaut de la v1.5** : le CMaj7 « Drop 2 » affichait en réalité un Mi mineur (les notes jouées étaient Sol-Si-Mi-Sol, sans aucun Do) — le diagramme est corrigé (Sol-Do-Mi-Si)
+- **Vérification harmonique automatique** : chaque diagramme de la bibliothèque (positions ouvertes, formes CAGED, couleurs, voicings) est contrôlé note par note avant affichage — un doigté faux ne peut plus apparaître ; les positions injouables (écart trop grand) sont écartées plutôt que mal affichées
+- Sur les accords de dominante où la tierce et la ♯9 sont jouées ensemble (7♯9 Hendrix), le degré sous la corde s'affiche **♯9** et non b3
+- **Catalogue triplé** : environ 800 diagrammes affichables sur les 96 accords (12 tonalités × 8 familles), contre ~230 en v1.5 ; un accord de dominante offre désormais jusqu'à 12 positions
+- Légende du pied de fenêtre enrichie (9 = neuvième, 6 = sixte) ; sous-titre et info-bulles des boutons 📚 mis à jour
+- Un audit `auditBibliotheque()` est exposé pour les tests : il contrôle les 96 accords et renvoie les défauts éventuels (0 défaut à la livraison)
+- Aucun changement du moteur audio, du format des projets (2.3), des raccourcis clavier, des thèmes ni de la navigation existante
+
 ## v1.5 (2026-11-03)
 
 Nouvelle fonctionnalité : **la bibliothèque d'accords** 📚 (façon Oolimo) — et adieu la fenêtre fantôme 👻

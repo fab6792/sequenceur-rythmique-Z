@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.5</title>
+    <title>Séquenceur Rythmique v1.5.1</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.5" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.5.1" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3614,7 +3614,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.5</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.5.1</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -3996,7 +3996,7 @@
                     <button id="btnToggleDiagrammes" type="button" class="btn-score-toggle active" onclick="toggleAffichageDiagrammes()" title="Afficher ou masquer les diagrammes d'accords au-dessus des temps">
                         📐 Fig.
                     </button>
-                    <button id="btnOpenInversions" type="button" class="btn-score-toggle" onclick="ouvrirBibliothequeAccords()" title="Bibliothèque d'accords : toutes les positions, renversements et voicings — cliquez sur un diagramme, écoutez, appliquez">
+                    <button id="btnOpenInversions" type="button" class="btn-score-toggle" onclick="ouvrirBibliothequeAccords()" title="Bibliothèque d'accords : formes CAGED, couleurs blues, renversements et voicings jazz — cliquez sur un diagramme, écoutez, appliquez">
                         📚 Biblio.
                     </button>
                     <button id="btnPrintPartition" type="button" class="btn-score-action" onclick="imprimerPartition()" title="Imprimer ou exporter la partition / tablature propre au format papier ou PDF">
@@ -4785,7 +4785,7 @@
                 <button type="button" class="btn-v2" onclick="testerAudioAccordPopover()" title="Écouter le son de cet accord">🔊 Écouter</button>
                 <button type="button" class="btn-v2" onclick="propagerAccordDepuisPopover()" title="Appliquer cet accord à tous les pas suivants de la même mesure">➡️ Remplir mesure</button>
                 <button type="button" class="btn-v2" onclick="ouvrirMancheDepuisPopover()" title="Ouvrir le manche interactif pour cet accord" aria-label="Ouvrir le manche pour cet accord">🎸</button>
-                <button type="button" class="btn-v2" onclick="ouvrirInversionsDepuisPopover()" title="Ouvrir la bibliothèque d'accords : toutes les positions, renversements et voicings de cet accord" style="background: #fef3c7; border-color: #f59e0b; color: #b45309; font-weight: bold;">📚 Bibliothèque</button>
+                <button type="button" class="btn-v2" onclick="ouvrirInversionsDepuisPopover()" title="Ouvrir la bibliothèque d'accords : formes CAGED, couleurs blues, renversements et voicings jazz de cet accord" style="background: #fef3c7; border-color: #f59e0b; color: #b45309; font-weight: bold;">📚 Bibliothèque</button>
                 <button type="button" class="btn-v2" onclick="fermerPopoverAccord()" style="background: #e2e8f0; border-color: #cbd5e1; color: #334155;">Fermer</button>
             </div>
         </div>
@@ -4855,7 +4855,7 @@
                 <span class="biblio-icone">📚</span>
                 <div>
                     <h3 class="biblio-titre-principal">Bibliothèque d'accords — <span id="biblioTitreAccord">Am</span></h3>
-                    <p class="biblio-sous-titre">Toutes les positions, renversements et voicings — cliquez, écoutez, appliquez.</p>
+                    <p class="biblio-sous-titre">Position ouverte, CAGED, blues, renversements, voicings jazz — cliquez, écoutez, appliquez.</p>
                 </div>
                 <span class="biblio-contexte" id="biblioContexte"></span>
                 <div class="biblio-nav">
@@ -4873,7 +4873,7 @@
                 <!-- Sections générées dynamiquement -->
             </div>
             <div class="biblio-pied">
-                <span>💡 <span class="biblio-legende">Sous chaque diagramme : la <b>note</b> jouée et son <b>degré</b> — R = fondamentale, b3 = tierce mineure, 3 = tierce majeure, 5 = quinte, b7 = septième. </span>Le bouton 🔊 joue exactement les notes affichées (moteur audio de l'appli).</span>
+                <span>💡 <span class="biblio-legende">Sous chaque diagramme : la <b>note</b> jouée et son <b>degré</b> — R = fondamentale, b3 = tierce mineure, 3 = tierce majeure, 5 = quinte, b7 = septième, 9 = neuvième, 6 = sixte. </span>Le bouton 🔊 joue exactement les notes affichées (moteur audio de l'appli).</span>
                 <button type="button" class="biblio-btn-fermer" onclick="fermerBibliothequeAccords()">Fermer</button>
             </div>
         </div>
@@ -10457,6 +10457,12 @@
                              "m7": [0, 2, 0, 0, 0, 0], "sus4": [0, 2, 2, 2, 0, 0], "add9": [0, 2, 2, 1, 0, 2], "5": [0, 2, 2, "x", "x", "x"] };
     const BIBLIO_A_SHAPE = { "maj": [0, 2, 2, 2, 0], "min": [0, 2, 2, 1, 0], "7": [0, 2, 0, 2, 0], "maj7": [0, 2, 1, 2, 0],
                              "m7": [0, 2, 0, 1, 0], "sus4": [0, 2, 2, 3, 0], "5": [0, 2, "x", "x", "x"] };
+    const BIBLIO_G_SHAPE = { "maj": [0, -1, -3, -3, -3, 0], "min": [0, 2, 2, 0, 0, 0], "7": [0, 2, 0, 1, 0, 0], "maj7": [0, -1, -3, -3, -3, -1],
+                             "m7": [0, 2, 0, 0, 0, 0], "sus4": [0, 0, -3, -3, 0, 0], "add9": [0, "x", -3, -1, -3, 0] };
+    const BIBLIO_C_SHAPE = { "maj": [0, -1, -3, -2, -3], "min": [0, 2, 2, 1, 0], "7": [0, -1, 0, -2, -3], "maj7": [0, -1, -3, -3, -3],
+                             "m7": [0, 2, 0, 1, 0], "sus4": [0, 2, 2, 3, 0], "add9": [0, -1, -3, 0, 0] };
+    const BIBLIO_D_SHAPE = { "maj": [0, 2, 3, 2], "min": [0, 2, 3, 1], "7": [0, 2, 1, 2], "maj7": [0, 2, 2, 2],
+                             "m7": [0, 2, 1, 1], "sus4": [0, 2, 3, 3] };
     const BIBLIO_OUVERTES = {
         "C:maj": ["x", 3, 2, 0, 1, 0], "C:7": ["x", 3, 2, 3, 1, 0], "C:maj7": ["x", 3, 2, 0, 0, 0], "C:add9": ["x", 3, 2, 0, 3, 3], "C:sus4": ["x", 3, 3, 0, 1, 1],
         "G:maj": [3, 2, 0, 0, 0, 3], "G:7": [3, 2, 0, 0, 0, 1], "G:maj7": [3, 2, 0, 0, 0, 2], "G:sus4": [3, 3, 0, 0, 3, 3], "G:add9": [3, "x", 0, 2, 0, 3],
@@ -10468,14 +10474,121 @@
         "E:m7": [0, 2, 0, 0, 0, 0], "E:sus4": [0, 2, 2, 2, 0, 0],
         "F:maj7": ["x", "x", 3, 2, 1, 0]
     };
-    const BIBLIO_JAZZ = {
-        "Am": [["x", "x", 7, 5, 5, 5], "Am — Drop 2, case V", "Voicing compact cordes 4→1, chaleureux en bossa."],
-        "C": [["x", "x", 5, 5, 5, 3], "C — Drop 2, case III", "Quinte en basse, son clair de piano jazz."],
-        "CMaj7": [["x", "x", 5, 4, 5, 3], "CMaj7 — Drop 2, case III", "Septime majeure en tête, sonorité veloutée."],
-        "G7": [[3, "x", 3, 4, 3, "x"], "G7 — Shell, case I", "Fondamentale, 7e et 3e : l'essentiel du blues jazz."],
-        "FMaj7": [["x", 8, 10, 9, 10, 8], "FMaj7 — A-shape, case VIII", "Forme mobile élégante pour morceaux bossa."],
-        "F#m7": [["x", "x", 2, 2, 2, 2], "F#m7 — Drop 2, case II", "Voicing feutré, parfait en II-V-I."]
+    // Notes de l'accord (demi-tons depuis la fondamentale) — clé de la vérification harmonique (v1.5.1)
+    const BIBLIO_TONNES = {
+        "maj": [0, 4, 7], "min": [0, 3, 7], "7": [0, 4, 7, 10], "maj7": [0, 4, 7, 11],
+        "m7": [0, 3, 7, 10], "sus4": [0, 5, 7], "add9": [0, 2, 4, 7], "5": [0, 7],
+        "9": [0, 2, 4, 7, 10], "7#9": [0, 3, 4, 7, 10], "6": [0, 4, 7, 9],
+        "m9": [0, 2, 3, 7, 10], "maj9": [0, 2, 4, 7, 11]
     };
+    // Vérifie qu'une position ne contient que des notes de l'accord — un doigté faux ne peut plus s'afficher
+    function biblioVerifFrets(frets, rootPc, cleType) {
+        const tons = BIBLIO_TONNES[cleType];
+        if (!tons) return true;
+        return frets.every((fr, si) => {
+            if (fr === "x" || fr === -1 || typeof fr !== "number") return true;
+            if (fr < 0 || fr > 15) return false;
+            const pc = ((BIBLIO_CORDES_MIDI[si] + fr) % 12 + 12) % 12;
+            return tons.indexOf(((pc - rootPc) % 12 + 12) % 12) !== -1;
+        });
+    }
+    // Couleurs blues : extensions jouées sur l'accord courant, sans changer la grille (v1.5.1)
+    const BIBLIO_BLUES = {
+        "7": [
+            { label: "9 (forme E)", cleHarmonie: "9", ancre: "E", table: [0, 2, 0, 1, 0, 2], desc: "Neuvième façon Chuck Berry — LA couleur du blues et du rock dominant." },
+            { label: "9 (forme A)", cleHarmonie: "9", ancre: "A", table: ["x", 0, 2, 4, 2, 3], desc: "Neuvième compacte sur la corde de La — funk, soul et blues tranquille." },
+            { label: "7♯9 « Hendrix »", cleHarmonie: "7#9", ancre: "A", table: ["x", 0, -1, 0, 1, "x"], desc: "La dominante tendue du blues et du rock psychédélique — la fameuse neuvième augmentée." }
+        ],
+        "maj": [
+            { label: "6 (forme E)", cleHarmonie: "6", ancre: "E", table: [0, 2, 2, 1, 2, 0], desc: "Sixte façon rock'n'roll — couleur douce pour terminer une phrase." },
+            { label: "6 (forme A)", cleHarmonie: "6", ancre: "A", table: ["x", 0, 2, 2, 2, "x"], desc: "Sixte compacte — très utilisée en country et en rock'n'roll." }
+        ],
+        "m7": [
+            { label: "m9 (forme E)", cleHarmonie: "m9", ancre: "E", table: [0, 2, 0, 0, 0, 2], desc: "Neuvième mineure — le son funk / latin par excellence." }
+        ],
+        "maj7": [
+            { label: "Maj9 (forme E)", cleHarmonie: "maj9", ancre: "E", table: [0, 2, 1, 1, 0, 2], desc: "Neuvième majeure — couleur bossa / soirée, très veloutée." }
+        ]
+    };
+    // Voicings jazz générés dans les 12 tonalités (v1.5.1) : intervalles [corde, demi-tons depuis
+    // la fondamentale] posés autour de la case de la fondamentale — corrige le défaut CMaj7 de la v1.5
+    // Indices de cordes : 0=Mi grave (6e) → 5=Mi aigu (1re)
+    const BIBLIO_JAZZ_MODELES = {
+        "maj": [
+            { label: "Drop 2 (quinte en basse)", ancre: "A", spec: [[2, 7], [3, 0], [4, 4], [5, 7]], desc: "Triade compacte cordes 4→1, quinte à la basse — son clair de piano jazz." }
+        ],
+        "min": [
+            { label: "Drop 2 (fondamentale en basse)", ancre: "D", spec: [[2, 0], [3, 3], [4, 7], [5, 12]], desc: "Triade compacte cordes 4→1, chaleureuse en bossa." }
+        ],
+        "maj7": [
+            { label: "Shell (l'essentiel)", ancre: "E", spec: [[0, 0], [2, 11], [3, 4], [4, 7]], desc: "Fondamentale, 7e majeure et 3e : l'os du voicing jazz." },
+            { label: "Drop 2 (quinte en basse)", ancre: "A", spec: [[2, 7], [3, 0], [4, 4], [5, 11]], desc: "Voicing compact sans fondamentale grave — sonorité veloutée de jazz moderne." }
+        ],
+        "m7": [
+            { label: "Shell (l'essentiel)", ancre: "E", spec: [[0, 0], [2, 10], [3, 3], [4, 7]], desc: "Fondamentale, 7e et 3e mineure : l'essentiel du groove." },
+            { label: "Drop 2 (fondamentale en basse)", ancre: "D", spec: [[2, 0], [3, 3], [4, 7], [5, 10]], desc: "Voicing compact cordes 4→1, parfait en II-V-I." }
+        ],
+        "7": [
+            { label: "Shell (l'essentiel)", ancre: "E", spec: [[0, 0], [2, 10], [3, 4], [4, 7]], desc: "Fondamentale, 7e et 3e : l'essentiel du blues jazz." },
+            { label: "Drop 2 (fondamentale en basse)", ancre: "D", spec: [[2, 0], [3, 4], [4, 7], [5, 10]], desc: "Voicing compact cordes 4→1, sonorité moderne." },
+            { label: "Drop 2 (7e en basse)", ancre: "A", spec: [[2, 10], [3, 4], [4, 7], [5, 0]], desc: "Septième à la basse — tension de dominante, idéal en jazz manouche." }
+        ]
+    };
+    // Les 5 formes du système CAGED : table de deltas, corde porteuse de la fondamentale (E/A/D),
+    // nombre de cordes muettes avant la première corde jouée
+    const BIBLIO_CAGED = [
+        { lettre: "E", nomLong: "Forme de Mi", cordeTxt: "6e corde", ancre: "E", table: BIBLIO_E_SHAPE, muettes: 0 },
+        { lettre: "A", nomLong: "Forme de La", cordeTxt: "5e corde", ancre: "A", table: BIBLIO_A_SHAPE, muettes: 1 },
+        { lettre: "G", nomLong: "Forme de Sol", cordeTxt: "6e corde", ancre: "E", table: BIBLIO_G_SHAPE, muettes: 0 },
+        { lettre: "C", nomLong: "Forme de Do", cordeTxt: "5e corde", ancre: "A", table: BIBLIO_C_SHAPE, muettes: 1 },
+        { lettre: "D", nomLong: "Forme de Ré", cordeTxt: "4e corde", ancre: "D", table: BIBLIO_D_SHAPE, muettes: 2 }
+    ];
+    // Construit un voicing : pour chaque [corde, intervalle], pose la note la plus proche de la
+    // case de la fondamentale ; renvoie null si le résultat est injouable.
+    function biblioVoicingGenere(rootPc, fretRacine, spec) {
+        const frets = ["x", "x", "x", "x", "x", "x"];
+        for (const couple of spec) {
+            const si = couple[0], iv = couple[1];
+            const pcCible = (rootPc + iv + 120) % 12;
+            let fr = ((pcCible - BIBLIO_CORDES_MIDI[si] % 12) % 12 + 12) % 12;
+            if (fr !== 0 && fr < fretRacine - 3) fr += 12;
+            if (fr === 0 && fretRacine > 6) fr += 12;   // corde à vide acceptée, sauf voicing très haut
+            if (fr < 0 || fr > fretRacine + 6) return null;
+            frets[si] = fr;
+        }
+        const jouees = frets.filter(v => v !== "x");
+        for (let i = 1; i < jouees.length; i++) if (Math.abs(jouees[i] - jouees[i - 1]) > 5) return null;
+        return frets;
+    }
+    function biblioCaseTxt(frets) {
+        const jouees = frets.filter(v => typeof v === "number" && v > 0);
+        if (!jouees.length) return "";
+        const base = Math.min(...jouees);
+        return base > 1 ? ", case " + toRoman(base) : "";
+    }
+    // Audit de test (v1.5.1) : contrôle harmonique de tous les diagrammes générés — utilisé par les tests
+    function auditBibliotheque() {
+        const defauts = [];
+        let total = 0;
+        BIBLIO_NOTES.forEach(racine => {
+            BIBLIO_TYPES.forEach(t => {
+                const nom = racine + biblioSuffixeDu(t.cle);
+                const { root, type } = biblioDecouper(nom);
+                const rootPc = BIBLIO_NOTES.indexOf(root);
+                biblioConstruireSections(nom).forEach(sec => sec.cartes.forEach(c => {
+                    total++;
+                    if (!c.cleHarmonie) return;   // renversements : données existantes de l'appli
+                    const fr = c.frets;
+                    const invalide = !Array.isArray(fr) || fr.length !== 6 ||
+                        fr.some(v => v !== "x" && (typeof v !== "number" || v < 0 || v > 15));
+                    if (invalide || !biblioVerifFrets(fr, rootPc, c.cleHarmonie)) {
+                        defauts.push({ nom: nom, carte: c.nom, frets: JSON.stringify(fr) });
+                    }
+                }));
+            });
+        });
+        return { total: total, defauts: defauts };
+    }
     let biblioAccordCourant = "Am";
     let biblioContexteOuverture = "";
 
@@ -10512,7 +10625,7 @@
     }
     function biblioNoteEtDegre(cordeMidi, fret, rootPc) {
         const pc = ((cordeMidi + fret) % 12 + 12) % 12;
-        return { note: BIBLIO_NOTES[pc], deg: BIBLIO_DEGRES[((pc - rootPc) % 12 + 12) % 12] };
+        return { note: BIBLIO_NOTES[pc], pc: pc, deg: BIBLIO_DEGRES[((pc - rootPc) % 12 + 12) % 12] };
     }
     function biblioSuffixeDu(type) { return ({ maj: "", min: "m", "7": "7", maj7: "Maj7", m7: "m7", sus4: "sus4", add9: "add9", "5": "5" })[type] || ""; }
     function biblioPuces(n) { return '<span class="biblio-puces">' + "●".repeat(n) + "○".repeat(3 - n) + "</span>"; }
@@ -10542,6 +10655,9 @@
             const sw = (!haut && f === 0) ? 3 : 1.1;
             s += `<line x1="${startX}" y1="${y}" x2="${startX + 5 * sg}" y2="${y}" stroke="currentColor" stroke-width="${sw}" opacity="${(!haut && f === 0) ? 0.95 : 0.45}"/>`;
         }
+        const pcsJouees = new Set(frets.map((fr2, si2) => (typeof fr2 === "number" && fr2 >= 0) ? ((BIBLIO_CORDES_MIDI[si2] + fr2) % 12 + 12) % 12 : -1));
+        pcsJouees.delete(-1);
+        const septNeuf = pcsJouees.has((rootPc + 3) % 12) && pcsJouees.has((rootPc + 4) % 12);
         frets.forEach((fr, si) => {
             const x = startX + si * sg;
             if (fr === "x" || fr === -1) {
@@ -10560,50 +10676,94 @@
             }
             s += `<text x="${x}" y="${yNotes}" text-anchor="middle" font-size="8.2" font-weight="800" fill="currentColor" opacity="0.88">${info.note}</text>`;
             const estR = (info.deg === "R");
-            s += `<text x="${x}" y="${yDeg}" text-anchor="middle" font-size="7.6" font-weight="${estR ? "900" : "700"}" fill="${estR ? "#f59e0b" : "currentColor"}" opacity="${estR ? "1" : "0.6"}">${info.deg}</text>`;
+            const degAffiche = (septNeuf && info.pc === (rootPc + 3) % 12) ? "#9" : info.deg;
+            s += `<text x="${x}" y="${yDeg}" text-anchor="middle" font-size="7.6" font-weight="${estR ? "900" : "700"}" fill="${estR ? "#f59e0b" : "currentColor"}" opacity="${estR ? "1" : "0.6"}">${degAffiche}</text>`;
         });
         return s + "</svg>";
     }
 
     function biblioConstruireSections(nomComplet) {
         const { root, type } = biblioDecouper(nomComplet);
+        const rootPc = BIBLIO_NOTES.indexOf(root);
         const sections = [];
         const fE = biblioFretteRacine(root, 40);   // corde 6 à vide = E2 (midi 40)
         const fA = biblioFretteRacine(root, 45);   // corde 5 à vide = A2 (midi 45)
+        const fD = biblioFretteRacine(root, 50);   // corde 4 à vide = D3 (midi 50)
+        const fretRacineDe = ancre => (ancre === "E") ? fE : (ancre === "A") ? fA : fD;
+        const dejaVues = new Set();
 
         // 1. Position ouverte
         const ouverte = type ? BIBLIO_OUVERTES[root + ":" + type] : null;
         if (ouverte) {
+            dejaVues.add(JSON.stringify(ouverte));
             sections.push({
                 titre: "🏠 Position ouverte",
                 sous: "La position de base, cordes à vide comprises — idéale pour accompagner.",
-                cartes: [{ nom: nomComplet, frets: ouverte, nomAppliquer: nomComplet, desc: "Position ouverte standard, la plus jouée à la guitare." }]
+                cartes: [{ nom: nomComplet, frets: ouverte, nomAppliquer: nomComplet, cleHarmonie: type, desc: "Position ouverte standard, la plus jouée à la guitare." }]
             });
         }
 
-        // 2. Formes barrées transposables
+        // 2. Système CAGED complet : 5 formes mobiles (Mi, La, Sol, Do, Ré)
         if (type) {
             const barrees = [];
-            if (BIBLIO_E_SHAPE[type]) barrees.push({
-                nom: nomComplet + " — forme E, case " + fE,
-                frets: BIBLIO_E_SHAPE[type].map(d => (d === "x") ? "x" : d + fE),
-                nomAppliquer: nomComplet,
-                desc: "Forme de Mi décalée en case " + fE + " — racine sur la 6e corde."
-            });
-            if (BIBLIO_A_SHAPE[type]) barrees.push({
-                nom: nomComplet + " — forme A, case " + fA,
-                frets: ["x"].concat(BIBLIO_A_SHAPE[type].map(d => (d === "x") ? "x" : d + fA)),
-                nomAppliquer: nomComplet,
-                desc: "Forme de La décalée en case " + fA + " — racine sur la 5e corde."
+            BIBLIO_CAGED.forEach(fm => {
+                const deltas = fm.table[type];
+                if (!deltas) return;
+                const frets = [];
+                let ok = true;
+                for (let i = 0; i < 6; i++) {
+                    if (i < fm.muettes) { frets.push("x"); continue; }
+                    const d = deltas[i - fm.muettes];
+                    if (d === "x") { frets.push("x"); continue; }
+                    const fr = fretRacineDe(fm.ancre) + d;
+                    if (fr < 0 || fr > 15) { ok = false; break; }
+                    frets.push(fr);
+                }
+                if (!ok || !biblioVerifFrets(frets, rootPc, type)) return;
+                if (dejaVues.has(JSON.stringify(frets))) return;
+                dejaVues.add(JSON.stringify(frets));
+                barrees.push({
+                    nom: nomComplet + " — forme " + fm.lettre + biblioCaseTxt(frets),
+                    frets: frets, nomAppliquer: nomComplet, cleHarmonie: type,
+                    desc: fm.nomLong + " décalée — racine sur la " + fm.cordeTxt + ", valable dans les 12 tonalités."
+                });
             });
             if (barrees.length) sections.push({
-                titre: "🔒 Formes barrées transposables",
-                sous: "Deux formes mobiles valables dans les 12 tonalités — déplacez le barré le long du manche.",
+                titre: "🔒 Formes CAGED transposables",
+                sous: "Les 5 formes du système CAGED (Mi, La, Sol, Do, Ré), déplacées le long du manche.",
                 cartes: barrees
             });
         }
 
-        // 3. Renversements (accords slash) — base existante de l'appli
+        // 3. Blues & couleurs : extensions jouées sur l'accord courant
+        if (type && BIBLIO_BLUES[type]) {
+            const couleurs = [];
+            BIBLIO_BLUES[type].forEach(md => {
+                const frets = [];
+                let ok = true;
+                for (let i = 0; i < 6; i++) {
+                    const d = md.table[i];
+                    if (d === "x") { frets.push("x"); continue; }
+                    const fr = fretRacineDe(md.ancre) + d;
+                    if (fr < 0 || fr > 15) { ok = false; break; }
+                    frets.push(fr);
+                }
+                if (!ok || !biblioVerifFrets(frets, rootPc, md.cleHarmonie)) return;
+                if (dejaVues.has(JSON.stringify(frets))) return;
+                dejaVues.add(JSON.stringify(frets));
+                couleurs.push({
+                    nom: nomComplet + " — " + md.label + biblioCaseTxt(frets),
+                    frets: frets, nomAppliquer: nomComplet, cleHarmonie: md.cleHarmonie, desc: md.desc
+                });
+            });
+            if (couleurs.length) sections.push({
+                titre: "🎸 Blues & couleurs",
+                sous: "Extensions classiques jouées sur cet accord : neuvième, sixte, septième augmentée… une couleur en plus, sans changer l'accord écrit.",
+                cartes: couleurs
+            });
+        }
+
+        // 4. Renversements (accords slash) — base existante de l'appli
         const invs = obtenirRenversementsAccord(nomComplet) || [];
         if (invs.length) sections.push({
             titre: "🔄 Renversements (accords slash)",
@@ -10611,13 +10771,25 @@
             cartes: invs.map(inv => ({ nom: inv.nom, frets: inv.frets, nomAppliquer: inv.nom, desc: inv.desc || ("Basse : " + inv.basse) }))
         });
 
-        // 4. Voicings jazz
-        const jz = type ? BIBLIO_JAZZ[nomComplet] : null;
-        if (jz) sections.push({
-            titre: "🎷 Voicings jazz & compact",
-            sous: "Positions resserrées sur les cordes aiguës — sonorité moderne.",
-            cartes: [{ nom: jz[1], frets: jz[0], nomAppliquer: nomComplet, desc: jz[2] }]
-        });
+        // 5. Voicings jazz générés (shell + drop 2) dans les 12 tonalités
+        if (type && BIBLIO_JAZZ_MODELES[type]) {
+            const jazz = [];
+            BIBLIO_JAZZ_MODELES[type].forEach(mj => {
+                const frets = biblioVoicingGenere(rootPc, fretRacineDe(mj.ancre), mj.spec);
+                if (!frets || !biblioVerifFrets(frets, rootPc, type)) return;
+                if (dejaVues.has(JSON.stringify(frets))) return;
+                dejaVues.add(JSON.stringify(frets));
+                jazz.push({
+                    nom: nomComplet + " — " + mj.label + biblioCaseTxt(frets),
+                    frets: frets, nomAppliquer: nomComplet, cleHarmonie: type, desc: mj.desc
+                });
+            });
+            if (jazz.length) sections.push({
+                titre: "🎷 Voicings jazz & compact",
+                sous: "Positions resserrées (shell, drop 2) générées dans les 12 tonalités — sonorité moderne.",
+                cartes: jazz
+            });
+        }
 
         return sections;
     }
@@ -10754,6 +10926,7 @@
     window.majBibliothequeDepuisSelecteurs = majBibliothequeDepuisSelecteurs;
     window.ouvrirBibliothequeDepuisManche = ouvrirBibliothequeDepuisManche;
     window.allerVersAccordBibliotheque = allerVersAccordBibliotheque;
+    window.auditBibliotheque = auditBibliotheque;
 
 
     function ecouterRenversement(fretsVoicing, nom) {
