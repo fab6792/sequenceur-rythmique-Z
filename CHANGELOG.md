@@ -3,6 +3,20 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.5 (2026-11-03)
+
+Nouvelle fonctionnalité : **la bibliothèque d'accords** 📚 (façon Oolimo) — et adieu la fenêtre fantôme 👻
+
+- **Un clic sur n'importe quel diagramme d'accord de la portée** ouvre la bibliothèque sur cet accord : toutes ses positions rassemblées au même endroit, avec un rappel d'où on vient (badge « Portée — TEMPS 2 », etc.)
+- La bibliothèque présente **4 sections** : 🏠 Position ouverte · 🔒 Formes barrées transposables (formes de Mi et de La, valables dans les 12 tonalités) · 🔄 Renversements (accords slash comme Am/C, G/B) · 🎷 Voicings jazz & compact
+- **Chaque diagramme affiche la note jouée et son degré** sous chaque corde (R = fondamentale en ambre, b3 = tierce mineure, 3 = tierce majeure, 5 = quinte, b7 = septième…) — on comprend ce qu'on joue, pas seulement où poser les doigts
+- **Chaque position s'écoute** 🔊 : le bouton joue exactement les notes du diagramme affiché, avec le moteur audio habituel de l'appli
+- **Chaque position s'applique** ✔ en un clic au temps sélectionné ; la position en cours est marquée « voicing actuel »
+- **Navigation libre** : deux sélecteurs (fondamentale × type d'accord, 12 tonalités × 8 familles) génèrent les positions à la demande — même les accords sans position apprise (F♯m7, Cmaj7…) sortent leurs formes barrées correctes automatiquement
+- La fenêtre fantôme 👻 est **supprimée** : plus de bouton « 👻 Inv. » ni de pastilles sur les cases d'accords ; à la place, un bouton unique « 📚 Biblio. » au-dessus de la portée, un bouton « 📚 Bibliothèque » dans la barre du manche, et le bouton de la fenêtre d'accord ouvre désormais la bibliothèque
+- Sur **mobile**, la bibliothèque passe pleine largeur et la légende se replie ; les **4 thèmes** sont respectés
+- Aucun changement du moteur audio, du format des projets (2.3) ni des raccourcis existants
+
 ## v1.4.3 (2026-10-30)
 
 Interface : **la palette des notes reste sous la main** 🎚️
