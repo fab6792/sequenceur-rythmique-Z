@@ -3,6 +3,32 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.5.3 (2026-11-05)
+
+Bibliothèque d'accords : **8 nouvelles familles + le catalogue de diagrammes de référence** 🎸 — et les défauts que tu as trouvés, corrigés
+
+**Les 8 nouvelles familles d'accords** (le travail de la v1.5.2, livré avec cette version)
+- La bibliothèque passe de 8 à **16 familles** : 6, m6, 9, m9, Maj9, m7b5, dim7 et mMaj7 rejoignent Majeur, Mineur, 7, Maj7, m7, sus4, add9 et Power 5 — dans les 12 tonalités
+- Les suffixes « C6 », « Am6 », « F♯dim7 », « E5 »… sont reconnus partout (portée, bibliothèque, basse automatique) et reçoivent un voicing principal dédié
+
+**Un catalogue de diagrammes refondu**
+- Les sections ⭐ Must Know et 🔒 Moveable affichent désormais **les diagrammes exacts d'une base de référence intégrée** (mêmes doigtés, même case de départ), au lieu de formes CAGED générées théoriquement
+- Jusqu'à 6 cases affichées pour les positions aiguës ; 4 842 diagrammes contrôlés (16 familles × 12 tonalités)
+
+**Les défauts que tu as découverts — tous corrigés**
+- « Un CMaj9 sans la 9ᵉ, bizarre ? » : tu avais raison — les voicings Drop 2 du Maj9 étaient copiés du Maj7 sans la neuvième. Corrigé (CMaj9 case 5 : Sol-Ré-Mi-Si, degrés 5-9-3-7), idem pour Em9
+- Les triades aiguës 9 / Maj9 / m9 oubliaient la septième (un C9 sonnait « add9 ») — corrigées
+- Les voicings principaux de la portée étaient faux aussi : CMaj9 et AMaj9 affichaient en réalité des Maj7, Dm9 un Ré mineur — remplacés par les vraies formes
+- La carte blues « 6 (forme A) » jouait la sixte sur une corde marquée muette — corrigée
+- **Audit renforcé** : la note qui donne son nom à l'accord (la 9ᵉ d'un Maj9, la b7 d'un 9, la sixte d'un 6…) doit désormais sonner — un accord qui ne sonne pas son nom ne peut plus s'afficher nulle part, et l'ancien doigté fautif est formellement rejeté par le test
+
+**Lisibilité des degrés et zoom (tes dernières remarques)**
+- La tierce mineure s'écrit désormais **3m** (et non plus b3) et la septième majeure **7M** (et non plus 7) sous chaque corde ; la légende du pied de fenêtre suit, et la fondamentale « 1 » retrouve sa couleur ambre
+- **Zoom au survol** 🔍 : passer la souris sur un diagramme l'agrandit en surimpression pour lire confortablement les notes et les degrés — le zoom disparaît dès qu'on sort du diagramme ou qu'on fait défiler (sans effet sur écran tactile, pas de survol)
+- La mention de la source externe disparaît de l'interface ; une seule mention discrète subsiste en commentaire du code source, pour créditer l'auteur de la base de diagrammes
+
+Aucun changement du moteur audio, du format des projets (2.3), des raccourcis clavier ni des thèmes.
+
 ## v1.5.1 (2026-11-04)
 
 Bibliothèque d'accords : **le grand catalogue** 🎸 — CAGED complet, couleurs blues, jazz dans les 12 tonalités

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.5.1</title>
+    <title>Séquenceur Rythmique v1.5.3</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.5.1" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.5.3" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -2841,7 +2841,7 @@
         }
 
         /* ======================================================== */
-        /* --- v1.5 : BIBLIOTHÈQUE D'ACCORDS (façon Oolimo) --- */
+        /* --- v1.5 : BIBLIOTHÈQUE D'ACCORDS --- */
         /* ======================================================== */
         .biblio-fenetre {
             background: var(--bg-card, #ffffff);
@@ -2942,7 +2942,22 @@
             white-space: nowrap;
         }
         .biblio-diag-zone { display: flex; align-items: center; gap: 10px; }
-        .biblio-diag-svg { flex-shrink: 0; }
+        .biblio-diag-svg { flex-shrink: 0; cursor: zoom-in; }
+        /* v1.5.3 — zoom au survol : le diagramme s'agrandit en surimpression (position fixe),
+           sans décaler la grille ni être rogné par la fenêtre */
+        .biblio-zoom-overlay {
+            position: fixed;
+            z-index: 3000;
+            pointer-events: none;
+            background: var(--bg-card, #ffffff);
+            color: var(--text-dark, #212529);
+            border: 1.5px solid var(--panel-border, #ced4da);
+            border-radius: 12px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.38);
+            padding: 6px 10px;
+            animation: biblioZoomApparition 0.12s ease-out;
+        }
+        @keyframes biblioZoomApparition { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
         .biblio-meta { display: flex; flex-direction: column; gap: 4px; font-size: 0.68rem; color: var(--text-gray, #6c757d); }
         .biblio-meta .biblio-desc { line-height: 1.35; }
         .biblio-puces { letter-spacing: 2px; font-size: 0.72rem; }
@@ -3614,7 +3629,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.5.1</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.5.3</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -3996,7 +4011,7 @@
                     <button id="btnToggleDiagrammes" type="button" class="btn-score-toggle active" onclick="toggleAffichageDiagrammes()" title="Afficher ou masquer les diagrammes d'accords au-dessus des temps">
                         📐 Fig.
                     </button>
-                    <button id="btnOpenInversions" type="button" class="btn-score-toggle" onclick="ouvrirBibliothequeAccords()" title="Bibliothèque d'accords : formes CAGED, couleurs blues, renversements et voicings jazz — cliquez sur un diagramme, écoutez, appliquez">
+                    <button id="btnOpenInversions" type="button" class="btn-score-toggle" onclick="ouvrirBibliothequeAccords()" title="Bibliothèque d'accords : tous les diagrammes de l'accord (Must Know, formes transposables, renversements, blues, voicings jazz) — cliquez, écoutez, appliquez">
                         📚 Biblio.
                     </button>
                     <button id="btnPrintPartition" type="button" class="btn-score-action" onclick="imprimerPartition()" title="Imprimer ou exporter la partition / tablature propre au format papier ou PDF">
@@ -4785,7 +4800,7 @@
                 <button type="button" class="btn-v2" onclick="testerAudioAccordPopover()" title="Écouter le son de cet accord">🔊 Écouter</button>
                 <button type="button" class="btn-v2" onclick="propagerAccordDepuisPopover()" title="Appliquer cet accord à tous les pas suivants de la même mesure">➡️ Remplir mesure</button>
                 <button type="button" class="btn-v2" onclick="ouvrirMancheDepuisPopover()" title="Ouvrir le manche interactif pour cet accord" aria-label="Ouvrir le manche pour cet accord">🎸</button>
-                <button type="button" class="btn-v2" onclick="ouvrirInversionsDepuisPopover()" title="Ouvrir la bibliothèque d'accords : formes CAGED, couleurs blues, renversements et voicings jazz de cet accord" style="background: #fef3c7; border-color: #f59e0b; color: #b45309; font-weight: bold;">📚 Bibliothèque</button>
+                <button type="button" class="btn-v2" onclick="ouvrirInversionsDepuisPopover()" title="Ouvrir la bibliothèque d'accords : tous les diagrammes de cet accord, renversements, blues et voicings jazz" style="background: #fef3c7; border-color: #f59e0b; color: #b45309; font-weight: bold;">📚 Bibliothèque</button>
                 <button type="button" class="btn-v2" onclick="fermerPopoverAccord()" style="background: #e2e8f0; border-color: #cbd5e1; color: #334155;">Fermer</button>
             </div>
         </div>
@@ -4844,7 +4859,7 @@
 
     <!-- FENÊTRE FANTÔME : RENVERSEMENTS & VOICINGS D'ACCORDS -->
     <!-- ==========================================================
-         v1.5 — FENÊTRE : BIBLIOTHÈQUE D'ACCORDS (façon Oolimo)
+         v1.5 — FENÊTRE : BIBLIOTHÈQUE D'ACCORDS
          Ouvre par : clic sur un diagramme (portée), bouton 📚 de la
          barre d'outils ou du manche, bouton 📚 de la fenêtre d'accord.
          Remplace la fenêtre fantôme des renversements (v1.2.5).
@@ -4855,7 +4870,7 @@
                 <span class="biblio-icone">📚</span>
                 <div>
                     <h3 class="biblio-titre-principal">Bibliothèque d'accords — <span id="biblioTitreAccord">Am</span></h3>
-                    <p class="biblio-sous-titre">Position ouverte, CAGED, blues, renversements, voicings jazz — cliquez, écoutez, appliquez.</p>
+                    <p class="biblio-sous-titre">Must Know &amp; Moveable, renversements, blues et voicings jazz — chaque position s'écoute et s'applique.</p>
                 </div>
                 <span class="biblio-contexte" id="biblioContexte"></span>
                 <div class="biblio-nav">
@@ -4873,7 +4888,7 @@
                 <!-- Sections générées dynamiquement -->
             </div>
             <div class="biblio-pied">
-                <span>💡 <span class="biblio-legende">Sous chaque diagramme : la <b>note</b> jouée et son <b>degré</b> — R = fondamentale, b3 = tierce mineure, 3 = tierce majeure, 5 = quinte, b7 = septième, 9 = neuvième, 6 = sixte. </span>Le bouton 🔊 joue exactement les notes affichées (moteur audio de l'appli).</span>
+                <span>💡 <span class="biblio-legende">Sous chaque diagramme : la <b>note</b> jouée et son <b>degré</b> — 1 = fondamentale, 3m = tierce mineure, 3 = tierce majeure, 4 = quarte, 5 = quinte, b5 = quinte diminuée, 6 = sixte, 7 = septième, 7M = septième majeure, 9 = neuvième, b9 = neuvième mineure, bb7 = septième diminuée (dim7). Notation internationale : C = Do, D = Ré, E = Mi, F = Fa, G = Sol, A = La, B = Si. Survolez un diagramme avec la souris pour l'agrandir 🔍. </span>Le bouton 🔊 joue exactement les notes affichées (moteur audio de l'appli).</span>
                 <button type="button" class="biblio-btn-fermer" onclick="fermerBibliothequeAccords()">Fermer</button>
             </div>
         </div>
@@ -10066,6 +10081,11 @@
         }
         if (TABLATURE_CHORDS[altere]) return [...TABLATURE_CHORDS[altere]];
 
+        // v1.5.2 : un suffixe d'accord connu ("C6", "Am6", "F#dim7", "E5"…) n'est JAMAIS
+        // une note isolée — on résout d'abord comme accord, sinon on continue.
+        const voicingPrincipal = biblioVoicingPrincipal(nomAccord);
+        if (voicingPrincipal) return voicingPrincipal;
+
         // Si c'est une note isolée sur le manche (ex: "E4", "A2", "G3"...)
         const matchNote = String(nomAccord).match(/^([A-G][#b]?)([2-6])$/);
         if (matchNote) {
@@ -10093,135 +10113,222 @@
         return ["x", 3, 2, 0, 1, 0]; // Repli standard en Do
     }
 
+    // v1.5.2 : voicing principal d'un accord à suffixe connu ("C6", "Am6", "F#dim7"…).
+    // Position ouverte de la bibliothèque si elle existe, sinon forme E puis forme A
+    // transposées à la case de la fondamentale — toujours vérifiées harmoniquement.
+    // Corrige le bug qui faisait jouer "C6" comme la note C6 (frette 20, corde aiguë).
+    function biblioVoicingPrincipal(nomAccord) {
+        const dec = biblioDecouper(nomAccord);
+        if (!dec.type) return null;
+        const ouverte = BIBLIO_OUVERTES[dec.root + ":" + dec.type];
+        if (ouverte) return [...ouverte];
+        const rootPc = BIBLIO_NOTES.indexOf(dec.root);
+        const candidats = [
+            { table: BIBLIO_E_SHAPE, ancreMidi: 40, muettes: 0 },
+            { table: BIBLIO_A_SHAPE, ancreMidi: 45, muettes: 1 }
+        ];
+        for (const cand of candidats) {
+            const deltas = cand.table[dec.type];
+            if (!deltas) continue;
+            const base = ((48 + rootPc - cand.ancreMidi) % 12 + 12) % 12;
+            const frets = [];
+            let ok = true;
+            for (let i = 0; i < 6; i++) {
+                if (i < cand.muettes) { frets.push("x"); continue; }
+                const d = deltas[i - cand.muettes];
+                if (d === "x") { frets.push("x"); continue; }
+                const fr = base + d;
+                if (fr < 0 || fr > 15) { ok = false; break; }
+                frets.push(fr);
+            }
+            if (ok && biblioVerifFrets(frets, rootPc, dec.type)) return frets;
+        }
+        return null;
+    }
+
     // ========================================================
     // --- BASE DE DONNÉES DES RENVERSEMENTS & VOICINGS GUITARE ---
     // ========================================================
     const CHORD_INVERSIONS_DB = {
         "C": [
-            { nom: "C (Fondamentale)", basse: "Do (Fond.)", frets: ["x", 3, 2, 0, 1, 0], desc: "Position ouverte standard. Basse Do sur corde La (5e corde)." },
-            { nom: "C/E (1er Renversement)", basse: "Mi (3ce)", frets: [0, 3, 2, 0, 1, 0], desc: "Basse Mi à vide sur la 6e corde. Sonorité ronde, parfait pour les transitions C → C/E → F." },
-            { nom: "C/G (2ème Renversement)", basse: "Sol (5te)", frets: [3, 3, 2, 0, 1, 0], desc: "Basse Sol frette 3 sur la 6e corde. Incontournable en folk, picking et ballades." },
-            { nom: "C (Barré 8e case)", basse: "Do (8e)", frets: [8, 10, 10, 9, 8, 8], desc: "Forme Mi transposée en case 8. Idéal pour un son puissant et défini." },
-            { nom: "C (Triade aiguë)", basse: "Sol", frets: ["x", "x", "x", 5, 5, 3], desc: "Triade aiguë sur cordes Sol-Si-Mi. Idéal pour les cocottes funk et rythmiques pop." }
+            { nom: "C (Fondamentale)", basse: "C (Fond.)", frets: ["x", 3, 2, 0, 1, 0], desc: "Position ouverte standard. Basse C sur corde A (5e corde)." },
+            { nom: "C/E (1er Renversement)", basse: "E (3ce)", frets: [0, 3, 2, 0, 1, 0], desc: "Basse E à vide sur la 6e corde. Sonorité ronde, parfait pour les transitions C → C/E → F." },
+            { nom: "C/G (2ème Renversement)", basse: "G (5te)", frets: [3, 3, 2, 0, 1, 0], desc: "Basse G frette 3 sur la 6e corde. Incontournable en folk, picking et ballades." },
+            { nom: "C (Barré 8e case)", basse: "C (8e)", frets: [8, 10, 10, 9, 8, 8], desc: "Forme E transposée en case 8. Idéal pour un son puissant et défini." },
+            { nom: "C (Triade aiguë)", basse: "G", frets: ["x", "x", "x", 5, 5, 3], desc: "Triade aiguë sur cordes G-B-E. Idéal pour les cocottes funk et rythmiques pop." }
         ],
         "G": [
-            { nom: "G (Fondamentale)", basse: "Sol (Fond.)", frets: [3, 2, 0, 0, 0, 3], desc: "Position ouverte classique avec basse Sol sur la 6e corde." },
-            { nom: "G/B (1er Renversement)", basse: "Si (3ce)", frets: ["x", 2, 0, 0, 0, 3], desc: "Basse Si frette 2 sur corde La. La référence absolue pour la descente C → G/B → Am." },
-            { nom: "G/B (Moderne rock)", basse: "Si (3ce)", frets: ["x", 2, 0, 0, 3, 3], desc: "Voicing moderne avec ré et sol aigus, très brillant et stable." },
-            { nom: "G/D (2ème Renversement)", basse: "Ré (5te)", frets: ["x", "x", 0, 0, 0, 3], desc: "Basse Ré à vide sur la 4e corde. Sonorité aérée." },
-            { nom: "G (Barré 3e case)", basse: "Sol", frets: [3, 5, 5, 4, 3, 3], desc: "Barré complet forme Mi en frette 3." }
+            { nom: "G (Fondamentale)", basse: "G (Fond.)", frets: [3, 2, 0, 0, 0, 3], desc: "Position ouverte classique avec basse G sur la 6e corde." },
+            { nom: "G/B (1er Renversement)", basse: "B (3ce)", frets: ["x", 2, 0, 0, 0, 3], desc: "Basse B frette 2 sur corde A. La référence absolue pour la descente C → G/B → Am." },
+            { nom: "G/B (Moderne rock)", basse: "B (3ce)", frets: ["x", 2, 0, 0, 3, 3], desc: "Voicing moderne avec ré et sol aigus, très brillant et stable." },
+            { nom: "G/D (2ème Renversement)", basse: "D (5te)", frets: ["x", "x", 0, 0, 0, 3], desc: "Basse D à vide sur la 4e corde. Sonorité aérée." },
+            { nom: "G (Barré 3e case)", basse: "G", frets: [3, 5, 5, 4, 3, 3], desc: "Barré complet forme E en frette 3." }
         ],
         "D": [
-            { nom: "D (Fondamentale)", basse: "Ré (Fond.)", frets: ["x", "x", 0, 2, 3, 2], desc: "Position ouverte standard avec basse Ré sur corde 4." },
-            { nom: "D/F# (1er Renversement)", basse: "Fa# (3ce)", frets: [2, 0, 0, 2, 3, 2], desc: "Basse Fa# au pouce sur la 6e corde. Le classique folk/rock (G → D/F# → Em)." },
-            { nom: "D/A (2ème Renversement)", basse: "La (5te)", frets: ["x", 0, 0, 2, 3, 2], desc: "Basse La à vide sur corde 5. Sonorité riche et posée." },
-            { nom: "D (Barré 5e case)", basse: "Ré", frets: ["x", 5, 7, 7, 7, 5], desc: "Barré forme La en frette 5." },
-            { nom: "D (Triade aiguë)", basse: "La", frets: ["x", "x", "x", 7, 7, 5], desc: "Voicing aigu pour arrangements pop/acoustique." }
+            { nom: "D (Fondamentale)", basse: "D (Fond.)", frets: ["x", "x", 0, 2, 3, 2], desc: "Position ouverte standard avec basse D sur corde 4." },
+            { nom: "D/F# (1er Renversement)", basse: "F# (3ce)", frets: [2, 0, 0, 2, 3, 2], desc: "Basse F# au pouce sur la 6e corde. Le classique folk/rock (G → D/F# → Em)." },
+            { nom: "D/A (2ème Renversement)", basse: "A (5te)", frets: ["x", 0, 0, 2, 3, 2], desc: "Basse A à vide sur corde 5. Sonorité riche et posée." },
+            { nom: "D (Barré 5e case)", basse: "D", frets: ["x", 5, 7, 7, 7, 5], desc: "Barré forme A en frette 5." },
+            { nom: "D (Triade aiguë)", basse: "A", frets: ["x", "x", "x", 7, 7, 5], desc: "Voicing aigu pour arrangements pop/acoustique." }
         ],
         "A": [
-            { nom: "A (Fondamentale)", basse: "La (Fond.)", frets: ["x", 0, 2, 2, 2, 0], desc: "Position ouverte standard avec basse La sur corde 5." },
-            { nom: "A/C# (1er Renversement)", basse: "Do# (3ce)", frets: ["x", 4, 2, 2, 2, 0], desc: "Basse Do# case 4 corde La. Merveilleuse ligne de basse D → A/C# → Bm." },
-            { nom: "A/E (2ème Renversement)", basse: "Mi (5te)", frets: [0, 0, 2, 2, 2, 0], desc: "Basse Mi grave à vide sur la 6e corde. Son plein et résonant." },
-            { nom: "A (Barré 5e case)", basse: "La", frets: [5, 7, 7, 6, 5, 5], desc: "Barré forme Mi complet en frette 5." }
+            { nom: "A (Fondamentale)", basse: "A (Fond.)", frets: ["x", 0, 2, 2, 2, 0], desc: "Position ouverte standard avec basse A sur corde 5." },
+            { nom: "A/C# (1er Renversement)", basse: "C# (3ce)", frets: ["x", 4, 2, 2, 2, 0], desc: "Basse C# case 4 corde A. Merveilleuse ligne de basse D → A/C# → Bm." },
+            { nom: "A/E (2ème Renversement)", basse: "E (5te)", frets: [0, 0, 2, 2, 2, 0], desc: "Basse E grave à vide sur la 6e corde. Son plein et résonant." },
+            { nom: "A (Barré 5e case)", basse: "A", frets: [5, 7, 7, 6, 5, 5], desc: "Barré forme E complet en frette 5." }
         ],
         "E": [
-            { nom: "E (Fondamentale)", basse: "Mi (Fond.)", frets: [0, 2, 2, 1, 0, 0], desc: "Accord ouvert standard avec 6 cordes résonantes." },
-            { nom: "E/G# (1er Renversement)", basse: "Sol# (3ce)", frets: [4, 2, 2, 1, 0, 0], desc: "Basse Sol# case 4 sur corde Mi. Transition reine A → E/G# → F#m." },
-            { nom: "E/B (2ème Renversement)", basse: "Si (5te)", frets: ["x", 2, 2, 1, 0, 0], desc: "Basse Si frette 2 sur corde La." },
-            { nom: "E (Barré 7e case)", basse: "Mi", frets: ["x", 7, 9, 9, 9, 7], desc: "Barré forme La en case 7." }
+            { nom: "E (Fondamentale)", basse: "E (Fond.)", frets: [0, 2, 2, 1, 0, 0], desc: "Accord ouvert standard avec 6 cordes résonantes." },
+            { nom: "E/G# (1er Renversement)", basse: "G# (3ce)", frets: [4, 2, 2, 1, 0, 0], desc: "Basse G# case 4 sur corde E. Transition reine A → E/G# → F#m." },
+            { nom: "E/B (2ème Renversement)", basse: "B (5te)", frets: ["x", 2, 2, 1, 0, 0], desc: "Basse B frette 2 sur corde A." },
+            { nom: "E (Barré 7e case)", basse: "E", frets: ["x", 7, 9, 9, 9, 7], desc: "Barré forme A en case 7." }
         ],
         "F": [
-            { nom: "F (Barré complet)", basse: "Fa (Fond.)", frets: [1, 3, 3, 2, 1, 1], desc: "Barré classique complet forme Mi en frette 1." },
-            { nom: "F/A (1er Renversement)", basse: "La (3ce)", frets: ["x", 0, 3, 2, 1, 1], desc: "Basse La à vide sur corde 5. Sonorité très fluide et aérée." },
-            { nom: "F/C (2ème Renversement)", basse: "Do (5te)", frets: ["x", 3, 3, 2, 1, "x"], desc: "Basse Do sur corde La. Position folk standard sans barré lourd." },
-            { nom: "F (Triade aiguë)", basse: "Fa", frets: ["x", "x", 3, 2, 1, 1], desc: "4 cordes aiguës, très accessible et propre." }
+            { nom: "F (Barré complet)", basse: "F (Fond.)", frets: [1, 3, 3, 2, 1, 1], desc: "Barré classique complet forme E en frette 1." },
+            { nom: "F/A (1er Renversement)", basse: "A (3ce)", frets: ["x", 0, 3, 2, 1, 1], desc: "Basse A à vide sur corde 5. Sonorité très fluide et aérée." },
+            { nom: "F/C (2ème Renversement)", basse: "C (5te)", frets: ["x", 3, 3, 2, 1, "x"], desc: "Basse C sur corde A. Position folk standard sans barré lourd." },
+            { nom: "F (Triade aiguë)", basse: "F", frets: ["x", "x", 3, 2, 1, 1], desc: "4 cordes aiguës, très accessible et propre." }
         ],
         "Am": [
-            { nom: "Am (Fondamentale)", basse: "La (Fond.)", frets: ["x", 0, 2, 2, 1, 0], desc: "Position ouverte standard." },
-            { nom: "Am/C (1er Renversement)", basse: "Do (3ce)", frets: ["x", 3, 2, 2, 1, 0], desc: "Basse Do corde 5 frette 3. Très doux, mélancolique et expressif." },
-            { nom: "Am/E (2ème Renversement)", basse: "Mi (5te)", frets: [0, 0, 2, 2, 1, 0], desc: "Basse Mi grave à vide sur la 6e corde." },
-            { nom: "Am (Barré 5e case)", basse: "La", frets: [5, 7, 7, 5, 5, 5], desc: "Barré mineur forme Mim en frette 5." },
-            { nom: "Am (Triade aiguë)", basse: "Do", frets: ["x", "x", "x", 5, 5, 5], desc: "Triade aiguë cordes Sol-Si-Mi en frette 5." }
+            { nom: "Am (Fondamentale)", basse: "A (Fond.)", frets: ["x", 0, 2, 2, 1, 0], desc: "Position ouverte standard." },
+            { nom: "Am/C (1er Renversement)", basse: "C (3ce)", frets: ["x", 3, 2, 2, 1, 0], desc: "Basse C corde 5 frette 3. Très doux, mélancolique et expressif." },
+            { nom: "Am/E (2ème Renversement)", basse: "E (5te)", frets: [0, 0, 2, 2, 1, 0], desc: "Basse E grave à vide sur la 6e corde." },
+            { nom: "Am (Barré 5e case)", basse: "A", frets: [5, 7, 7, 5, 5, 5], desc: "Barré mineur forme Em en frette 5." },
+            { nom: "Am (Triade aiguë)", basse: "C", frets: ["x", "x", "x", 5, 5, 5], desc: "Triade aiguë cordes G-B-E en frette 5." }
         ],
         "Em": [
-            { nom: "Em (Fondamentale)", basse: "Mi (Fond.)", frets: [0, 2, 2, 0, 0, 0], desc: "Position ouverte riche et puissante." },
-            { nom: "Em/G (1er Renversement)", basse: "Sol (3ce)", frets: [3, 2, 2, 0, 0, 0], desc: "Basse Sol frette 3 sur la 6e corde." },
-            { nom: "Em/B (2ème Renversement)", basse: "Si (5te)", frets: ["x", 2, 2, 0, 0, 0], desc: "Basse Si frette 2 sur corde La." },
-            { nom: "Em (Barré 7e case)", basse: "Mi", frets: ["x", 7, 9, 9, 8, 7], desc: "Barré forme Lam en frette 7." }
+            { nom: "Em (Fondamentale)", basse: "E (Fond.)", frets: [0, 2, 2, 0, 0, 0], desc: "Position ouverte riche et puissante." },
+            { nom: "Em/G (1er Renversement)", basse: "G (3ce)", frets: [3, 2, 2, 0, 0, 0], desc: "Basse G frette 3 sur la 6e corde." },
+            { nom: "Em/B (2ème Renversement)", basse: "B (5te)", frets: ["x", 2, 2, 0, 0, 0], desc: "Basse B frette 2 sur corde A." },
+            { nom: "Em (Barré 7e case)", basse: "E", frets: ["x", 7, 9, 9, 8, 7], desc: "Barré forme Am en frette 7." }
         ],
         "Dm": [
-            { nom: "Dm (Fondamentale)", basse: "Ré (Fond.)", frets: ["x", "x", 0, 2, 3, 1], desc: "Position ouverte standard avec basse Ré corde 4." },
-            { nom: "Dm/F (1er Renversement)", basse: "Fa (3ce)", frets: ["x", "x", 3, 2, 3, 1], desc: "Basse Fa frette 3 corde Ré. Parfait pour les cadences baroques et pop." },
-            { nom: "Dm/A (2ème Renversement)", basse: "La (5te)", frets: ["x", 0, 0, 2, 3, 1], desc: "Basse La à vide sur corde 5." },
-            { nom: "Dm (Barré 5e case)", basse: "Ré", frets: ["x", 5, 7, 7, 6, 5], desc: "Barré forme Lam en frette 5." }
+            { nom: "Dm (Fondamentale)", basse: "D (Fond.)", frets: ["x", "x", 0, 2, 3, 1], desc: "Position ouverte standard avec basse D corde 4." },
+            { nom: "Dm/F (1er Renversement)", basse: "F (3ce)", frets: ["x", "x", 3, 2, 3, 1], desc: "Basse F frette 3 corde D. Parfait pour les cadences baroques et pop." },
+            { nom: "Dm/A (2ème Renversement)", basse: "A (5te)", frets: ["x", 0, 0, 2, 3, 1], desc: "Basse A à vide sur corde 5." },
+            { nom: "Dm (Barré 5e case)", basse: "D", frets: ["x", 5, 7, 7, 6, 5], desc: "Barré forme Am en frette 5." }
         ],
         "Bm": [
-            { nom: "Bm (Fondamentale)", basse: "Si (Fond.)", frets: ["x", 2, 4, 4, 3, 2], desc: "Barré forme Lam en frette 2." },
-            { nom: "Bm/D (1er Renversement)", basse: "Ré (3ce)", frets: ["x", "x", 0, 4, 3, 2], desc: "Basse Ré à vide sur corde 4. Très mélodique et aéré." },
-            { nom: "Bm/F# (2ème Renversement)", basse: "Fa# (5te)", frets: [2, 2, 4, 4, 3, 2], desc: "Basse Fa# sur corde 6 frette 2." }
+            { nom: "Bm (Fondamentale)", basse: "B (Fond.)", frets: ["x", 2, 4, 4, 3, 2], desc: "Barré forme Am en frette 2." },
+            { nom: "Bm/D (1er Renversement)", basse: "D (3ce)", frets: ["x", "x", 0, 4, 3, 2], desc: "Basse D à vide sur corde 4. Très mélodique et aéré." },
+            { nom: "Bm/F# (2ème Renversement)", basse: "F# (5te)", frets: [2, 2, 4, 4, 3, 2], desc: "Basse F# sur corde 6 frette 2." }
         ],
         "C7": [
-            { nom: "C7 (Fondamentale)", basse: "Do (Fond.)", frets: ["x", 3, 2, 3, 1, 0], desc: "Position ouverte blues/ragtime standard." },
-            { nom: "C7/E (1er Renversement)", basse: "Mi (3ce)", frets: [0, 3, 2, 3, 1, 0], desc: "Basse Mi grave à vide avec coloration blues." },
-            { nom: "C7/Bb (3ème Renversement)", basse: "Sib (7e)", frets: ["x", 1, 2, 3, 1, "x"], desc: "Basse 7ème mineure sur corde La frette 1. Voicing jazz/funk irrésistible." }
+            { nom: "C7 (Fondamentale)", basse: "C (Fond.)", frets: ["x", 3, 2, 3, 1, 0], desc: "Position ouverte blues/ragtime standard." },
+            { nom: "C7/E (1er Renversement)", basse: "E (3ce)", frets: [0, 3, 2, 3, 1, 0], desc: "Basse E grave à vide avec coloration blues." },
+            { nom: "C7/Bb (3ème Renversement)", basse: "Sib (7e)", frets: ["x", 1, 2, 3, 1, "x"], desc: "Basse 7ème mineure sur corde A frette 1. Voicing jazz/funk irrésistible." }
         ],
         "G7": [
-            { nom: "G7 (Fondamentale)", basse: "Sol (Fond.)", frets: [3, 2, 0, 0, 0, 1], desc: "Position ouverte classique avec fa aigu frette 1." },
-            { nom: "G7/B (1er Renversement)", basse: "Si (3ce)", frets: ["x", 2, 0, 0, 0, 1], desc: "Basse Si corde 5." },
-            { nom: "G7/F (3ème Renversement)", basse: "Fa (7e)", frets: [1, 2, 0, 0, 0, 1], desc: "Basse Fa frette 1 corde Mi. Voicing blues percutant." }
+            { nom: "G7 (Fondamentale)", basse: "G (Fond.)", frets: [3, 2, 0, 0, 0, 1], desc: "Position ouverte classique avec fa aigu frette 1." },
+            { nom: "G7/B (1er Renversement)", basse: "B (3ce)", frets: ["x", 2, 0, 0, 0, 1], desc: "Basse B corde 5." },
+            { nom: "G7/F (3ème Renversement)", basse: "F (7e)", frets: [1, 2, 0, 0, 0, 1], desc: "Basse F frette 1 corde E. Voicing blues percutant." }
         ],
         "D7": [
-            { nom: "D7 (Fondamentale)", basse: "Ré (Fond.)", frets: ["x", "x", 0, 2, 1, 2], desc: "Position ouverte blues standard." },
-            { nom: "D7/F# (1er Renversement)", basse: "Fa# (3ce)", frets: [2, 0, 0, 2, 1, 2], desc: "Basse Fa# au pouce corde 6." },
-            { nom: "D7/C (3ème Renversement)", basse: "Do (7e)", frets: ["x", 3, 0, 2, 1, 2], desc: "Basse Do corde 5 frette 3." }
+            { nom: "D7 (Fondamentale)", basse: "D (Fond.)", frets: ["x", "x", 0, 2, 1, 2], desc: "Position ouverte blues standard." },
+            { nom: "D7/F# (1er Renversement)", basse: "F# (3ce)", frets: [2, 0, 0, 2, 1, 2], desc: "Basse F# au pouce corde 6." },
+            { nom: "D7/C (3ème Renversement)", basse: "C (7e)", frets: ["x", 3, 0, 2, 1, 2], desc: "Basse C corde 5 frette 3." }
         ],
         "E7": [
-            { nom: "E7 (Fondamentale)", basse: "Mi (Fond.)", frets: [0, 2, 0, 1, 0, 0], desc: "Position ouverte blues riche." },
-            { nom: "E7/G# (1er Renversement)", basse: "Sol# (3ce)", frets: [4, 2, 0, 1, 0, 0], desc: "Basse Sol# frette 4 sur corde 6." },
-            { nom: "E7/D (3ème Renversement)", basse: "Ré (7e)", frets: ["x", "x", 0, 1, 0, 0], desc: "Basse Ré à vide sur corde 4." }
+            { nom: "E7 (Fondamentale)", basse: "E (Fond.)", frets: [0, 2, 0, 1, 0, 0], desc: "Position ouverte blues riche." },
+            { nom: "E7/G# (1er Renversement)", basse: "G# (3ce)", frets: [4, 2, 0, 1, 0, 0], desc: "Basse G# frette 4 sur corde 6." },
+            { nom: "E7/D (3ème Renversement)", basse: "D (7e)", frets: ["x", "x", 0, 1, 0, 0], desc: "Basse D à vide sur corde 4." }
         ],
         "A7": [
-            { nom: "A7 (Fondamentale)", basse: "La (Fond.)", frets: ["x", 0, 2, 0, 2, 0], desc: "Position ouverte blues standard." },
-            { nom: "A7/C# (1er Renversement)", basse: "Do# (3ce)", frets: ["x", 4, 2, 0, 2, 0], desc: "Basse Do# frette 4 corde La." },
-            { nom: "A7/G (3ème Renversement)", basse: "Sol (7e)", frets: [3, 0, 2, 0, 2, 0], desc: "Basse Sol frette 3 corde 6." }
+            { nom: "A7 (Fondamentale)", basse: "A (Fond.)", frets: ["x", 0, 2, 0, 2, 0], desc: "Position ouverte blues standard." },
+            { nom: "A7/C# (1er Renversement)", basse: "C# (3ce)", frets: ["x", 4, 2, 0, 2, 0], desc: "Basse C# frette 4 corde A." },
+            { nom: "A7/G (3ème Renversement)", basse: "G (7e)", frets: [3, 0, 2, 0, 2, 0], desc: "Basse G frette 3 corde 6." }
         ],
         "CMaj7": [
-            { nom: "CMaj7 (Fondamentale)", basse: "Do (Fond.)", frets: ["x", 3, 2, 0, 0, 0], desc: "Sonorité veloutée bossa / jazz." },
-            { nom: "CMaj7/E (1er Renversement)", basse: "Mi (3ce)", frets: [0, 3, 2, 0, 0, 0], desc: "Basse Mi grave à vide avec 7e majeure si." },
-            { nom: "CMaj7/B (3ème Renversement)", basse: "Si (7e)", frets: ["x", 2, 2, 0, 1, 0], desc: "Basse Si sur corde La." }
+            { nom: "CMaj7 (Fondamentale)", basse: "C (Fond.)", frets: ["x", 3, 2, 0, 0, 0], desc: "Sonorité veloutée bossa / jazz." },
+            { nom: "CMaj7/E (1er Renversement)", basse: "E (3ce)", frets: [0, 3, 2, 0, 0, 0], desc: "Basse E grave à vide avec 7e majeure si." },
+            { nom: "CMaj7/B (3ème Renversement)", basse: "B (7e)", frets: ["x", 2, 2, 0, 1, 0], desc: "Basse B sur corde A." }
         ],
         "FMaj7": [
-            { nom: "FMaj7 (Fondamentale)", basse: "Fa (Fond.)", frets: ["x", "x", 3, 2, 1, 0], desc: "Position ouverte limpide sans barré avec mi aigu à vide." },
-            { nom: "FMaj7/A (1er Renversement)", basse: "La (3ce)", frets: ["x", 0, 3, 2, 1, 0], desc: "Basse La à vide corde 5." },
-            { nom: "FMaj7/C (2ème Renversement)", basse: "Do (5te)", frets: ["x", 3, 3, 2, 1, 0], desc: "Basse Do corde 5 frette 3." }
+            { nom: "FMaj7 (Fondamentale)", basse: "F (Fond.)", frets: ["x", "x", 3, 2, 1, 0], desc: "Position ouverte limpide sans barré avec mi aigu à vide." },
+            { nom: "FMaj7/A (1er Renversement)", basse: "A (3ce)", frets: ["x", 0, 3, 2, 1, 0], desc: "Basse A à vide corde 5." },
+            { nom: "FMaj7/C (2ème Renversement)", basse: "C (5te)", frets: ["x", 3, 3, 2, 1, 0], desc: "Basse C corde 5 frette 3." }
         ],
         "Am7": [
-            { nom: "Am7 (Fondamentale)", basse: "La (Fond.)", frets: ["x", 0, 2, 0, 1, 0], desc: "Position ouverte soul / folk très aérée." },
-            { nom: "Am7/C (1er Renversement)", basse: "Do (3ce)", frets: ["x", 3, 2, 0, 1, 0], desc: "Basse Do corde 5." },
-            { nom: "Am7/G (3ème Renversement)", basse: "Sol (7e)", frets: [3, 0, 2, 0, 1, 0], desc: "Basse Sol frette 3 corde 6." }
+            { nom: "Am7 (Fondamentale)", basse: "A (Fond.)", frets: ["x", 0, 2, 0, 1, 0], desc: "Position ouverte soul / folk très aérée." },
+            { nom: "Am7/C (1er Renversement)", basse: "C (3ce)", frets: ["x", 3, 2, 0, 1, 0], desc: "Basse C corde 5." },
+            { nom: "Am7/G (3ème Renversement)", basse: "G (7e)", frets: [3, 0, 2, 0, 1, 0], desc: "Basse G frette 3 corde 6." }
         ],
         "Dm7": [
-            { nom: "Dm7 (Fondamentale)", basse: "Ré (Fond.)", frets: ["x", "x", 0, 2, 1, 1], desc: "Position jazz / pop standard." },
-            { nom: "Dm7/F (1er Renversement)", basse: "Fa (3ce)", frets: ["x", "x", 3, 2, 1, 1], desc: "Basse Fa frette 3." },
-            { nom: "Dm7/C (3ème Renversement)", basse: "Do (7e)", frets: ["x", 3, 0, 2, 1, 1], desc: "Basse Do corde 5." }
+            { nom: "Dm7 (Fondamentale)", basse: "D (Fond.)", frets: ["x", "x", 0, 2, 1, 1], desc: "Position jazz / pop standard." },
+            { nom: "Dm7/F (1er Renversement)", basse: "F (3ce)", frets: ["x", "x", 3, 2, 1, 1], desc: "Basse F frette 3." },
+            { nom: "Dm7/C (3ème Renversement)", basse: "C (7e)", frets: ["x", 3, 0, 2, 1, 1], desc: "Basse C corde 5." }
         ],
         "Csus4": [
-            { nom: "Csus4 (Fondamentale)", basse: "Do", frets: ["x", 3, 3, 0, 1, 1], desc: "Quarte suspendue fa remplaçant la tierce." },
-            { nom: "Csus4/G", basse: "Sol", frets: [3, 3, 3, 0, 1, 1], desc: "Basse Sol sur corde 6." }
+            { nom: "Csus4 (Fondamentale)", basse: "C", frets: ["x", 3, 3, 0, 1, 1], desc: "Quarte suspendue fa remplaçant la tierce." },
+            { nom: "Csus4/G", basse: "G", frets: [3, 3, 3, 0, 1, 1], desc: "Basse G sur corde 6." }
         ],
         "Dsus4": [
-            { nom: "Dsus4 (Fondamentale)", basse: "Ré", frets: ["x", "x", 0, 2, 3, 3], desc: "Le classique folk D ↔ Dsus4." },
-            { nom: "Dsus4/G", basse: "Sol", frets: [3, 0, 0, 2, 3, 3], desc: "Basse Sol avec quarte sol aiguë." }
+            { nom: "Dsus4 (Fondamentale)", basse: "D", frets: ["x", "x", 0, 2, 3, 3], desc: "Le classique folk D ↔ Dsus4." },
+            { nom: "Dsus4/G", basse: "G", frets: [3, 0, 0, 2, 3, 3], desc: "Basse G avec quarte G aiguë." }
         ],
         "Cadd9": [
-            { nom: "Cadd9 (Fondamentale)", basse: "Do", frets: ["x", 3, 2, 0, 3, 3], desc: "Neuvième ajoutée ré frette 3 corde Si." },
-            { nom: "Cadd9/E", basse: "Mi", frets: [0, 3, 2, 0, 3, 3], desc: "Basse Mi grave avec 9e brillante." }
+            { nom: "Cadd9 (Fondamentale)", basse: "C", frets: ["x", 3, 2, 0, 3, 3], desc: "Neuvième ajoutée D frette 3 corde B." },
+            { nom: "Cadd9/E", basse: "E", frets: [0, 3, 2, 0, 3, 3], desc: "Basse E grave avec 9e brillante." }
         ],
         "E5": [
-            { nom: "E5 (Powerchord grave)", basse: "Mi", frets: [0, 2, 2, "x", "x", "x"], desc: "Powerchord rock avec basse Mi à vide." },
-            { nom: "E5 (Case 7)", basse: "Mi", frets: ["x", 7, 9, 9, "x", "x"], desc: "Powerchord tranchant sur corde La case 7." }
+            { nom: "E5 (Powerchord grave)", basse: "E", frets: [0, 2, 2, "x", "x", "x"], desc: "Powerchord rock avec basse E à vide." },
+            { nom: "E5 (Case 7)", basse: "E", frets: ["x", 7, 9, 9, "x", "x"], desc: "Powerchord tranchant sur corde A case 7." }
         ]
     };
+
+    // v1.5.2 : triades aiguës conçues par famille — cordes G-B-E (ou D-G-B pour le
+    // m7b5 et le Power). Format identique aux voicings jazz : [corde, intervalle depuis la
+    // fondamentale]. Vérifiées harmoniquement avant affichage ; repli générique sinon.
+    const TRIADES_AIGUES_152 = {
+        "maj":   { ancre: "E", spec: [[3, 4], [4, 7], [5, 0]] },   // 3ce, 5, R
+        "min":   { ancre: "E", spec: [[3, 3], [4, 7], [5, 0]] },   // b3, 5, R
+        "7":     { ancre: "E", spec: [[3, 4], [4, 7], [5, 10]] },  // 3ce, 5, b7
+        "maj7":  { ancre: "E", spec: [[2, 11], [3, 4], [4, 7]] },  // 7e maj., 3ce, 5
+        "m7":    { ancre: "E", spec: [[3, 3], [4, 7], [5, 10]] },  // b3, 5, b7
+        "sus4":  { ancre: "E", spec: [[3, 0], [4, 5], [5, 0]] },   // R, 4te, R — ex. Gsus4 : sol-do-sol
+        "add9":  { ancre: "E", spec: [[3, 4], [4, 7], [5, 2]] },   // 3ce, 5, 9e
+        "6":     { ancre: "E", spec: [[3, 4], [4, 9], [5, 0]] },   // 3ce, 6te, R — ex. C6 : E A C
+        "m6":    { ancre: "E", spec: [[3, 3], [4, 9], [5, 0]] },   // b3, 6te, R — la sixte manouche reste audible
+        "9":     { ancre: "E", spec: [[3, 4], [4, 10], [5, 2]] },  // 3ce, b7, 9e — la couleur dominante reste audible
+        "m9":    { ancre: "E", spec: [[3, 3], [4, 10], [5, 2]] },  // b3, b7, 9e
+        "maj9":  { ancre: "E", spec: [[3, 4], [4, 11], [5, 2]] },  // 3ce, 7e maj., 9e
+        "dim7":  { ancre: "E", spec: [[3, 3], [4, 6], [5, 0]] },   // b3, b5, R
+        "mMaj7": { ancre: "A", spec: [[2, 3], [3, 11], [4, 0]] },  // b3, 7e maj., R — la couleur « James Bond » reste audible
+        "m7b5":  { ancre: "A", spec: [[2, 6], [3, 10], [4, 3]] },  // b5, b7, b3
+        "5":     { ancre: "A", spec: [[2, 7], [3, 0]] }            // 5, R — un power chord reste deux notes
+    };
+    // (sus4 incluse : sa triade générique perdait la quarte sur certains voicings)
+
+    // v1.5.2 : mini-résolveur de triade par force brute — pour chaque corde du spec, deux
+    // candidats (case naturelle, +12) ; on garde la combinaison la plus compacte (écart
+    // ≤ 5 cases). Contrairement à biblioVoicingGenere (fenêtre ancrée sur la case de la
+    // fondamentale, pensée pour les voicings jazz), ce résolveur reste valide dans les
+    // 12 tonalités. Renvoie null si aucune combinaison jouable n'existe.
+    function biblioTriadeAigue152(rootPc, spec) {
+        const choix = spec.map(couple => {
+            const pcCible = (rootPc + couple[1]) % 12;
+            const fr0 = ((pcCible - BIBLIO_CORDES_MIDI[couple[0]] % 12) % 12 + 12) % 12;
+            const cands = [fr0];
+            if (fr0 + 12 <= 15) cands.push(fr0 + 12);   // octave au-dessus — même note, autre position
+            return cands;
+        });
+        let meilleure = null;
+        const enumCombos = (i, courant) => {
+            if (i === choix.length) {
+                const span = Math.max(...courant) - Math.min(...courant);
+                if (span > 5) return;
+                const score = span * 100 + Math.min(...courant) + Math.max(...courant);
+                if (!meilleure || score < meilleure.score) meilleure = { score: score, frets: courant.slice() };
+                return;
+            }
+            choix[i].forEach(fr => { courant.push(fr); enumCombos(i + 1, courant); courant.pop(); });
+        };
+        enumCombos(0, []);
+        if (!meilleure) return null;
+        const frets = ["x", "x", "x", "x", "x", "x"];
+        spec.forEach((couple, k) => { frets[couple[0]] = meilleure.frets[k]; });
+        return frets;
+    }
 
     let pasCibleRenversement = null;
     let accordActuelInversions = "C";
@@ -10232,19 +10339,36 @@
             { nom: `${nomAccord} (Position standard)`, basse: "Basse usuelle", frets: voicingBase, desc: "Voicing principal recommandé sur le manche." }
         ];
 
-        // Tentative de 1er renversement : basse corde 6 à vide si compatible ou corde 5
+        // Tentative de 1er renversement — v1.5.2 : la basse E à vide n'est ajoutée QUE si le
+        // E appartient à l'accord (plus de basse dissonante sous C5, Cm, C#7…) ; si la 6e
+        // corde est déjà muette et le E inadapté, on ne propose pas de variante redondante.
+        const decBas = biblioDecouper(nomAccord);
+        const tonsBas = BIBLIO_TONNES[decBas.type];
+        const miCompatible = !tonsBas || tonsBas.indexOf(((4 - BIBLIO_NOTES.indexOf(decBas.root)) % 12 + 12) % 12) !== -1;
         const v1 = [...voicingBase];
         if (v1[0] === "x" || v1[0] === -1) {
-            v1[0] = 0;
-            liste.push({ nom: `${nomAccord} / Basse corde 6`, basse: "Mi grave", frets: v1, desc: "Voicing étendu avec basse Mi à vide sur la 6e corde." });
+            if (miCompatible) {
+                v1[0] = 0;
+                liste.push({ nom: `${nomAccord} / Basse corde 6`, basse: "E grave", frets: v1, desc: "Voicing étendu avec basse E à vide sur la 6e corde — le E appartient à cet accord." });
+            }
         } else {
             const v2 = [...voicingBase];
             v2[0] = "x";
             liste.push({ nom: `${nomAccord} (Aéré sans basse 6)`, basse: "Corde 5", frets: v2, desc: "Voicing compact sans la 6e corde pour plus de clarté." });
         }
 
-        // Triade aiguë cordes Sol-Si-Mi
-        const triade = ["x", "x", "x", typeof voicingBase[3] === "number" ? voicingBase[3] : 0, typeof voicingBase[4] === "number" ? voicingBase[4] : 1, typeof voicingBase[5] === "number" ? voicingBase[5] : 0];
+        // Triade aiguë cordes G-B-E — v1.5.2 : voicing conçu par famille (la tierce et
+        // la couleur caractéristique ne doivent jamais disparaître, et un Power chord n'a
+        // pas de tierce), vérifié harmoniquement ; repli générique cordes aiguës sinon.
+        const decTri = biblioDecouper(nomAccord);
+        let triade = null;
+        if (decTri.type && TRIADES_AIGUES_152[decTri.type]) {
+            const genTri = biblioTriadeAigue152(BIBLIO_NOTES.indexOf(decTri.root), TRIADES_AIGUES_152[decTri.type].spec);
+            if (genTri && biblioVerifFrets(genTri, BIBLIO_NOTES.indexOf(decTri.root), decTri.type)) triade = genTri;
+        }
+        if (!triade) {
+            triade = ["x", "x", "x", typeof voicingBase[3] === "number" ? voicingBase[3] : "x", typeof voicingBase[4] === "number" ? voicingBase[4] : "x", typeof voicingBase[5] === "number" ? voicingBase[5] : "x"];
+        }
         liste.push({ nom: `${nomAccord} (Triade aiguë)`, basse: "Cordes aiguës", frets: triade, desc: "Idéal pour rythmique pop/funk légère sans encombrer les graves." });
 
         return liste;
@@ -10283,7 +10407,7 @@
 
     function genererDiagrammeAccordSVG(frets, nomAccord) {
         if (!frets || !Array.isArray(frets)) return "";
-        const w = 62, h = 68;
+        const w = 62;
         const startX = 14, startY = 20, stringGap = 7.5, fretGap = 9;
 
         // Calcul de la plage de frettes jouées
@@ -10293,6 +10417,8 @@
 
         const isHighPos = (maxFret > 4 || minFret > 1);
         const baseFret = isHighPos ? minFret : 1;
+        const nbCases = isHighPos ? Math.max(4, maxFret - baseFret + 1) : 4;   // v1.5.3 : jusqu'à 6 cases
+        const h = startY + nbCases * fretGap + 12;
         const nomAffiche = extraireNomAccordPourSelect(nomAccord) || nomAccord;
 
         let svg = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" class="chord-diagram-svg">`;
@@ -10306,10 +10432,10 @@
         // 6 cordes
         for (let i = 0; i < 6; i++) {
             const x = startX + i * stringGap;
-            svg += `<line x1="${x}" y1="${startY}" x2="${x}" y2="${startY + 4 * fretGap}" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>`;
+            svg += `<line x1="${x}" y1="${startY}" x2="${x}" y2="${startY + nbCases * fretGap}" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>`;
         }
-        // 5 frettes
-        for (let f = 0; f <= 4; f++) {
+        // cases (4 à 6 selon l'étendue du voicing)
+        for (let f = 0; f <= nbCases; f++) {
             const y = startY + f * fretGap;
             const sw = (!isHighPos && f === 0) ? 2.8 : 0.9;
             svg += `<line x1="${startX}" y1="${y}" x2="${startX + 5 * stringGap}" y2="${y}" stroke="currentColor" stroke-width="${sw}" opacity="${(!isHighPos && f === 0) ? 0.95 : 0.45}"/>`;
@@ -10323,7 +10449,7 @@
                 svg += `<circle cx="${x}" cy="${startY - 4}" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/>`;
             } else if (typeof fret === "number" && fret > 0) {
                 const relFret = fret - baseFret + 1;
-                if (relFret >= 1 && relFret <= 4) {
+                if (relFret >= 1 && relFret <= nbCases) {
                     const y = startY + (relFret - 0.5) * fretGap;
                     svg += `<circle cx="${x}" cy="${y}" r="2.8" fill="#f59e0b"/>`;
                 }
@@ -10435,34 +10561,34 @@
     }
 
     // ========================================================
-    // --- v1.5 : BIBLIOTHÈQUE D'ACCORDS (façon Oolimo) ---
+    // --- v1.5 : BIBLIOTHÈQUE D'ACCORDS ---
     // Une seule porte d'entrée pour explorer toutes les positions
     // d'un accord : position ouverte, formes barrées transposables
-    // (E-shape / A-shape), renversements (accords slash) et voicings
-    // jazz. Chaque diagramme affiche la note jouée et son degré ;
+    // (base de référence : Must Know & Moveable), renversements (accords slash) et
+    // voicings jazz. Chaque diagramme affiche la note jouée et son degré ;
     // chaque position s'écoute (🔊) et s'applique au temps
     // sélectionné (✔). Remplace la fenêtre fantôme (v1.2.5).
     // ========================================================
     const BIBLIO_NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const BIBLIO_BEMOL_VERS_DIESE = { "Db": "C#", "Eb": "D#", "Gb": "F#", "Ab": "G#", "Bb": "A#" };
-    const BIBLIO_CORDES_MIDI = [40, 45, 50, 55, 59, 64];   // corde 6 (Mi grave) → corde 1 (Mi aigu)
-    const BIBLIO_DEGRES = ["R", "b9", "9", "b3", "3", "11", "b5", "5", "b6", "6", "b7", "7"];
+    const BIBLIO_CORDES_MIDI = [40, 45, 50, 55, 59, 64];   // corde 6 (E grave) → corde 1 (E aigu)
+    const BIBLIO_DEGRES = ["1", "b9", "9", "3m", "3", "4", "b5", "5", "b6", "6", "7", "7M"];   // v1.5.3 : 3m = tierce mineure, 7M = septième majeure, 7 = septième
     const BIBLIO_TYPES = [
         { cle: "maj", label: "Majeur" }, { cle: "min", label: "Mineur" }, { cle: "7", label: "7 (dominante)" },
         { cle: "maj7", label: "Maj7" }, { cle: "m7", label: "m7" }, { cle: "sus4", label: "Sus4" },
-        { cle: "add9", label: "Add9" }, { cle: "5", label: "Power (5)" }
+        { cle: "add9", label: "Add9" }, { cle: "5", label: "Power (5)" },
+        { cle: "6", label: "6" }, { cle: "m6", label: "m6" }, { cle: "9", label: "9" }, { cle: "m9", label: "m9" },
+        { cle: "maj9", label: "Maj9" }, { cle: "m7b5", label: "m7♭5" }, { cle: "dim7", label: "dim7" }, { cle: "mMaj7", label: "mMaj7" }
     ];
     // Formes mobiles : deltas en demi-tons depuis la fondamentale (vérifiées harmoniquement)
     const BIBLIO_E_SHAPE = { "maj": [0, 2, 2, 1, 0, 0], "min": [0, 2, 2, 0, 0, 0], "7": [0, 2, 0, 1, 0, 0], "maj7": [0, 1, 2, 1, 0, 0],
-                             "m7": [0, 2, 0, 0, 0, 0], "sus4": [0, 2, 2, 2, 0, 0], "add9": [0, 2, 2, 1, 0, 2], "5": [0, 2, 2, "x", "x", "x"] };
+                             "m7": [0, 2, 0, 0, 0, 0], "sus4": [0, 2, 2, 2, 0, 0], "add9": [0, 2, 2, 1, 0, 2], "5": [0, 2, 2, "x", "x", "x"],
+                             "6": [0, 2, 2, 1, 2, 0], "m6": [0, 2, 2, 0, 2, 0], "9": [0, 2, 0, 1, 0, 2], "m9": [0, 2, 0, 0, 0, 2],
+                             "maj9": [0, 2, 1, 1, 0, 2], "m7b5": [0, 1, 0, 0, "x", 0], "dim7": [0, 1, 2, 0, 2, 0], "mMaj7": [0, 2, 1, 0, 0, 0] };
     const BIBLIO_A_SHAPE = { "maj": [0, 2, 2, 2, 0], "min": [0, 2, 2, 1, 0], "7": [0, 2, 0, 2, 0], "maj7": [0, 2, 1, 2, 0],
-                             "m7": [0, 2, 0, 1, 0], "sus4": [0, 2, 2, 3, 0], "5": [0, 2, "x", "x", "x"] };
-    const BIBLIO_G_SHAPE = { "maj": [0, -1, -3, -3, -3, 0], "min": [0, 2, 2, 0, 0, 0], "7": [0, 2, 0, 1, 0, 0], "maj7": [0, -1, -3, -3, -3, -1],
-                             "m7": [0, 2, 0, 0, 0, 0], "sus4": [0, 0, -3, -3, 0, 0], "add9": [0, "x", -3, -1, -3, 0] };
-    const BIBLIO_C_SHAPE = { "maj": [0, -1, -3, -2, -3], "min": [0, 2, 2, 1, 0], "7": [0, -1, 0, -2, -3], "maj7": [0, -1, -3, -3, -3],
-                             "m7": [0, 2, 0, 1, 0], "sus4": [0, 2, 2, 3, 0], "add9": [0, -1, -3, 0, 0] };
-    const BIBLIO_D_SHAPE = { "maj": [0, 2, 3, 2], "min": [0, 2, 3, 1], "7": [0, 2, 1, 2], "maj7": [0, 2, 2, 2],
-                             "m7": [0, 2, 1, 1], "sus4": [0, 2, 3, 3] };
+                             "m7": [0, 2, 0, 1, 0], "sus4": [0, 2, 2, 3, 0], "5": [0, 2, "x", "x", "x"],
+                             "6": [0, 2, 2, 2, 2], "m6": [0, 2, 2, 1, 2], "9": [0, 2, 4, 2, 3], "m9": [0, 2, 4, 1, 3],
+                             "maj9": [0, -1, 1, 0, "x"], "m7b5": [0, 1, 0, 1, "x"], "dim7": [0, 1, 2, 1, 2], "mMaj7": [0, 2, 1, 1, 0] };
     const BIBLIO_OUVERTES = {
         "C:maj": ["x", 3, 2, 0, 1, 0], "C:7": ["x", 3, 2, 3, 1, 0], "C:maj7": ["x", 3, 2, 0, 0, 0], "C:add9": ["x", 3, 2, 0, 3, 3], "C:sus4": ["x", 3, 3, 0, 1, 1],
         "G:maj": [3, 2, 0, 0, 0, 3], "G:7": [3, 2, 0, 0, 0, 1], "G:maj7": [3, 2, 0, 0, 0, 2], "G:sus4": [3, 3, 0, 0, 3, 3], "G:add9": [3, "x", 0, 2, 0, 3],
@@ -10472,36 +10598,194 @@
         "A:m7": ["x", 0, 2, 0, 1, 0], "A:sus4": ["x", 0, 2, 2, 3, 0],
         "E:maj": [0, 2, 2, 1, 0, 0], "E:min": [0, 2, 2, 0, 0, 0], "E:7": [0, 2, 0, 1, 0, 0], "E:maj7": [0, 2, 1, 1, 0, 0],
         "E:m7": [0, 2, 0, 0, 0, 0], "E:sus4": [0, 2, 2, 2, 0, 0],
-        "F:maj7": ["x", "x", 3, 2, 1, 0]
+        "F:maj7": ["x", "x", 3, 2, 1, 0],
+        "C:6": ["x", 3, 2, 2, 1, 3], "G:6": [3, "x", 0, 0, 0, 0], "D:6": ["x", "x", 0, 2, 0, 2], "A:6": ["x", 0, 2, 2, 2, 2], "E:6": [0, 2, 2, 1, 2, 0],
+        "C:m6": ["x", 3, 1, 2, 1, 3], "E:m6": [0, 2, 2, 0, 2, 0], "A:m6": ["x", 0, 2, 2, 1, 2], "D:m6": ["x", "x", 0, 2, 0, 1],
+        "C:9": ["x", 3, 2, 3, 3, 3], "G:9": [3, "x", 0, 2, 0, 1], "A:9": ["x", 0, 2, 4, 2, 3], "E:9": [0, 2, 0, 1, 0, 2],
+        "E:m9": [0, 2, 0, 0, 0, 2], "A:m9": ["x", 0, 2, 4, 1, 3], "D:m9": ["x", 5, 3, 5, 5, "x"],
+        "C:maj9": ["x", 3, 2, 4, 3, "x"], "E:maj9": [0, 2, 1, 1, 0, 2],
+        "A:m7b5": ["x", 0, 1, 0, 1, "x"], "B:m7b5": ["x", 2, 3, 2, 3, "x"], "D:m7b5": ["x", "x", 0, 1, 1, 1], "E:m7b5": [0, 1, 0, 0, "x", 0],
+        "E:dim7": [0, 1, 2, 0, 2, 0], "A:dim7": ["x", 0, 1, 2, 1, 2], "D:dim7": ["x", "x", 0, 1, 0, 1],
+        "E:mMaj7": [0, 2, 1, 0, 0, 0], "A:mMaj7": ["x", 0, 2, 1, 1, 0]
     };
     // Notes de l'accord (demi-tons depuis la fondamentale) — clé de la vérification harmonique (v1.5.1)
     const BIBLIO_TONNES = {
         "maj": [0, 4, 7], "min": [0, 3, 7], "7": [0, 4, 7, 10], "maj7": [0, 4, 7, 11],
         "m7": [0, 3, 7, 10], "sus4": [0, 5, 7], "add9": [0, 2, 4, 7], "5": [0, 7],
         "9": [0, 2, 4, 7, 10], "7#9": [0, 3, 4, 7, 10], "6": [0, 4, 7, 9],
-        "m9": [0, 2, 3, 7, 10], "maj9": [0, 2, 4, 7, 11]
+        "m9": [0, 2, 3, 7, 10], "maj9": [0, 2, 4, 7, 11],
+        "m6": [0, 3, 7, 9], "m7b5": [0, 3, 6, 10], "dim7": [0, 3, 6, 9], "mMaj7": [0, 3, 7, 11]
+    };
+    // v1.5.3 corrigée — les notes qui justifient le NOM de la famille doivent sonner :
+    // un sous-ensemble harmoniquement correct mais muet sur la couleur (un CMaj7
+    // affiché CMaj9, un Ré mineur affiché Dm9…) est maintenant rejeté par l'audit.
+    const BIBLIO_OBLIGATOIRES = {
+        "maj": [0, 4], "min": [0, 3], "7": [4, 10], "maj7": [4, 11], "m7": [3, 10],
+        "sus4": [5], "add9": [4, 2], "5": [0, 7], "9": [4, 10, 2], "7#9": [4, 10, 3],
+        "6": [4, 9], "m6": [3, 9], "m9": [3, 10, 2], "maj9": [4, 11, 2],
+        "m7b5": [3, 6, 10], "dim7": [3, 6, 9], "mMaj7": [3, 11]
     };
     // Vérifie qu'une position ne contient que des notes de l'accord — un doigté faux ne peut plus s'afficher
-    function biblioVerifFrets(frets, rootPc, cleType) {
+    // v1.5.3 : demitonsBasse étend l'accord de la note de basse des slash (C/A# contient Bb)
+    function biblioVerifFrets(frets, rootPc, cleType, demitonsBasse) {
         const tons = BIBLIO_TONNES[cleType];
         if (!tons) return true;
+        const tonsEtendus = (typeof demitonsBasse === "number") ? tons.concat([demitonsBasse]) : tons;
         return frets.every((fr, si) => {
             if (fr === "x" || fr === -1 || typeof fr !== "number") return true;
             if (fr < 0 || fr > 15) return false;
             const pc = ((BIBLIO_CORDES_MIDI[si] + fr) % 12 + 12) % 12;
-            return tons.indexOf(((pc - rootPc) % 12 + 12) % 12) !== -1;
+            return tonsEtendus.indexOf(((pc - rootPc) % 12 + 12) % 12) !== -1;
         });
     }
+    // ========================================================
+    // v1.5.3 — LA BASE DE DIAGRAMMES DE LA BIBLIOTHÈQUE
+    // La bibliothèque embarque une base de diagrammes de référence
+    // (classification « Must Know » / « Moveable », même case de départ) —
+    // plus de formes CAGED générées théoriquement, on affiche la
+    // référence elle-même.
+    // ========================================================
+    /* BIBLIO_OL — format fixe à 8 champs :
+       [toniqueÉcrite, transposable, mustKnow, basse, degrés, cases, octHaute, exclue]
+       · degrés : "1_5_9_3" — degré par corde jouée, corde 6 → corde 1
+       · cases  : "60_5x_42_30_21_10" — corde (1-6) collée à la frette, x = muette
+       · octHaute : rejouer le diagramme une octave plus haut pour cette tonalité
+       · exclue   : la référence cache ce diagramme pour cette tonalité */
+/* Crédit source : base de diagrammes d'accords Oolimo.com (chordsdb26,
+   © Oliver Mochmann, https://www.oolimo.com) — intégrée à des fins
+   personnelles d'apprentissage, avec sa logique publique : mêmes formes,
+   même classification Must Know / Moveable.
+   Format : [cordeRacine, transposable, mustKnow, basse, degres, cases, octHaute?, exclue?] */
+const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""],["C","1",1,"","1_5_x_x_x_x","68_510_4x_3x_2x_1x","",""],["C","1",1,"","x_1_5_1_x_x","6x_53_45_35_2x_1x","",""],["C","1",1,"","x_1_5_x_x_x","6x_53_45_3x_2x_1x","",""],["C","1",0,"","1_x_5_1_x_x","68_5x_45_35_2x_1x","",""],["C","1",0,"","1_x_5_x_x_x","68_5x_45_3x_2x_1x","",""],["C","1",0,"","x_1_x_5_1_x","6x_53_4x_30_21_1x","",""],["C","1",0,"","x_1_x_5_x_x","6x_53_4x_30_2x_1x","",""],["C","1",0,"","x_x_1_5_1_x","6x_5x_410_312_213_1x","",""],["C","1",0,"","x_x_1_5_x_x","6x_5x_410_312_2x_1x","",""],["C","1",0,"","x_x_1_x_5_1","6x_5x_410_3x_28_18","",""],["C","1",0,"","x_x_1_x_5_x","6x_5x_410_3x_28_1x","",""]],"6":[["E","0",0,"","1_5_1_3_6_1","60_52_42_31_22_10","",""],["E","0",1,"","1_x_1_5_6_3","60_5x_42_34_22_14","",""],["E","0",0,"","1_x_3_6_1_1","60_5x_46_36_25_10","",""],["E","0",1,"","1_1_3_6_1_1","60_57_46_36_25_10","",""],["A","0",0,"","x_1_6_1_3_6","6x_50_44_32_22_12","",""],["A","0",0,"","x_1_1_3_6_1","6x_50_47_36_27_15","",""],["E","0",0,"","1_x_5_1_3_6","60_5x_49_39_29_19","",""],["A","0",0,"","x_1_5_1_3_6","6x_50_42_32_22_12","",""],["G","0",0,"","1_5_1_3_3_6","63_55_45_34_20_10","",""],["G","0",0,"","1_x_1_3_3_6","63_5x_45_34_20_10","",""],["G","0",0,"","1_x_1_3_5_6","63_5x_45_34_23_10","",""],["G","0",0,"","1_x_1_3_6_6","63_5x_45_34_25_10","",""],["C","0",0,"","x_1_3_6_1_3","6x_53_42_32_21_10","",""],["C","1",1,"","1_x_6_3_5_x","68_5x_47_39_28_1x","",""],["C","1",1,"","x_1_3_6_1_x","6x_53_42_32_21_1x","",""],["C","1",1,"","x_1_6_1_3_x","6x_53_47_35_25_1x","",""],["C","1",1,"","1_x_1_3_6_x","68_5x_410_39_210_1x","",""],["C","1",0,"","1_x_1_3_6_1","68_5x_410_39_210_18","",""],["C","1",0,"","1_5_x_3_6_1","68_510_4x_39_210_18","","E"],["C","1",0,"","1_x_6_1_3_6","68_5x_47_35_25_15","",""],["C","1",0,"","x_1_5_6_3_x","6x_53_45_32_25_1x","",""],["C","1",0,"","x_1_6_1_3_5","6x_53_47_35_25_13","",""],["C","1",0,"","x_1_x_1_3_6","6x_53_4x_35_25_15","",""],["C","1",0,"","x_1_x_6_3_5","6x_53_4x_32_25_13","",""],["C","1",0,"","x_5_1_3_6_x","6x_510_410_39_210_1x","",""],["C","1",0,"","x_x_1_3_6_1","6x_5x_410_39_210_18","",""],["C","1",1,"","x_x_1_5_6_3","6x_5x_410_312_210_112","",""]],"7":[["G","0",0,"","1_3_5_1_3_7","63_52_40_30_20_11","",""],["G","0",1,"","1_x_5_1_3_7","63_5x_40_30_20_11","",""],["B","0",1,"","x_1_3_7_1_5","6x_52_41_32_20_12","",""],["C","0",1,"","x_1_3_7_1_3","6x_53_42_33_21_10","",""],["E","0",0,"","1_5_7_3_7_1","60_52_40_31_23_10","",""],["E","0",0,"","1_1_3_7_5_1","60_57_46_37_20_10","",""],["E","0",0,"","1_1_3_7_1_1","60_57_46_37_25_10","",""],["A","0",0,"","x_1_5_1_3_7","6x_50_42_32_22_13","",""],["A","0",0,"","x_1_5_7_3_5","6x_50_42_30_22_10","",""],["D","0",1,"","x_x_1_5_7_3","6x_5x_40_32_21_12","",""],["C","1",1,"","1_5_7_3_5_1","68_510_48_39_28_18","",""],["C","1",0,"","1_x_7_3_x_x","68_5x_48_39_2x_1x","",""],["C","1",0,"","1_5_7_3_7_1","68_510_48_39_211_18","",""],["C","1",0,"","1_x_5_1_3_7","68_5x_45_35_25_16","",""],["C","1",0,"","1_x_7_3_5_x","68_5x_48_39_28_1x","E",""],["C","1",0,"","1_x_x_3_5_7","68_5x_4x_39_28_16","",""],["C","1",1,"","x_1_3_7_1_x","6x_53_42_33_21_1x","","B"],["C","1",0,"","x_1_3_7_x_x","6x_53_42_33_2x_1x","",""],["C","1",1,"","x_1_5_7_3_5","6x_53_45_33_25_13","",""],["C","1",0,"","x_3_7_1_5_x","6x_57_48_35_28_1x","",""],["C","1",0,"","x_5_1_3_7_x","6x_510_410_39_211_1x","",""],["C","1",0,"","x_7_3_5_1_x","6x_513_414_312_213_1x","",""],["C","1",0,"","x_x_1_3_5_7","6x_5x_410_39_28_16","",""],["C","1",1,"","x_x_1_5_7_3","6x_5x_410_312_211_112","",""],["C","1",0,"","x_x_3_7_1_3","6x_5x_42_33_21_10","",""],["C","1",0,"","x_x_3_7_1_5","6x_5x_42_33_21_13","",""],["C","1",0,"","x_x_5_1_3_7","6x_5x_45_35_25_16","",""],["C","1",0,"","x_x_7_3_5_1","6x_5x_48_39_28_18","",""],["C","1",1,"3","3_x_1_5_7_x","612_5x_410_312_211_1x","",""],["C","1",0,"3","3_x_3_7_1_x","60_5x_42_33_21_1x","",""],["C","1",0,"3","x_3_1_3_7_x","6x_57_410_39_211_1x","",""],["C","1",0,"3","x_3_7_1_3_x","6x_57_48_35_25_1x","",""],["C","1",0,"3","x_3_7_1_5_x","6x_57_48_35_28_1x","",""],["C","1",0,"3","x_3_7_3_5_x","6x_57_48_39_28_1x","",""],["C","1",1,"3","x_3_x_1_5_7","6x_57_4x_35_28_16","",""],["C","1",0,"3","x_x_3_7_1_3","6x_5x_42_33_21_10","",""],["C","1",0,"3","x_x_3_7_1_5","6x_5x_42_33_21_13","",""],["C","1",1,"5","5_x_3_7_1_x","63_5x_42_33_21_1x","",""],["C","1",0,"5","5_x_5_7_3_x","63_5x_45_33_25_1x","",""],["C","1",0,"5","x_5_1_3_7_x","6x_510_410_39_211_1x","",""],["C","1",1,"5","x_5_x_3_7_1","6x_510_4x_39_211_18","",""],["C","1",0,"5","x_5_x_5_7_3","6x_510_4x_312_211_112","",""],["C","1",0,"5","x_x_5_1_3_7","6x_5x_45_35_25_16","",""]],"9":[["E","0",1,"","1_x_1_3_7_9","60_5x_42_31_23_12","",""],["G","0",0,"","1_x_7_9_3_7","63_5x_43_32_20_11","",""],["D","0",0,"","x_1_3_7_1_9","6x_55_44_35_23_10","",""],["A","0",0,"","1_x_7_3_9_5","65_5x_45_36_20_10","",""],["A","0",0,"","x_1_7_3_9_5","6x_50_45_36_20_10","",""],["A","0",0,"","x_1_5_9_3_7","6x_50_42_34_22_13","",""],["C","1",0,"","1_5_7_3_5_9","68_510_48_39_28_110","",""],["C","1",0,"","1_x_5_9_3_7","68_5x_45_37_25_16","",""],["C","1",1,"","1_x_7_9_3_x","68_5x_48_37_25_1x","",""],["C","1",1,"","x_1_3_7_9_5","6x_53_42_33_23_13","",""],["C","1",1,"","x_x_1_3_7_9","6x_5x_410_39_211_110","","E"]],"maj":[["E","0",0,"","1_1_x_5_1_3","60_57_4x_34_25_14","",""],["E","0",0,"","1_1_3_5_1_3","60_57_46_34_25_14","",""],["E","0",0,"","1_1_3_5_1_1","60_57_46_34_25_10","",""],["G","0",1,"","1_3_5_1_3_1","63_52_40_30_20_13","",""],["C","0",0,"","1_x_1_3_5_3","68_5x_410_39_28_10","",""],["E","0",0,"","1_x_3_5_1_1","60_5x_46_34_25_10","",""],["C","0",0,"","x_1_3_5_1_5","6x_53_42_30_21_13","",""],["C","1",1,"","1_5_1_3_5_1","68_510_410_39_28_18","",""],["C","1",0,"","1_x_1_3_5_x","68_5x_410_39_28_1x","",""],["C","1","G","","1_x_5_1_3_1","68_5x_45_35_25_18","",""],["C","1",1,"","1_x_5_1_3_x","68_5x_45_35_25_1x","","G"],["C","1",1,"","x_1_3_5_1_3","6x_53_42_30_21_10","",""],["C","1",1,"","x_1_5_1_3_5","6x_53_45_35_25_13","",""],["C","1",0,"","x_1_5_x_3_x","6x_53_45_3x_25_1x","",""],["C","1",0,"","x_1_x_5_1_3","6x_53_4x_30_21_10","",""],["C","1",0,"","x_x_1_3_5_1","6x_5x_410_39_28_18","",""],["C","1",0,"","x_x_1_3_5_x","6x_5x_410_39_28_1x","",""],["C","1",0,"","x_x_1_5_1_3","6x_5x_410_312_213_112","",""],["C","1",0,"","x_x_1_5_x_3","6x_5x_410_312_2x_112","",""],["C","1",0,"","x_x_3_5_1_3","6x_5x_42_30_21_10","",""],["C","1",0,"","x_x_3_5_1_x","6x_5x_42_30_21_1x","",""],["C","1",0,"","x_x_5_1_3_5","6x_5x_45_35_25_13","",""],["C","1",0,"","x_x_5_1_3_x","6x_5x_45_35_25_1x","",""],["C","1",0,"","x_x_x_1_3_5","6x_5x_4x_35_25_13","",""],["C","1",0,"","x_x_x_3_5_1","6x_5x_4x_39_28_18","",""],["C","1",0,"","x_x_x_5_1_3","6x_5x_4x_30_21_10","",""],["E","0",0,"3","3_x_3_5_5_1","64_5x_46_34_20_10","",""],["E","0",0,"3","3_x_1_5_5_1","64_5x_42_34_20_10","",""],["C","1",1,"3","3_x_3_5_1_x","60_5x_42_30_21_1x","",""],["C","1",0,"3","3_x_1_5_x_x","612_5x_410_312_2x_1x","",""],["C","1",0,"3","3_x_3_5_1_3","60_5x_42_30_21_10","",""],["C","1",1,"3","x_3_1_3_5_x","6x_57_410_39_28_1x","",""],["C","1",0,"3","x_3_1_x_5_x","6x_57_410_3x_28_1x","",""],["C","1",0,"3","x_3_5_1_3_x","6x_57_45_35_25_1x","",""],["C","1",0,"3","x_3_x_1_5_1","6x_57_4x_35_28_18","",""],["C","1",1,"3","x_3_x_1_5_x","6x_57_4x_35_28_1x","",""],["C","1",0,"3","x_3_x_3_5_1","6x_57_4x_39_28_18","",""],["C","1",0,"3","x_x_3_5_1_3","6x_5x_42_30_21_10","",""],["C","1",0,"5","5_x_3_5_1_3","63_5x_42_30_21_10","",""],["C","1",1,"5","5_x_3_5_1_x","63_5x_42_30_21_1x","",""],["C","1",0,"5","5_x_5_1_3_5","63_5x_45_35_25_13","",""],["C","1",1,"5","5_x_5_1_3_x","63_5x_45_35_25_1x","",""],["C","1",0,"5","5_x_x_1_3_5","63_5x_4x_35_25_13","",""],["C","1",0,"5","5_x_x_5_1_3","63_5x_4x_30_21_10","",""],["C","1",0,"5","x_5_1_3_5_1","6x_510_410_39_28_18","",""],["C","1",1,"5","x_5_1_3_5_x","6x_510_410_39_28_1x","",""],["C","1",0,"5","x_5_3_5_1_x","6x_510_414_312_213_1x","",""],["C","1",0,"5","x_5_x_3_5_1","6x_510_4x_39_28_18","",""],["C","1",0,"5","x_5_x_5_1_3","6x_510_4x_312_213_112","",""],["C","1",0,"7","7_x_1_3_5_x","66_5x_410_39_28_1x","",""],["C","1",1,"7","7_x_5_1_3_x","66_5x_45_35_25_1x","",""],["C","1",0,"7","7_x_x_3_5_1","66_5x_4x_39_28_18","",""],["C","1",0,"7","x_7_3_5_1_3","6x_51_42_30_21_10","",""],["C","1",1,"7","x_7_3_5_1_x","6x_51_42_30_21_1x","",""],["C","1",0,"7","x_7_5_1_3_x","6x_51_45_35_25_1x","",""],["C","1",0,"7","x_7_x_5_1_3","6x_51_4x_30_21_10","",""],["C","1",0,"7","x_x_7_3_5_1","6x_5x_48_39_28_18","",""],["C","1",0,"maj7","maj7_x_1_3_5_x","67_5x_410_39_28_1x","",""],["C","1",1,"maj7","maj7_x_5_1_3_x","67_5x_45_35_25_1x","",""],["C","1",0,"maj7","maj7_x_x_3_5_1","67_5x_4x_39_28_18","",""],["C","1",0,"maj7","x_maj7_5_1_3_x","6x_52_45_35_25_1x","",""],["C","1",1,"maj7","x_ma7_x_5_1_3","6x_52_4x_30_21_10","",""],["C","1",0,"maj7","x_x_maj7_3_5_1","6x_5x_49_39_28_18","",""],["C","1",0,"9","9_x_1_3_5_1","610_5x_410_39_28_18","",""],["C","1",1,"9","9_x_1_3_5_x","610_5x_410_39_28_1x","",""],["C","1",0,"9","9_x_3_5_1_x","610_5x_414_312_213_1x","",""],["C","1",0,"9","9_x_x_3_5_1","610_5x_4x_39_28_18","",""],["C","1",0,"9","x_9_5_1_3_x","6x_55_45_35_25_1x","",""],["C","1",1,"9","x_9_x_1_3_5","6x_55_4x_35_25_13","",""],["C","1",0,"9","x_x_9_5_1_3","6x_5x_40_30_21_10","",""],["C","1",1,"11","x_11_1_3_5_x","6x_58_410_39_28_1x","",""],["C","1",0,"11","x_11_5_1_3_x","6x_58_45_35_25_1x","",""],["C","1",0,"11","x_11_x_3_5_1","6x_58_4x_39_28_18","",""],["C","1",1,"11","11_x_3_5_1_x","61_5x_42_30_21_1x","",""],["C","1",0,"11","11_x_5_1_3_x","61_5x_45_35_25_1x","",""],["C","1",0,"11","11_x_x_5_1_3","61_5x_4x_30_21_10","",""],["C","1",0,"11","x_x_11_5_1_3","6x_5x_43_30_21_10","",""]],"min":[["C","1","D","","x_x_1_5_1_m3","6x_5x_410_312_213_111","",""],["C","1",1,"","1_5_1_m3_5_1","68_510_410_38_28_18","",""],["C","1",1,"","x_1_5_1_m3_5","6x_53_45_35_24_13","",""],["C","1",0,"","x_1_5_1_m3_x","6x_53_45_35_24_1x","",""],["C","1",0,"","x_1_5_x_m3_x","6x_53_45_3x_24_1x","",""],["C","1",0,"","x_x_1_m3_5_x","6x_5x_410_38_28_1x","",""],["C","1",0,"","x_x_5_1_m3_x","6x_5x_45_35_24_1x","",""],["C","1",0,"","x_x_x_1_m3_5","6x_5x_4x_35_24_13","",""],["C","1",0,"","x_x_x_m3_5_1","6x_5x_4x_38_28_18","",""],["C","1",0,"","x_x_x_5_1_m3","6x_5x_4x_312_213_111","",""],["C","1",0,"","x_x_1_m3_5_1","6x_5x_410_38_28_18","",""],["C","1",0,"","x_x_m3_5_1_m3","6x_5x_413_312_213_111","",""],["C","1",0,"","x_x_5_1_m3_5","6x_5x_45_35_24_13","",""],["C","1",0,"","x_x_m3_5_1_x","6x_5x_41_30_21_1x","C",""],["C","1",0,"m3","m3_x_1_m3_5_1","611_5x_410_38_28_18","",""],["C","1",0,"m3","m3_x_1_m3_5_x","611_5x_410_38_28_1x","",""],["C","1",0,"m3","m3_x_m3_5_1_m3","611_5x_413_312_213_111","",""],["C","1",1,"m3","m3_x_m3_5_1_x","611_5x_413_312_213_1x","",""],["C","1",0,"m3","m3_x_x_5_1_m3","611_5x_4x_312_213_111","",""],["C","1",0,"m3","x_m3_1_m3_5_x","6x_56_410_38_28_1x","",""],["C","1",0,"m3","x_m3_5_1_m3_x","6x_56_45_35_24_1x","",""],["C","1",0,"m3","x_m3_x_1_m3_5","6x_56_4x_35_24_13","",""],["C","1",1,"m3","x_m3_x_1_5_x","6x_56_4x_35_28_1x","",""],["C","1",0,"m3","x_m3_x_1_5_1","6x_56_4x_35_28_18","",""],["C","1",1,"m3","m3_x_1_5_x_x","611_5x_410_312_2x_1x","",""],["C","1",0,"m3","m3_x_1_5_1_x","611_5x_410_312_213_1x","",""],["C","1",0,"m3","x_m3_x_m3_5_1","6x_56_4x_38_28_18","",""],["C","1",0,"m3","x_x_m3_1_m3_5","6x_5x_41_35_24_13","",""],["C","1",0,"5","5_x_5_1_m3_5","63_5x_45_35_24_13","",""],["C","1",1,"5","5_x_5_1_m3_x","63_5x_45_35_24_1x","",""],["C","1",0,"5","5_x_x_1_m3_5","63_5x_4x_35_24_13","",""],["C","1",1,"5","x_5_1_m3_5_1","6x_510_410_38_28_18","",""],["C","1",0,"5","x_5_1_m3_5_x","6x_510_410_38_28_1x","",""],["C","1",1,"5","x_5_m3_5_1_x","6x_510_413_312_213_1x","",""],["C","1",0,"5","x_5_x_m3_5_1","6x_510_4x_38_28_18","",""],["C","1",0,"5","x_5_x_5_1_m3","6x_510_4x_312_213_111","",""],["C","1",0,"5","x_x_5_1_m3_5","6x_5x_45_35_24_13","",""],["C","1",0,"7","7_x_1_m3_5_x","66_5x_410_38_28_1x","",""],["C","1",1,"7","7_x_5_1_m3_x","66_5x_45_35_24_1x","",""],["C","1",0,"7","x_7_m3_5_1_x","6x_51_41_30_21_1x","",""],["C","1",0,"7","x_7_x_1_m3_5","6x_51_4x_35_24_13","",""],["C","1",1,"7","x_7_x_5_1_m3","6x_513_4x_312_213_111","",""],["C","1",0,"7","x_x_7_m3_5_1","6x_5x_48_38_28_18","",""],["C","1",0,"11","x_11_1_m3_5_1","6x_58_410_38_28_18","",""],["C","1",0,"11","x_11_1_m3_5_x","6x_58_410_38_28_1x","",""],["C","1",1,"11","x_11_x_m3_5_1","6x_58_4x_38_28_18","",""],["C","1",1,"11","11_x_m3_5_1_x","61_5x_41_30_21_1x","",""],["C","1",0,"11","11_x_x_1_m3_5","61_5x_4x_35_24_13","",""],["C","1",0,"11","11_x_x_5_1_m3","613_5x_4x_312_213_111","",""],["C","1",0,"11","x_x_11_1_m3_5","6x_5x_43_35_24_13","",""],["C","1",0,"11","x_x_11_5_1_m3","6x_5x_415_312_213_111","",""]],"maj7":[["E","0",0,"","1_x_1_5_maj7_3","60_5x_42_34_24_14","",""],["E","0",0,"","1_x_3_maj7_1_5","60_5x_46_38_25_17","",""],["E","0",0,"","1_1_3_5_maj7_3","60_57_46_34_24_14","",""],["A","0",0,"","x_1_5_1_3_maj7","6x_50_42_32_22_14","",""],["A","0",0,"","x_1_1_3_5_maj7","6x_50_47_36_25_14","",""],["A","0",0,"","1_x_maj7_3_5_5","65_5x_46_36_25_10","",""],["C","0",0,"","1_x_1_3_maj7_3","68_5x_410_39_20_10","",""],["C","0",0,"","1_x_maj7_3_5_3","68_5x_49_39_28_10","",""],["C","0",0,"","x_1_5_1_maj7_3","6x_53_45_35_20_10","",""],["C","0",0,"","x_1_5_maj7_3_3","6x_53_45_34_25_10","",""],["C","0",0,"","x_1_5_maj7_maj7_3","6x_53_45_34_20_10","",""],["C","1",1,"","1_x_maj7_3_5_x","68_5x_49_39_28_1x","","E"],["C","1",0,"","1_x_maj7_3_5_maj7","68_5x_49_39_28_17","",""],["C","1",1,"","x_1_3_5_maj7_3","6x_53_42_30_20_10","",""],["C","1",1,"","x_1_5_maj7_3_5","6x_53_45_34_25_13","",""],["C","1",0,"","x_3_maj7_1_5_x","6x_57_49_35_28_1x","",""],["C","1",0,"","x_3_x_1_5_maj7","6x_57_4x_35_28_17","",""],["C","1",0,"","x_5_1_3_maj7_x","6x_510_410_39_212_1x","",""],["C","1",1,"","x_x_1_3_5_maj7","6x_5x_410_39_28_17","",""],["C","1",0,"","1_x_1_3_5_maj7","68_5x_410_39_28_17","",""],["C","1",1,"","x_x_1_5_maj7_3","6x_5x_410_312_212_112","",""],["C","1",0,"","x_x_3_maj7_1_5","6x_5x_42_34_21_13","",""],["C","1",0,"","x_x_5_1_3_maj7","6x_5x_45_35_25_17","",""],["C","1",0,"","x_x_maj7_3_5_1","6x_5x_49_39_28_18","",""]],"m7":[["E","0",1,"","1_5_x_m3_7_1","60_52_4x_30_23_10","",""],["E","0",0,"","1_x_m3_5_7_1","60_5x_45_34_23_10","",""],["E","0",0,"","1_x_m3_5_7_m3","60_5x_45_34_23_13","",""],["A","0",0,"","x_1_7_m3_5_7","6x_50_45_35_25_13","",""],["A","0",0,"","x_1_5_1_m3_7","6x_50_42_32_21_13","",""],["C#","0",0,"","1_x_7_m3_7_m3","69_5x_49_39_20_10","",""],["C#","0",0,"","x_1_5_1_7_m3","6x_54_46_36_20_10","",""],["C#","0",0,"","x_1_5_7_7_m3","6x_54_46_34_20_10","",""],["C","0",1,"","x_1_5_5_m3_7","6x_53_45_30_24_16","",""],["C","1",1,"","x_1_5_7_m3_5","6x_53_45_33_24_13","",""],["C","1",1,"","1_x_7_m3_5_x","68_5x_48_38_28_1x","E",""],["C","1",1,"","1_5_7_m3_5_1","68_510_48_38_28_18","","E"],["C","1",1,"","1_5_7_m3_7_1","68_510_48_38_211_18","","E"],["C","1",0,"","x_1_5_7_m3_x","6x_53_45_33_24_1x","A",""],["C","1",0,"","x_1_x_7_m3_5","6x_53_4x_33_24_13","A",""],["C","1",0,"","1_x_x_m3_5_7","68_5x_4x_38_28_16","",""],["C","1",0,"","x_1_m3_5_7_m3","6x_515_413_312_211_111","",""],["C","1",0,"","x_1_m3_5_7_x","6x_515_413_312_211_1x","",""],["C","1",0,"","x_1_m3_7_1_x","6x_53_41_33_21_1x","",""],["C","1",0,"","x_1_5_7_m3_7","6x_53_45_33_24_16","",""],["C","1",0,"","x_m3_7_1_5_x","6x_56_48_35_28_1x","",""],["C","1",0,"","x_5_1_m3_7_x","6x_510_410_38_211_1x","",""],["C","1",0,"","x_x_1_m3_5_7","6x_5x_410_38_28_16","",""],["C","1","D","","x_x_1_5_7_m3","6x_5x_410_312_211_111","",""],["C","1",0,"","x_x_m3_7_1_5","6x_5x_41_33_21_13","",""],["C","1",0,"","x_x_5_1_m3_7","6x_5x_45_35_24_16","",""],["C","1",0,"","x_x_7_m3_5_1","6x_5x_48_38_28_18","E",""],["C","1",1,"5","5_x_m3_7_1_x","63_5x_41_33_21_1x","",""],["C","1",0,"5","5_x_x_1_m3_7","63_5x_4x_35_24_16","",""],["C","1",0,"5","x_5_1_m3_7_x","6x_510_410_38_211_1x","",""],["C","1",1,"5","x_5_x_m3_7_1","6x_510_4x_38_211_18","",""],["C","1",0,"5","x_x_5_1_m3_7","6x_5x_45_35_24_16","",""]],"sus4":[["B","0",0,"","x_1_5_1_1_4","6x_52_44_34_20_10","",""],["B","0",0,"","1_x_1_4_1_4","67_5x_49_39_20_10","",""],["E","0",0,"","1_x_1_4_5_1","60_5x_42_32_20_10","",""],["E","0",0,"","1_x_4_5_1_1","60_5x_47_34_25_10","",""],["A","0",0,"","x_1_1_4_5_5","6x_50_47_37_25_10","",""],["A","0",0,"","x_1_4_5_1_5","6x_50_412_39_210_10","",""],["C","1",1,"","1_5_1_4_5_1","68_510_410_310_28_18","",""],["C","1",0,"","1_x_5_1_4_1","68_5x_45_35_26_18","",""],["C","1",0,"","1_x_5_1_4_x","68_5x_45_35_26_1x","",""],["C","1",0,"","x_1_4_5_1_x","6x_53_43_30_21_1x","",""],["C","1",1,"","x_1_5_1_4_5","6x_53_45_35_26_13","",""],["C","1",0,"","x_x_1_4_5_1","6x_5x_410_310_28_18","",""],["C","1",0,"","x_x_1_4_5_x","6x_5x_410_310_28_1x","",""],["C","1","D","","x_x_1_5_1_4","6x_5x_410_312_213_113","",""],["C","1",0,"","x_x_4_5_1_x","6x_5x_43_30_21_1x","",""],["C","1",0,"","x_x_5_1_4_x","6x_5x_45_35_26_1x","",""],["C","1",0,"","x_x_x_1_4_5","6x_5x_4x_35_26_13","",""],["C","1",0,"","x_x_x_4_5_1","6x_5x_4x_310_28_18","",""],["C","1",0,"","x_x_x_5_1_4","6x_5x_4x_30_21_11","",""]],"add9":[["A","0",0,"","x_1_5_9_3_1","6x_50_42_34_22_15","",""],["A","0",0,"","1_5_1_3_9_5","65_57_47_36_20_10","",""],["A","0",0,"","1_5_9_3_9_5","65_57_49_36_20_10","",""],["A","0",0,"","1_x_1_3_9_5","65_5x_47_36_20_10","",""],["A","0",0,"","x_1_1_3_9_5","6x_50_47_36_20_10","",""],["D","0",0,"","x_1_3_5_1_9","6x_55_44_32_23_10","",""],["A","0",0,"","x_1_3_5_9_5","6x_50_411_39_20_10","",""],["A","0",0,"","x_1_9_3_5_1","6x_50_49_36_25_15","",""],["A","0",0,"","x_1_3_5_1_9","6x_50_411_39_210_17","",""],["A","0",0,"","x_1_1_3_5_9","6x_50_47_36_25_17","",""],["E","0",0,"","1_x_3_5_1_9","60_5x_46_34_25_12","",""],["E","0",0,"","1_5_1_3_5_9","60_52_42_31_20_12","",""],["E","0",0,"","1_3_5_9_5_1","60_511_49_311_20_10","",""],["C","1",1,"","1_5_9_3_5_1","68_510_412_39_28_18","",""],["C","1",1,"","1_x_5_9_3_x","68_5x_45_37_25_1x","",""],["C","1",0,"","x_1_3_5_9_3","6x_53_42_30_23_10","",""],["C","1",0,"","x_1_3_5_9_x","6x_53_42_30_23_1x","",""],["C","1",1,"","x_1_5_9_3_5","6x_53_45_37_25_13","",""],["C","1",1,"","x_1_x_5_9_3","6x_53_4x_30_23_10","",""],["C","1",0,"3","x_3_5_1_9_5","6x_57_45_35_23_13","",""],["C","1",0,"3","x_3_5_1_9_x","6x_57_45_35_23_1x","",""],["C","1",0,"","x_x_1_3_5_9","6x_5x_410_39_28_110","","E"],["C","1",0,"","1_x_5_9_3_1","68_5x_45_37_25_18","",""]],"m6":[["E","0",0,"","1_x_m3_5_6_1","60_5x_45_34_22_10","",""],["E","0",0,"","1_6_m3_5_1_1","60_54_45_34_25_10","",""],["E","0",0,"","1_x_1_m3_6_1","60_5x_42_30_22_10","",""],["A","0",0,"","x_1_6_1_m3_5","6x_50_44_32_21_10","",""],["A","0",0,"","x_1_5_1_m3_6","6x_50_42_32_21_12","",""],["A","0",0,"","x_1_6_m3_5_1","6x_50_44_35_25_15","",""],["A","0",0,"","x_1_1_m3_6_5","6x_50_47_35_27_10","",""],["C","1",0,"","1_x_6_m3_5_1","68_5x_47_38_28_18","",""],["C","1",1,"","1_x_6_m3_5_x","68_5x_47_38_28_1x","",""],["C","1",0,"","x_1_m3_6_1_5","6x_53_41_32_21_13","",""],["C","1",0,"","x_1_m3_6_1_x","6x_53_41_32_21_1x","",""],["C","1",1,"","x_1_5_6_m3_x","6x_53_45_32_24_1x","",""],["C","1",0,"","x_1_x_1_m3_6","6x_53_4x_35_24_15","",""],["C","1",1,"","x_1_x_6_m3_5","6x_53_4x_32_24_13","",""],["C","1",0,"","x_m3_6_1_5_x","6x_56_47_35_28_1x","",""],["C","1",0,"","x_5_1_m3_6_x","6x_510_410_38_210_1x","",""],["C","1",1,"","x_x_1_5_6_m3","6x_5x_410_312_210_111","",""],["C","1",0,"","x_x_m3_6_1_5","6x_5x_41_32_21_13","",""]],"m9":[["E","0",1,"","1_5_x_m3_7_9","60_52_4x_30_23_12","",""],["A","0",0,"","1_x_7_m3_9_5","65_5x_45_35_20_10","",""],["A","0",0,"","x_1_m3_7_9_5","6x_50_410_312_20_10","",""],["A","0",0,"","x_1_7_m3_9_5","6x_50_45_35_20_10","",""],["C#","0",0,"","1_x_5_9_7_m3","69_5x_46_38_20_10","",""],["C#","0",0,"","1_x_7_9_7_m3","69_5x_49_38_20_10","",""],["C#","0",0,"","x_1_5_9_7_m3","6x_54_46_38_20_10","",""],["C","1",1,"","1_5_7_m3_5_9","68_510_48_38_28_110","","E"],["C","1",1,"","x_1_m3_7_9_5","6x_53_41_33_23_13","",""],["C","1",0,"","1_x_7_m3_5_9","68_5x_48_38_28_110","",""],["C","1",0,"","x_x_1_m3_7_9","6x_5x_410_38_211_110","",""],["C","1",0,"","x_x_m3_7_9_5","6x_5x_41_33_23_13","",""],["C","1",0,"","x_x_5_9_m3_7","6x_5x_45_37_24_16","",""],["C","1",0,"","x_x_7_m3_5_9","6x_5x_48_38_28_110","",""]],"maj9":[["E","0",0,"","1_5_9_3_maj7_x","60_52_44_31_24_1x","",""],["E","0",0,"","1_x_3_5_maj7_9","60_5x_46_34_24_12","",""],["C","0",0,"","1_x_5_9_maj7_3","68_5x_45_37_20_10","",""],["A","0",0,"","1_x_maj7_3_9_5","65_5x_46_36_20_10","",""],["A","0",0,"","x_1_5_9_3_maj7","6x_50_42_34_22_14","",""],["C","0",0,"","1_x_maj7_9_maj7_3","68_5x_49_37_20_10","",""],["A","0",0,"","x_1_3_maj7_9_5","6x_50_411_313_20_10","",""],["C","0",0,"","x_1_5_maj7_9_3","6x_53_45_34_23_10","",""],["C","0",0,"","x_1_5_9_maj7_3","6x_53_45_37_20_10","",""],["A","0",0,"","x_1_maj7_3_9_5","6x_50_46_36_20_10","",""],["A","0",0,"","x_1_maj7_3_5_9","6x_50_46_36_25_17","",""],["C","1",1,"","1_x_maj7_3_5_9","68_5x_49_39_28_110","","E"],["C","1",0,"","1_x_maj7_9_3_x","68_5x_49_37_25_1x","",""],["C","1",1,"","x_1_3_maj7_9_x","6x_53_42_34_23_1x","",""],["C","1",0,"","x_1_9_5_maj7_3","6x_53_40_30_20_10","",""],["C","1",0,"","x_1_x_maj7_9_3","6x_53_4x_34_23_10","",""],["C","1",0,"","x_x_1_3_maj7_9","6x_5x_410_39_212_110","",""],["C","1",0,"","x_x_5_9_3_maj7","6x_5x_45_37_25_17","",""]],"m7b5":[["C#","0",0,"","1_m3_7_b5_7_m3","69_57_49_30_20_10","",""],["C#","0",0,"","x_1_b5_b5_7_m3","6x_54_45_30_20_10","",""],["C#","0",0,"","x_1_b5_7_7_m3","6x_54_45_34_20_10","",""],["C#","0",0,"","x_1_m3_b5_7_m3","6x_54_42_30_20_10","",""],["C","1",1,"","1_x_7_m3_b5_x","68_5x_48_38_27_1x","",""],["C","1",0,"","x_1_m3_b5_7_m3","6x_515_413_311_211_111","",""],["C","1",1,"","x_1_b5_7_m3_x","6x_53_44_33_24_1x","",""],["C","1",1,"","x_1_x_7_m3_b5","6x_53_4x_33_24_12","",""],["C","1",0,"","x_m3_7_1_b5_x","6x_56_48_35_27_1x","",""],["C","1",0,"","x_b5_1_m3_7_x","6x_59_410_38_211_1x","",""],["C","1",0,"","x_x_1_m3_b5_7","6x_5x_410_38_27_16","",""],["C","1",1,"","x_x_1_b5_7_m3","6x_5x_410_311_211_111","",""],["C","1",0,"","x_x_m3_7_1_b5","6x_5x_41_33_21_12","",""],["C","1",0,"","x_x_b5_1_m3_7","6x_5x_44_35_24_16","",""],["C","1",1,"b5","b5_x_m3_7_1_x","62_5x_41_33_21_1x","",""],["C","1",0,"b5","b5_x_x_1_m3_7","62_5x_4x_35_24_16","",""],["C","1",0,"b5","x_b5_1_m3_7_x","6x_59_410_38_211_1x","",""],["C","1",1,"b5","x_b5_x_m3_7_1","6x_59_4x_38_211_18","",""],["C","1",0,"b5","x_x_b5_1_m3_7","6x_5x_44_35_24_16","",""]],"dim7":[["E","0",0,"","1_x_1_b5_dim7_m3","60_5x_42_33_22_13","",""],["E","0",0,"","1_x_m3_dim7_1_b5","60_5x_45_36_25_16","",""],["E","0",0,"","1_x_b5_1_m3_dim7","60_5x_48_39_28_19","",""],["E","0",0,"","1_x_dim7_m3_b5_1","60_5x_411_312_211_112","",""],["A","0",0,"","x_1_b5_1_m3_dim7","6x_50_41_32_21_12","",""],["A","0",0,"","x_1_dim7_m3_b5_1","6x_50_44_35_24_15","",""],["A","0",0,"","x_1_1_b5_dim7_m3","6x_50_47_38_27_18","",""],["A","0",0,"","x_1_m3_dim7_1_b5","6x_50_410_311_210_111","",""],["C","1",1,"","1_x_dim7_m3_b5_x","68_5x_47_38_27_1x","",""],["C","1",1,"","x_1_b5_dim7_m3_x","6x_53_44_32_24_1x","",""],["C","1",0,"","x_1_x_dim7_m3_b5","6x_53_4x_32_24_12","",""],["C","1",0,"","x_m3_dim7_1_b5_x","6x_56_47_35_27_1x","",""],["C","1",0,"","x_b5_1_m3_dim7_x","6x_59_410_38_210_1x","",""],["C","1",0,"","x_dim7_m3_b5_1_x","6x_512_413_311_213_1x","",""],["C","1",1,"","x_x_1_b5_dim7_m3","6x_5x_410_311_210_111","",""],["C","1",0,"","x_x_m3_dim7_1_b5","6x_5x_41_32_21_12","",""],["C","1",0,"","x_x_b5_1_m3_dim7","6x_5x_44_35_24_15","",""],["C","1",0,"","x_x_dim7_m3_b5_1","6x_5x_47_38_27_18","",""]],"mMaj7":[["E","0",0,"","1_5_m3_5_maj7_x","60_52_45_34_24_1x","",""],["E","0",0,"","1_x_m3_5_maj7_m3","60_5x_45_34_24_13","",""],["E","0",1,"","1_x_1_5_maj7_m3","60_5x_42_34_24_13","",""],["A","0",0,"","x_1_maj7_m3_5_maj7","6x_50_46_35_25_14","",""],["C","1",1,"","1_x_maj7_m3_5_x","68_5x_49_38_28_1x","","E"],["C","1",0,"","x_x_1_5_maj7_m3","6x_5x_410_312_212_111","","E"],["C","1",1,"","x_x_maj7_m3_5_1","6x_5x_49_38_28_18","E",""],["C","1",1,"","x_1_5_maj7_m3_x","6x_53_45_34_24_1x","","A"],["C","1",0,"","1_x_maj7_m3_5_maj7","68_5x_49_38_28_17","",""],["C","1",0,"","1_x_x_m3_5_maj7","68_5x_4x_38_28_17","",""],["C","1",0,"","x_1_m3_5_maj7_x","6x_53_41_30_20_1x","",""],["C","1","A","","x_1_5_maj7_m3_5","6x_53_45_34_24_13","",""],["C","1",0,"","x_1_x_maj7_m3_5","6x_53_4x_34_24_13","",""],["C","1",0,"","x_x_1_m3_5_maj7","6x_5x_410_38_28_17","",""]]};
+    const BIBLIO_OL_BASSE_DEMITONS = { "3": 4, "m3": 3, "5": 7, "7": 10, "maj7": 11, "9": 2, "11": 5, "b5": 6 };
+    const BIBLIO_OL_BASSE_NOMS = { "3": "tierce", "m3": "tierce mineure", "5": "quinte", "7": "septième", "maj7": "septième majeure", "9": "neuvième", "11": "quarte", "b5": "quinte diminuée" };
+    // Audit d'intégrité : étiquette de degré de la base → demi-tons au-dessus de la fondamentale
+    const BIBLIO_OL_DEGRE_DEMITONS = { "1": 0, "b9": 1, "9": 2, "m3": 3, "b3": 3, "3": 4, "4": 5, "11": 5, "b5": 6, "5": 7, "b6": 8, "6": 9, "dim7": 9, "7": 10, "ma7": 11, "maj7": 11 };
+    const BIBLIO_OL_POS = { "C": 1, "C#": 2, "Db": 2, "D": 3, "D#": 4, "Eb": 4, "E": 5, "F": 6, "F#": 7, "Gb": 7, "G": 8, "G#": 9, "Ab": 9, "A": 10, "A#": 11, "Bb": 11, "B": 12 };
+    const BIBLIO_OL_ENH_DIEZE = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const BIBLIO_OL_ENH_BEMOL = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+    const BIBLIO_OL_CORDES = ["corde 6 (E grave)", "corde 5 (A)", "corde 4 (D)", "corde 3 (G)", "corde 2 (B)", "corde 1 (E aigu)"];
+
+    // Transposition de la base : décalage minimal (aucune frette négative),
+    // refus au-delà de la case 15.
+    function biblioOlTranspose(cases, toniqueBase, tonalite) {
+        let diff = BIBLIO_OL_POS[tonalite] - BIBLIO_OL_POS[toniqueBase] - 12;
+        const spots = cases.split("_");
+        spots.forEach(sp => {
+            const fr = sp.substr(1);
+            if (fr !== "x") { while (parseInt(fr, 10) + diff < 0) diff += 12; }
+        });
+        let res = "";
+        for (const sp of spots) {
+            const corde = sp.substr(0, 1), fr = sp.substr(1);
+            const neuf = (fr === "x") ? "x" : parseInt(fr, 10) + diff;
+            if (neuf !== "x" && neuf > 15) return false;
+            res += corde + neuf + "_";
+        }
+        return res.slice(0, -1);
+    }
+
+    // Métriques d'un diagramme, fidèles aux tris de la base (case de départ, case de
+    // la fondamentale la plus grave, corde porteuse de la fondamentale…)
+    function biblioOlMetriques(spots, degres) {
+        let caseMin = 100, caseMax = 0, racineMin = 99, cordeGrave = 1, cordeRacineIdx = -1;
+        spots.forEach((sp, i) => {
+            const corde = parseInt(sp.substr(0, 1), 10), fr = parseInt(sp.substr(1), 10);
+            if (corde > cordeGrave) cordeGrave = corde;
+            if (fr < caseMin) caseMin = fr;
+            if (fr > caseMax) caseMax = fr;
+            if (degres[i] === "1" && fr < racineMin) { racineMin = fr; cordeRacineIdx = 6 - corde; }
+        });
+        return { caseMin, caseMax, racineMin, cordeGrave, cordeRacineIdx, etendue: caseMax - caseMin + 1 };
+    }
+
+    // Construit les positions de la base d'un accord pour une tonalité :
+    // { mustKnow, moveable, ouvertes, renversements } — ordre et classification du site.
+    function biblioOlPositions(tonalite, cleType) {
+        const resultat = { mustKnow: [], moveable: [], ouvertes: [], renversements: [] };
+        const entrees = BIBLIO_OL[cleType];
+        if (!entrees) return resultat;
+        const mkOuv = [], mkTrans = [], transTous = [], ouvToutes = [];
+        const vusOuv = new Set(), vusTrans = new Set();
+        const fretsDe = spots => {
+            const frets = ["x", "x", "x", "x", "x", "x"];
+            spots.forEach(sp => { frets[6 - parseInt(sp.substr(0, 1), 10)] = parseInt(sp.substr(1), 10); });
+            return frets;
+        };
+        for (const entree of entrees) {
+            const tonique = entree[0], transposable = entree[1], mk = entree[2], basse = entree[3];
+            if (entree[7] && entree[7] === tonalite) continue;   // diagramme écarté par la référence pour cette tonalité
+            let cases = entree[5];
+            if (tonalite !== tonique) {
+                const t = biblioOlTranspose(cases, tonique, tonalite);
+                if (t === false) continue;
+                cases = t;
+            }
+            cases = cases.replace(/[1-6]x/g, "");
+            while (cases.indexOf("__") > -1) cases = cases.replace(/__/g, "_");
+            cases = cases.replace(/^_/, "").replace(/_$/, "");
+            const spots = cases.split("_");
+            let degStr = entree[4].replace(/x/g, "");
+            while (degStr.indexOf("__") > -1) degStr = degStr.replace(/__/g, "_");
+            degStr = degStr.replace(/^_/, "").replace(/_$/, "");
+            const degres = degStr.split("_");
+            if (spots.length !== degres.length) continue;
+            if (basse !== "") {
+                // Accords slash de la référence (C/E, C/G, Am/C…) → section Renversements
+                const demitons = BIBLIO_OL_BASSE_DEMITONS[basse];
+                if (demitons === undefined) continue;
+                resultat.renversements.push({ spots: spots, degres: degres, basse: basse, demitons: demitons });
+                continue;
+            }
+            const metriques = biblioOlMetriques(spots, degres);
+            const spot = { spots: spots, degres: degres, metriques: metriques };
+            if (transposable === "0") {
+                // Position ouverte : ne vaut que pour sa tonalité d'écriture (ou enharmonique)
+                const enh = (tonique.indexOf("#") > -1) ? BIBLIO_OL_ENH_BEMOL[BIBLIO_OL_ENH_DIEZE.indexOf(tonique)]
+                          : (tonique.indexOf("b") > -1) ? BIBLIO_OL_ENH_DIEZE[BIBLIO_OL_ENH_BEMOL.indexOf(tonique)] : tonique;
+                if (tonique !== tonalite && enh !== tonalite) continue;
+                const cle = spots.join(",");
+                if (vusOuv.has(cle)) continue;
+                vusOuv.add(cle);
+                ouvToutes.push(spot);
+                if (mk === 1 || mk === tonalite) mkOuv.push(spot);
+            } else {
+                if (entree[6] && entree[6] === tonalite) {
+                    // La référence rejoue ce diagramme une octave plus haut pour cette tonalité
+                    const montes = spots.map(sp => sp.substr(0, 1) + (parseInt(sp.substr(1), 10) + 12));
+                    if (montes.every(sp => parseInt(sp.substr(1), 10) <= 15)) {
+                        spot.spots = montes;
+                        spot.metriques = biblioOlMetriques(spot.spots, spot.degres);
+                    }
+                }
+                const cle = spot.spots.join(",");
+                if (vusTrans.has(cle)) continue;
+                vusTrans.add(cle);
+                transTous.push(spot);
+                if (mk === 1 || mk === tonalite) mkTrans.push(spot);
+            }
+        }
+        const triOuvertes = (a, b) => b.metriques.cordeGrave - a.metriques.cordeGrave || a.metriques.etendue - b.metriques.etendue;
+        const triTrans = (a, b) => a.metriques.racineMin - b.metriques.racineMin || a.metriques.caseMin - b.metriques.caseMin || b.metriques.cordeGrave - a.metriques.cordeGrave || a.metriques.etendue - b.metriques.etendue;
+        mkOuv.sort(triOuvertes); ouvToutes.sort(triOuvertes);
+        mkTrans.sort(triTrans); transTous.sort(triTrans);
+        resultat.mustKnow = mkOuv.concat(mkTrans).map(s => ({ spot: s, frets: fretsDe(s.spots) }));
+        resultat.moveable = transTous.map(s => ({ spot: s, frets: fretsDe(s.spots) }));
+        const fretsMk = new Set(resultat.mustKnow.map(c => JSON.stringify(c.frets)));
+        resultat.ouvertes = ouvToutes.filter(s => !fretsMk.has(JSON.stringify(fretsDe(s.spots)))).map(s => ({ spot: s, frets: fretsDe(s.spots) }));
+        return resultat;
+    }
+
     // Couleurs blues : extensions jouées sur l'accord courant, sans changer la grille (v1.5.1)
     const BIBLIO_BLUES = {
         "7": [
             { label: "9 (forme E)", cleHarmonie: "9", ancre: "E", table: [0, 2, 0, 1, 0, 2], desc: "Neuvième façon Chuck Berry — LA couleur du blues et du rock dominant." },
-            { label: "9 (forme A)", cleHarmonie: "9", ancre: "A", table: ["x", 0, 2, 4, 2, 3], desc: "Neuvième compacte sur la corde de La — funk, soul et blues tranquille." },
+            { label: "9 (forme A)", cleHarmonie: "9", ancre: "A", table: ["x", 0, 2, 4, 2, 3], desc: "Neuvième compacte sur la corde de A — funk, soul et blues tranquille." },
             { label: "7♯9 « Hendrix »", cleHarmonie: "7#9", ancre: "A", table: ["x", 0, -1, 0, 1, "x"], desc: "La dominante tendue du blues et du rock psychédélique — la fameuse neuvième augmentée." }
         ],
         "maj": [
             { label: "6 (forme E)", cleHarmonie: "6", ancre: "E", table: [0, 2, 2, 1, 2, 0], desc: "Sixte façon rock'n'roll — couleur douce pour terminer une phrase." },
-            { label: "6 (forme A)", cleHarmonie: "6", ancre: "A", table: ["x", 0, 2, 2, 2, "x"], desc: "Sixte compacte — très utilisée en country et en rock'n'roll." }
+            { label: "6 (forme A)", cleHarmonie: "6", ancre: "A", table: ["x", 0, 2, 2, 2, 2], desc: "Sixte compacte — très utilisée en country et en rock'n'roll." }
         ],
         "m7": [
             { label: "m9 (forme E)", cleHarmonie: "m9", ancre: "E", table: [0, 2, 0, 0, 0, 2], desc: "Neuvième mineure — le son funk / latin par excellence." }
@@ -10512,7 +10796,7 @@
     };
     // Voicings jazz générés dans les 12 tonalités (v1.5.1) : intervalles [corde, demi-tons depuis
     // la fondamentale] posés autour de la case de la fondamentale — corrige le défaut CMaj7 de la v1.5
-    // Indices de cordes : 0=Mi grave (6e) → 5=Mi aigu (1re)
+    // Indices de cordes : 0=E grave (6e) → 5=E aigu (1re)
     const BIBLIO_JAZZ_MODELES = {
         "maj": [
             { label: "Drop 2 (quinte en basse)", ancre: "A", spec: [[2, 7], [3, 0], [4, 4], [5, 7]], desc: "Triade compacte cordes 4→1, quinte à la basse — son clair de piano jazz." }
@@ -10532,17 +10816,40 @@
             { label: "Shell (l'essentiel)", ancre: "E", spec: [[0, 0], [2, 10], [3, 4], [4, 7]], desc: "Fondamentale, 7e et 3e : l'essentiel du blues jazz." },
             { label: "Drop 2 (fondamentale en basse)", ancre: "D", spec: [[2, 0], [3, 4], [4, 7], [5, 10]], desc: "Voicing compact cordes 4→1, sonorité moderne." },
             { label: "Drop 2 (7e en basse)", ancre: "A", spec: [[2, 10], [3, 4], [4, 7], [5, 0]], desc: "Septième à la basse — tension de dominante, idéal en jazz manouche." }
+        ],
+        "6": [
+            { label: "Drop 2 (quinte en basse)", ancre: "A", spec: [[2, 7], [3, 0], [4, 4], [5, 9]], desc: "Quinte, fondamentale, tierce et sixte serrées — la couleur rock'n'roll en voicing compact." },
+            { label: "Shell (fondamentale, 3ce, 6te)", ancre: "A", spec: [[1, 0], [3, 4], [4, 9]], desc: "Trois notes, l'os du rock'n'roll : fondamentale, tierce et sixte serrées — la basse garde la fondamentale." }
+        ],
+        "m6": [
+            { label: "Drop 2 (quinte en basse)", ancre: "A", spec: [[2, 7], [3, 3], [4, 7], [5, 9]], desc: "Sonorité manouche / bossa : quinte, tierce mineure et sixte en voicing compact." },
+            { label: "Shell (fondamentale, b3, 6te)", ancre: "A", spec: [[1, 0], [3, 3], [4, 8]], desc: "Trois notes manouches : fondamentale, tierce mineure et sixte — la couleur Django en un grab." }
+        ],
+        "9": [
+            { label: "Drop 2 (7e en basse)", ancre: "A", spec: [[1, 0], [2, 4], [3, 10], [4, 2], [5, 7]], desc: "Dominante neuvième complète — le groove funk en un seul grab." },
+            { label: "Shell (b7, 3ce, 9e) sans fondamentale", ancre: "A", spec: [[2, 10], [3, 4], [5, 2]], desc: "Le funk à l'os : septième, tierce et neuvième serrées — la basse garde la fondamentale." }
+        ],
+        "m9": [
+            { label: "Shell (l'essentiel)", ancre: "E", spec: [[0, 0], [3, 3], [4, 10], [5, 2]], desc: "Fondamentale, tierce mineure, septième et neuvième — le groove funk à l'os." },
+            { label: "Drop 2 (b7 en basse)", ancre: "A", spec: [[2, 10], [3, 2], [4, 3], [5, 7]], desc: "Septième à la basse, sans fondamentale, avec la neuvième en couleur — latin / funk moderne." }
+        ],
+        "maj9": [
+            { label: "Shell (l'essentiel)", ancre: "E", spec: [[0, 0], [1, 4], [4, 11], [5, 2]], desc: "Fondamentale, tierce, septième et neuvième — l'os du voicing bossa." },
+            { label: "Drop 2 (quinte en basse)", ancre: "A", spec: [[2, 7], [3, 2], [4, 4], [5, 11]], desc: "Quinte, neuvième, tierce et septième (sans fondamentale) — bossa veloutée, idéal derrière une voix." }
+        ],
+        "m7b5": [
+            { label: "Shell (l'essentiel)", ancre: "E", spec: [[0, 0], [2, 3], [3, 6], [4, 10]], desc: "L'accord clé du II-V mineur jazz : fondamentale, b3, b5 et b7 à portée de doigts." },
+            { label: "Drop 2 (fondamentale en basse)", ancre: "A", spec: [[1, 0], [2, 6], [3, 10], [4, 3]], desc: "Quatre notes voisines : fondamentale, b5, b7 et b3 — le II-V mineur en un grab." }
+        ],
+        "dim7": [
+            { label: "Quatre notes serrées", ancre: "E", spec: [[0, 0], [1, 6], [2, 12], [3, 3], [4, 9], [5, 12]], desc: "La fameuse grille symétrique du dim7 — 4 cases voisines, tension garantie." },
+            { label: "Symétrie + 3 cases", ancre: "E", spec: [[0, 3], [1, 9], [2, 15], [3, 6], [4, 12], [5, 15]], desc: "Le même voicing décalé de 3 cases — le dim7 se répète tous les 3 frets, la tension voyage gratuitement." }
+        ],
+        "mMaj7": [
+            { label: "Drop 2 (fondamentale en basse)", ancre: "A", spec: [[1, 0], [2, 3], [4, 11], [5, 7]], desc: "Mineur à septième majeure — la couleur « James Bond », mystérieuse et élégante." },
+            { label: "Shell (fondamentale, b3, 7e)", ancre: "A", spec: [[1, 0], [3, 3], [4, 11]], desc: "Trois notes « James Bond » : fondamentale, tierce mineure et septième majeure — mystère immédiat." }
         ]
     };
-    // Les 5 formes du système CAGED : table de deltas, corde porteuse de la fondamentale (E/A/D),
-    // nombre de cordes muettes avant la première corde jouée
-    const BIBLIO_CAGED = [
-        { lettre: "E", nomLong: "Forme de Mi", cordeTxt: "6e corde", ancre: "E", table: BIBLIO_E_SHAPE, muettes: 0 },
-        { lettre: "A", nomLong: "Forme de La", cordeTxt: "5e corde", ancre: "A", table: BIBLIO_A_SHAPE, muettes: 1 },
-        { lettre: "G", nomLong: "Forme de Sol", cordeTxt: "6e corde", ancre: "E", table: BIBLIO_G_SHAPE, muettes: 0 },
-        { lettre: "C", nomLong: "Forme de Do", cordeTxt: "5e corde", ancre: "A", table: BIBLIO_C_SHAPE, muettes: 1 },
-        { lettre: "D", nomLong: "Forme de Ré", cordeTxt: "4e corde", ancre: "D", table: BIBLIO_D_SHAPE, muettes: 2 }
-    ];
     // Construit un voicing : pour chaque [corde, intervalle], pose la note la plus proche de la
     // case de la fondamentale ; renvoie null si le résultat est injouable.
     function biblioVoicingGenere(rootPc, fretRacine, spec) {
@@ -10564,7 +10871,7 @@
         const jouees = frets.filter(v => typeof v === "number" && v > 0);
         if (!jouees.length) return "";
         const base = Math.min(...jouees);
-        return base > 1 ? ", case " + toRoman(base) : "";
+        return base > 1 ? ", case " + base : "";   // v1.5.3 : chiffres arabes comme la référence
     }
     // Audit de test (v1.5.1) : contrôle harmonique de tous les diagrammes générés — utilisé par les tests
     function auditBibliotheque() {
@@ -10581,8 +10888,39 @@
                     const fr = c.frets;
                     const invalide = !Array.isArray(fr) || fr.length !== 6 ||
                         fr.some(v => v !== "x" && (typeof v !== "number" || v < 0 || v > 15));
-                    if (invalide || !biblioVerifFrets(fr, rootPc, c.cleHarmonie)) {
+                    if (invalide || !biblioVerifFrets(fr, rootPc, c.cleHarmonie, c.basseDemitons)) {
                         defauts.push({ nom: nom, carte: c.nom, frets: JSON.stringify(fr) });
+                        return;
+                    }
+                    // v1.5.3 corrigée : la note caractéristique doit être présente
+                    const oblig = BIBLIO_OBLIGATOIRES[c.cleHarmonie];
+                    if (oblig && Array.isArray(fr)) {
+                        const presentes = new Set();
+                        fr.forEach((v, si) => {
+                            if (typeof v !== "number" || v < 0) return;
+                            const pc = ((BIBLIO_CORDES_MIDI[si] + v) % 12 + 12) % 12;
+                            presentes.add(((pc - rootPc) % 12 + 12) % 12);
+                        });
+                        oblig.forEach(iv => {
+                            if (!presentes.has(iv)) defauts.push({ nom: nom, carte: c.nom,
+                                motif: "note caractéristique absente : " + (BIBLIO_DEGRES[iv] || iv) });
+                        });
+                    }
+                    // v1.5.3 : intégrité des degrés — chaque corde doit produire exactement le degré annoncé
+                    if (c.olDegres) {
+                        c.olDegres.forEach((deg, si) => {
+                            if (deg === "x" || typeof fr[si] !== "number") return;
+                            const demi = BIBLIO_OL_DEGRE_DEMITONS[deg];
+                            if (demi === undefined) {
+                                defauts.push({ nom: nom, carte: c.nom, motif: "degré inconnu : " + deg });
+                                return;
+                            }
+                            const pc = ((BIBLIO_CORDES_MIDI[si] + fr[si]) % 12 + 12) % 12;
+                            const attendu = (rootPc + demi) % 12;
+                            if (pc !== attendu) {
+                                defauts.push({ nom: nom, carte: c.nom, motif: "corde " + (6 - si) + " : " + BIBLIO_NOTES[pc] + " au lieu de " + BIBLIO_NOTES[attendu] + " (" + deg + ")" });
+                            }
+                        });
                     }
                 }));
             });
@@ -10596,10 +10934,20 @@
         const m = String(nom).match(/^([A-G][#b]?)(.*)$/);
         if (!m) return { root: "C", type: null };
         const root = BIBLIO_BEMOL_VERS_DIESE[m[1]] || m[1];
-        const sfx = m[2];
+        // v1.5.2 : on ne garde que le suffixe d'accord — tout ce qui suit un espace, une
+        // barre oblique ou une parenthèse est descriptif ("6 / Basse corde 6" → "6").
+        const sfx = m[2].split(/[\s/(]/)[0];
         let type = null;
         if (sfx === "" || sfx === "M" || sfx === "majeur") type = "maj";
         else if (sfx.startsWith("Maj7") || sfx.startsWith("maj7")) type = "maj7";
+        else if (sfx.startsWith("m7b5")) type = "m7b5";
+        else if (sfx.startsWith("mMaj7")) type = "mMaj7";
+        else if (sfx.startsWith("Maj9") || sfx.startsWith("maj9")) type = "maj9";
+        else if (sfx.startsWith("dim7")) type = "dim7";
+        else if (sfx.startsWith("m6")) type = "m6";
+        else if (sfx.startsWith("m9")) type = "m9";
+        else if (sfx === "6") type = "6";
+        else if (sfx === "9") type = "9";
         else if (sfx.startsWith("m7")) type = "m7";
         else if (sfx.startsWith("sus4")) type = "sus4";
         else if (sfx.startsWith("add9")) type = "add9";
@@ -10627,20 +10975,22 @@
         const pc = ((cordeMidi + fret) % 12 + 12) % 12;
         return { note: BIBLIO_NOTES[pc], pc: pc, deg: BIBLIO_DEGRES[((pc - rootPc) % 12 + 12) % 12] };
     }
-    function biblioSuffixeDu(type) { return ({ maj: "", min: "m", "7": "7", maj7: "Maj7", m7: "m7", sus4: "sus4", add9: "add9", "5": "5" })[type] || ""; }
+    function biblioSuffixeDu(type) { return ({ maj: "", min: "m", "7": "7", maj7: "Maj7", m7: "m7", sus4: "sus4", add9: "add9", "5": "5", "6": "6", "m6": "m6", "9": "9", "m9": "m9", "maj9": "Maj9", "m7b5": "m7b5", "dim7": "dim7", "mMaj7": "mMaj7" })[type] || ""; }
     function biblioPuces(n) { return '<span class="biblio-puces">' + "●".repeat(n) + "○".repeat(3 - n) + "</span>"; }
 
     /* Diagramme grand format : sous chaque corde jouée, la note et son degré */
     function biblioDiagSVG(frets, nom, nomAccord) {
         if (!frets || !Array.isArray(frets)) return "";
-        const w = 134, h = 144;
+        const w = 134;
         const startX = 24, startY = 28, sg = 16, fg = 19;
         const rootPc = BIBLIO_NOTES.indexOf((biblioDecouper(nomAccord || nom).root) || "C");
         const nums = frets.filter(f => typeof f === "number" && f > 0);
         const maxF = nums.length ? Math.max(...nums) : 1, minF = nums.length ? Math.min(...nums) : 1;
         const haut = (maxF > 4 || minF > 1);
         const base = haut ? minF : 1;
-        const yNotes = startY + 4 * fg + 12, yDeg = yNotes + 11;
+        const nbCases = haut ? Math.max(4, maxF - base + 1) : 4;   // v1.5.3 : jusqu'à 6 cases (base de diagrammes)
+        const h = startY + nbCases * fg + 40;
+        const yNotes = startY + nbCases * fg + 12, yDeg = yNotes + 11;
         let s = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" class="biblio-diag-svg">`;
         s += `<text x="${startX + 2.5 * sg}" y="14" text-anchor="middle" font-size="13.5" font-weight="900" fill="currentColor">${nom}</text>`;
         if (haut && base > 1) {
@@ -10648,9 +10998,9 @@
         }
         for (let i = 0; i < 6; i++) {
             const x = startX + i * sg;
-            s += `<line x1="${x}" y1="${startY}" x2="${x}" y2="${startY + 4 * fg}" stroke="currentColor" stroke-width="1.1" opacity="0.6"/>`;
+            s += `<line x1="${x}" y1="${startY}" x2="${x}" y2="${startY + nbCases * fg}" stroke="currentColor" stroke-width="1.1" opacity="0.6"/>`;
         }
-        for (let f = 0; f <= 4; f++) {
+        for (let f = 0; f <= nbCases; f++) {
             const y = startY + f * fg;
             const sw = (!haut && f === 0) ? 3 : 1.1;
             s += `<line x1="${startX}" y1="${y}" x2="${startX + 5 * sg}" y2="${y}" stroke="currentColor" stroke-width="${sw}" opacity="${(!haut && f === 0) ? 0.95 : 0.45}"/>`;
@@ -10658,6 +11008,7 @@
         const pcsJouees = new Set(frets.map((fr2, si2) => (typeof fr2 === "number" && fr2 >= 0) ? ((BIBLIO_CORDES_MIDI[si2] + fr2) % 12 + 12) % 12 : -1));
         pcsJouees.delete(-1);
         const septNeuf = pcsJouees.has((rootPc + 3) % 12) && pcsJouees.has((rootPc + 4) % 12);
+        const estDim7 = (biblioDecouper(nomAccord || nom).type === "dim7");
         frets.forEach((fr, si) => {
             const x = startX + si * sg;
             if (fr === "x" || fr === -1) {
@@ -10669,14 +11020,14 @@
                 s += `<circle cx="${x}" cy="${startY - 8}" r="4.6" fill="none" stroke="currentColor" stroke-width="1.4"/>`;
             } else if (typeof fr === "number" && fr > 0) {
                 const rel = fr - base + 1;
-                if (rel >= 1 && rel <= 4) {
+                if (rel >= 1 && rel <= nbCases) {
                     const y = startY + (rel - 0.5) * fg;
                     s += `<circle cx="${x}" cy="${y}" r="6.8" fill="#f59e0b"/>`;
                 }
             }
             s += `<text x="${x}" y="${yNotes}" text-anchor="middle" font-size="8.2" font-weight="800" fill="currentColor" opacity="0.88">${info.note}</text>`;
-            const estR = (info.deg === "R");
-            const degAffiche = (septNeuf && info.pc === (rootPc + 3) % 12) ? "#9" : info.deg;
+            const estR = (info.deg === "1");   // v1.5.3 : la fondamentale « 1 » est remise en ambre (le « R » de la v1.5 est devenu « 1 »)
+            const degAffiche = (septNeuf && info.pc === (rootPc + 3) % 12) ? "#9" : (estDim7 && info.deg === "6") ? "bb7" : info.deg;
             s += `<text x="${x}" y="${yDeg}" text-anchor="middle" font-size="7.6" font-weight="${estR ? "900" : "700"}" fill="${estR ? "#f59e0b" : "currentColor"}" opacity="${estR ? "1" : "0.6"}">${degAffiche}</text>`;
         });
         return s + "</svg>";
@@ -10692,50 +11043,57 @@
         const fretRacineDe = ancre => (ancre === "E") ? fE : (ancre === "A") ? fA : fD;
         const dejaVues = new Set();
 
-        // 1. Position ouverte
-        const ouverte = type ? BIBLIO_OUVERTES[root + ":" + type] : null;
-        if (ouverte) {
-            dejaVues.add(JSON.stringify(ouverte));
+        // v1.5.3 — Diagrammes de la base de référence : ⭐ Must Know puis 🔒 Moveable,
+        // dans l'ordre exact du catalogue — plus de formes CAGED générées théoriquement.
+        const ol = (type && BIBLIO_OL[type]) ? biblioOlPositions(root, type)
+                 : { mustKnow: [], moveable: [], ouvertes: [], renversements: [] };
+        const fretsOL = spot => {
+            const frets = ["x", "x", "x", "x", "x", "x"];
+            spot.spots.forEach(sp => { frets[6 - parseInt(sp.substr(0, 1), 10)] = parseInt(sp.substr(1), 10); });
+            return frets;
+        };
+        const degresOL = spot => {
+            const d = ["x", "x", "x", "x", "x", "x"];
+            spot.spots.forEach((sp, i) => { d[6 - parseInt(sp.substr(0, 1), 10)] = spot.degres[i]; });
+            return d;
+        };
+        const carteOL = (spot, frets, cleH, desc) => ({
+            nom: nomComplet + (spot.metriques.caseMin === 0 ? " — ouvert" : " — case " + spot.metriques.caseMin),
+            frets: frets, nomAppliquer: nomComplet, cleHarmonie: cleH, desc: desc, olDegres: degresOL(spot)
+        });
+        const descRacine = spot => spot.metriques.cordeRacineIdx >= 0
+            ? "fondamentale sur la " + BIBLIO_OL_CORDES[spot.metriques.cordeRacineIdx]
+            : "voicing du catalogue";
+        if (ol.mustKnow.length) {
             sections.push({
-                titre: "🏠 Position ouverte",
-                sous: "La position de base, cordes à vide comprises — idéale pour accompagner.",
-                cartes: [{ nom: nomComplet, frets: ouverte, nomAppliquer: nomComplet, cleHarmonie: type, desc: "Position ouverte standard, la plus jouée à la guitare." }]
+                titre: "⭐ Must Know — les incontournables",
+                sous: "Les positions jugées indispensables : positions ouvertes d'abord, puis formes transposables — les connaître par cœur suffit pour jouer presque tout.",
+                cartes: ol.mustKnow.map(c => carteOL(c.spot, c.frets, type,
+                    c.spot.metriques.caseMin === 0
+                        ? "Position ouverte du catalogue Must Know — " + descRacine(c.spot) + "."
+                        : "À connaître par cœur : forme transposable du catalogue — " + descRacine(c.spot) + "."))
             });
         }
-
-        // 2. Système CAGED complet : 5 formes mobiles (Mi, La, Sol, Do, Ré)
-        if (type) {
-            const barrees = [];
-            BIBLIO_CAGED.forEach(fm => {
-                const deltas = fm.table[type];
-                if (!deltas) return;
-                const frets = [];
-                let ok = true;
-                for (let i = 0; i < 6; i++) {
-                    if (i < fm.muettes) { frets.push("x"); continue; }
-                    const d = deltas[i - fm.muettes];
-                    if (d === "x") { frets.push("x"); continue; }
-                    const fr = fretRacineDe(fm.ancre) + d;
-                    if (fr < 0 || fr > 15) { ok = false; break; }
-                    frets.push(fr);
-                }
-                if (!ok || !biblioVerifFrets(frets, rootPc, type)) return;
-                if (dejaVues.has(JSON.stringify(frets))) return;
-                dejaVues.add(JSON.stringify(frets));
-                barrees.push({
-                    nom: nomComplet + " — forme " + fm.lettre + biblioCaseTxt(frets),
-                    frets: frets, nomAppliquer: nomComplet, cleHarmonie: type,
-                    desc: fm.nomLong + " décalée — racine sur la " + fm.cordeTxt + ", valable dans les 12 tonalités."
-                });
-            });
-            if (barrees.length) sections.push({
-                titre: "🔒 Formes CAGED transposables",
-                sous: "Les 5 formes du système CAGED (Mi, La, Sol, Do, Ré), déplacées le long du manche.",
-                cartes: barrees
+        if (ol.moveable.length) {
+            sections.push({
+                titre: "🔒 Moveable — formes transposables",
+                sous: "Toutes les formes transposables du catalogue, de la plus grave à la plus aiguë — la case de départ de chaque diagramme est écrite dans son titre.",
+                cartes: ol.moveable.map(c => carteOL(c.spot, c.frets, type,
+                    "Forme transposable dans les 12 tonalités (catalogue Moveable) — " + descRacine(c.spot) + "."))
             });
         }
+        if (ol.ouvertes.length) {
+            sections.push({
+                titre: "🏠 Autres positions ouvertes",
+                sous: "Positions ouvertes supplémentaires recensées par le catalogue — cordes à vide comprises, idéales pour accompagner.",
+                cartes: ol.ouvertes.map(c => carteOL(c.spot, c.frets, type,
+                    "Position ouverte supplémentaire du catalogue — " + descRacine(c.spot) + "."))
+            });
+        }
+        // Les doublons avec les sections suivantes (renversements, blues, jazz) sont écartés :
+        ol.mustKnow.concat(ol.moveable).concat(ol.ouvertes).forEach(c => dejaVues.add(JSON.stringify(c.frets)));
 
-        // 3. Blues & couleurs : extensions jouées sur l'accord courant
+        // 3. Blues & couleurs : extensions jouées sur cet accord        // 3. Blues & couleurs : extensions jouées sur l'accord courant
         if (type && BIBLIO_BLUES[type]) {
             const couleurs = [];
             BIBLIO_BLUES[type].forEach(md => {
@@ -10763,15 +11121,37 @@
             });
         }
 
-        // 4. Renversements (accords slash) — base existante de l'appli
-        const invs = obtenirRenversementsAccord(nomComplet) || [];
+        // 4. Renversements (accords slash) — d'abord les diagrammes « basse » de la
+        // base de référence (C/E, C/G, Am/C…), puis les voicings existants de l'appli,
+        // avec déduplication (le même diagramme ne s'affiche jamais deux fois).
+        const invsBrutes = [];
+        ol.renversements.forEach(rv => {
+            const lettreBasse = BIBLIO_NOTES[(rootPc + rv.demitons) % 12];
+            const nomSlash = nomComplet + "/" + lettreBasse;
+            invsBrutes.push({
+                nom: nomSlash, frets: fretsOL(rv), nomAppliquer: nomSlash, cleHarmonie: type, basseDemitons: rv.demitons,
+                desc: "Basse " + lettreBasse + " (" + (BIBLIO_OL_BASSE_NOMS[rv.basse] || "basse") + ") — diagramme « basse » transposable de la base de diagrammes.",
+                olDegres: degresOL(rv)
+            });
+        });
+        (obtenirRenversementsAccord(nomComplet) || []).forEach(inv => {
+            const nomPropre = String(inv.nom).replace(/\s*\(.*$/, "");   // « C/E (1er Renversement) » → « C/E »
+            invsBrutes.push({ nom: inv.nom, frets: inv.frets, nomAppliquer: nomPropre, desc: inv.desc || ("Basse : " + inv.basse) });
+        });
+        const invs = [];
+        invsBrutes.forEach(inv => {
+            if (!Array.isArray(inv.frets)) return;
+            if (dejaVues.has(JSON.stringify(inv.frets))) return;
+            dejaVues.add(JSON.stringify(inv.frets));
+            invs.push(inv);
+        });
         if (invs.length) sections.push({
             titre: "🔄 Renversements (accords slash)",
             sous: "Une note autre que la fondamentale à la basse — pour des lignes de basse mélodiques (C → G/B → Am).",
-            cartes: invs.map(inv => ({ nom: inv.nom, frets: inv.frets, nomAppliquer: inv.nom, desc: inv.desc || ("Basse : " + inv.basse) }))
+            cartes: invs
         });
 
-        // 5. Voicings jazz générés (shell + drop 2) dans les 12 tonalités
+        // 5. Voicings jazz générés (shell + drop 2) dans les 12 tonalités        // 5. Voicings jazz générés (shell + drop 2) dans les 12 tonalités
         if (type && BIBLIO_JAZZ_MODELES[type]) {
             const jazz = [];
             BIBLIO_JAZZ_MODELES[type].forEach(mj => {
@@ -10794,6 +11174,41 @@
         return sections;
     }
 
+    /* v1.5.3 — Zoom au survol : passer la souris sur un diagramme l'agrandit
+       en surimpression (position fixe), sans décaler la grille ni être rogné
+       par la fenêtre. Désactivé sur écran tactile (pas de survol). */
+    function biblioZoomAfficher(zone) {
+        try { if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return; } catch (e) {}
+        const svg = zone.querySelector(".biblio-diag-svg");
+        if (!svg) return;
+        biblioZoomMasquer();
+        const r = svg.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        const facteur = 2.1;
+        const clone = svg.cloneNode(true);
+        clone.setAttribute("width", Math.round(r.width * facteur));
+        clone.setAttribute("height", Math.round(r.height * facteur));
+        const boite = document.createElement("div");
+        boite.id = "biblioZoomOverlay";
+        boite.className = "biblio-zoom-overlay";
+        boite.appendChild(clone);
+        document.body.appendChild(boite);
+        const bw = boite.offsetWidth, bh = boite.offsetHeight;
+        let gauche = r.left + r.width / 2 - bw / 2;
+        let haut = r.top + r.height / 2 - bh / 2;
+        gauche = Math.max(8, Math.min(gauche, window.innerWidth - bw - 8));
+        haut = Math.max(8, Math.min(haut, window.innerHeight - bh - 8));
+        boite.style.left = Math.round(gauche) + "px";
+        boite.style.top = Math.round(haut) + "px";
+    }
+    function biblioZoomMasquer() {
+        const ex = document.getElementById("biblioZoomOverlay");
+        if (ex) ex.remove();
+    }
+    // Le zoom disparaît dès qu'on fait défile (molette, glissement) ou redimensionne la fenêtre
+    document.addEventListener("scroll", biblioZoomMasquer, true);
+    window.addEventListener("resize", biblioZoomMasquer);
+
     function biblioCarteHTML(c, nomComplet) {
         const json = JSON.stringify(c.frets);
         const estActuel = (json === JSON.stringify(trouverVoicingTab(nomComplet))) ||
@@ -10805,7 +11220,7 @@
         return '<div class="biblio-carte' + (estActuel ? " est-actuel" : "") + '">' +
             '<div class="biblio-carte-haut"><span class="biblio-carte-nom">' + nomHTML + "</span>" +
             (estActuel ? '<span class="biblio-badge-actuel">● voicing actuel</span>' : "") + "</div>" +
-            '<div class="biblio-diag-zone">' + biblioDiagSVG(c.frets, String(c.nom).split(" ")[0], nomComplet) +
+            '<div class="biblio-diag-zone" onmouseenter="biblioZoomAfficher(this)" onmouseleave="biblioZoomMasquer()">' + biblioDiagSVG(c.frets, String(c.nom).split(" ")[0], nomComplet) +
             '<div class="biblio-meta"><span>' + biblioPuces(dif) + "  " + ["Facile", "Moyen", "Exigeant"][dif - 1] + "</span>" +
             '<span class="biblio-desc">' + c.desc + "</span></div></div>" +
             '<div class="biblio-actions">' +
@@ -10863,6 +11278,7 @@
         if (modal) modal.style.display = "flex";
     }
     function fermerBibliothequeAccords() {
+        biblioZoomMasquer();   // v1.5.3 : pas de zoom fantôme après fermeture de la fenêtre
         const modal = document.getElementById("bibliothequeAccordsModal");
         if (modal) modal.style.display = "none";
     }
