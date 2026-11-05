@@ -3,6 +3,28 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.7.0 (2026-11-06)
+
+Bibliothèque d'accords : **toutes les combinaisons possibles — 44 familles** 🎸 (les accords 6/9 quittent l'analyseur et entrent dans la bibliothèque)
+
+**Ta remarque, corrigée**
+- « La bibliothèque ne contient pas les accords 6/9, on ne les trouve que dans l'analyseur » : réparé — la bibliothèque passe de 16 à **44 familles**, avec le même catalogue de diagrammes que le reste de l'application (⭐ Must Know, 🔒 Moveable, positions ouvertes, renversements). Le doigté 6/9 reconnu par l'analyseur ouvre maintenant une vraie page C6/9 (14 diagrammes pour le seul Do, position ouverte x32030 comprise)
+
+**Les 28 nouvelles familles**
+- **Sixtes** : 6/9, m6/9 — **Triades** : Sus2, aug, m(add9)
+- **Sus étendus** : 9sus4, 7sus4, 13sus4, 7♭9sus4
+- **Dominantes altérées** : 7♭9, 7♯9, 7♭5, 7♯5, 7♯11, 7♭13, 7♭9♭13
+- **Treizièmes** : 13, 13♭9, 9/13 — **Tensions mineures** : m11, m13, m7♭13, m7♭5(11)
+- **Tensions majeures** : Maj13, Maj7♯11, Maj7♯5, Maj9/13 — plus la couleur dim7♭13
+- Le menu déroulant de type est désormais **groupé** (Essentiels, Sixtes, Sus étendus, Dominantes altérées, Treizièmes, Tensions mineures, Tensions majeures…) : les 16 familles d'origine restent en tête, dans le même ordre qu'avant
+
+**Rigueur, comme d'habitude**
+- Chaque diagramme est vérifié **note à note** : la note jouée doit correspondre exactement au degré annoncé sous la corde — audit automatique sur **7 993 diagrammes** (44 familles × 12 tonalités × leurs sections), **0 défaut**
+- Les étiquettes de degrés affichent les vraies tensions : un 7♭9 montre « b9 » (et non « b2 »-ish), un 7♯11 montre « #11 », un 13 montre « 13 » — la fondamentale reste en ambre
+- Un accord appliqué au temps sélectionné (✔) sonne juste même pour les nouvelles familles : la position principale vient du catalogue (ex. C6/9 = x32233, C13 = x3x355, Dm11 = x5x563)
+- Légende des degrés de l'analyseur complétée (11 = onzième, 13 = treizième)
+- Test CI étendu : le 6/9 de l'analyseur doit s'ouvrir dans la bibliothèque, et l'audit harmonique des 44 familles doit passer — tout est vert en local
+
 ## v1.6.2 (2026-11-05)
 
 Analyseur d'accords : **la quinte facultative partout + la lecture ♯/♭** 🎯 — et le bouton ⏳ qui montre enfin son état

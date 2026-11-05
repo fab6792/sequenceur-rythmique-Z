@@ -147,6 +147,72 @@ try {
     echec = true;
 }
 
+// v1.7.0 : le 6/9 reconnu par l'analyseur s'ouvre dans la bibliothèque (44 familles)
+try {
+    await page.click("#btnOuvrirAnalyseur", { timeout: 5000 });
+    await page.waitForTimeout(300);
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    // doigté x3223x = C6/9 (cordes 5, 4, 3, 2)
+    await page.click('#anaMancheZone [data-ana="s1"][data-fret="3"]');
+    await page.click('#anaMancheZone [data-ana="s2"][data-fret="2"]');
+    await page.click('#anaMancheZone [data-ana="s3"][data-fret="2"]');
+    await page.click('#anaMancheZone [data-ana="s4"][data-fret="3"]');
+    await page.waitForTimeout(400);
+    const boutonBiblio = await page.evaluate(() => {
+        const b = [...document.querySelectorAll('#anaResultatZone button')]
+            .find(x => x.textContent.includes('Bibliothèque'));
+        return !!b;
+    });
+    if (!boutonBiblio) {
+        console.error("ÉCHEC : le bouton 📚 Bibliothèque n'apparaît pas pour un C6/9.");
+        echec = true;
+    } else {
+        await page.evaluate(() => window.anaOuvrirBibliotheque());
+        await page.waitForTimeout(500);
+        const biblio = await page.evaluate(() => {
+            const modal = document.getElementById("bibliothequeAccordsModal");
+            const sel = document.getElementById("biblioSelType");
+            const cartes = document.querySelectorAll("#biblioCorps .biblio-carte").length;
+            return {
+                visible: !!(modal && modal.style.display === "flex"),
+                type: sel ? sel.value : null,
+                familles: (typeof BIBLIO_TYPES !== "undefined") ? BIBLIO_TYPES.length : 0,
+                cartes
+            };
+        });
+        if (!biblio.visible || biblio.type !== "69" || biblio.cartes < 1) {
+            console.error("ÉCHEC : la bibliothèque n'affiche pas le C6/9 (modal=" +
+                biblio.visible + ", type=" + biblio.type + ", cartes=" + biblio.cartes + ").");
+            echec = true;
+        } else {
+            console.log("Bibliothèque OK — C6/9 ouvert depuis l'analyseur (« " +
+                biblio.type + " », " + biblio.cartes + " diagrammes, " +
+                biblio.familles + " familles).");
+        }
+        await page.evaluate(() => window.fermerBibliothequeAccords && window.fermerBibliothequeAccords());
+    }
+    await page.click("#btnFermerAnalyseur", { timeout: 3000 }).catch(() => {});
+} catch (e) {
+    console.error("ÉCHEC : le lien analyseur → bibliothèque (6/9) a échoué : " + e.message);
+    echec = true;
+}
+
+// v1.7.0 : audit harmonique — tous les diagrammes des 44 familles sont accordés
+try {
+    const audit = await page.evaluate(() => window.auditBibliotheque());
+    if (audit.defauts.length > 0) {
+        console.error("ÉCHEC : audit harmonique en défaut sur " + audit.defauts.length +
+            " diagramme(s), ex. : " + JSON.stringify(audit.defauts[0]));
+        echec = true;
+    } else {
+        console.log("Audit harmonique OK — " + audit.total + " diagrammes contrôlés, 0 défaut.");
+    }
+} catch (e) {
+    console.error("ÉCHEC : l'audit harmonique n'a pas pu être exécuté : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {
