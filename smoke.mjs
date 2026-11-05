@@ -68,6 +68,24 @@ try {
     } else {
         console.log("Analyseur d'accords OK — Am reconnu (« " + nomAnalyse + " »).");
     }
+    // v1.6.1 : le doigté standard C6/9 (x3223x, sans quinte) doit renvoyer C6/9,
+    // et non un renversement type Am/C (la quinte est facultative dans cette famille)
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    await page.click('#anaMancheZone [data-ana="s1"][data-fret="3"]');
+    await page.click('#anaMancheZone [data-ana="s2"][data-fret="2"]');
+    await page.click('#anaMancheZone [data-ana="s3"][data-fret="2"]');
+    await page.click('#anaMancheZone [data-ana="s4"][data-fret="3"]');
+    await page.waitForTimeout(400);
+    const nomC69 = await page.evaluate(
+        () => (document.getElementById("anaNomGrand")?.textContent || "").trim()
+    );
+    if (nomC69 !== "C6/9") {
+        console.error("ÉCHEC : le doigté x3223x affiche « " + nomC69 + " » au lieu de C6/9.");
+        echec = true;
+    } else {
+        console.log("Analyseur d'accords OK — doigté x3223x reconnu comme C6/9.");
+    }
     await page.click("#btnFermerAnalyseur", { timeout: 3000 }).catch(() => {});
 } catch (e) {
     console.error("ÉCHEC : l'analyseur d'accords n'a pas pu être testé : " + e.message);

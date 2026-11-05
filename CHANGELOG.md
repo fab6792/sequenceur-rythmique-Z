@@ -3,6 +3,20 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.6.1 (2026-11-05)
+
+Analyseur d'accords : **le doigté standard du C6/9 reconnu** 🎯 — et sa lecture « Am/C » corrigée
+
+**Le bug signalé**
+- Le doigté classique du C6/9 (**x 3 2 2 3 x** — cordes 5-4-3-2, cases 3-2-2-3) était lu « **Am/C** » : l'analyseur exigeait la quinte (Sol) pour la famille 6/9, or ce doigté de référence sonne Do–Mi–La–Ré **sans** Sol — comme tous les doigtés de 6/9 des recueils, où la quinte est volontairement omise
+- C'est réparé : la quinte est désormais **facultative** dans la famille 6/9 (comme elle l'était déjà pour les 7, 9, Maj9 et m9), donc « C6/9 » s'affiche en lecture principale, avec ses degrés exacts (C 1 · E 3 · A 6 · D 9)
+
+**Ce qui ne change pas**
+- Un vrai Am/C (triade La–Do–Mi avec Do à la basse, sans le Ré) reste lu « Am/C » : la quinte reste obligatoire pour les familles 6 et mineures — seule la 6/9 est assouplie
+- Le test automatique de l'intégration continue pose maintenant aussi le doigté x3223x sur le manche de l'analyseur et vérifie que « C6/9 » est reconnu, pour que ce cas ne revienne plus
+
+Aucun changement du moteur audio, du format des projets (2.3), des raccourcis clavier ni des thèmes.
+
 ## v1.6.0 (2026-11-05)
 
 Analyseur d'accords : **la recherche inversée** 🔍 — pose tes doigts sur le manche, l'appli devine l'accord
