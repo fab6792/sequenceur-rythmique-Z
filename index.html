@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.6.1</title>
+    <title>Séquenceur Rythmique v1.6.2</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.6.1" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.6.2" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -1565,6 +1565,43 @@
             color: #00e5ff;
         }
 
+        /* v1.6.2 : le bouton ⏳ (décompte) doit montrer son état dans les thèmes
+           sombres — les surcharges body.theme-* .btn-v2 (plus spécifiques)
+           écrasaient .btn-toggle.active : le bouton restait identique armé ou non */
+        body.theme-studio .btn-toggle {
+            background: #1f2b3b;
+            color: #cbd5e1;
+            border-color: #2d3e54;
+        }
+        body.theme-studio .btn-toggle.active {
+            background: #075985;
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+        body.theme-vintage .btn-toggle {
+            background: #332923;
+            color: #fde68a;
+            border-color: #4d3d34;
+        }
+        body.theme-vintage .btn-toggle.active {
+            background: #b45309;
+            color: #ffffff;
+            border-color: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.55);
+        }
+        body.theme-neon .btn-toggle {
+            background: #1a202a;
+            color: #e2e8f0;
+            border-color: #2c384a;
+        }
+        body.theme-neon .btn-toggle.active {
+            background: #155e75;
+            color: #ffffff;
+            border-color: #00e5ff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
         /* ======================================================== */
         /* --- ERGONOMIE & SIMPLIFICATION D'ACCORDS (VUE ALTERNATIVE) --- */
         /* ======================================================== */
@@ -3067,8 +3104,24 @@
         }
         .ana-alt:hover { border-color: #7c3aed; color: #6d28d9; }
         .ana-alt.est-active { border-color: #7c3aed; color: #fff; background: #7c3aed; }
-        .ana-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+        .ana-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; align-items: center; }
         .ana-actions .biblio-btn { flex: 0 0 auto; padding: 6px 12px; }
+        /* v1.6.2 : bascule de notation dièses/bémols (D# ↔ Eb) */
+        .ana-notes-groupe { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; }
+        .ana-notes-label { font-size: 0.66rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-gray, #6c757d); }
+        .ana-notes-switch { display: inline-flex; border: 1.5px solid var(--panel-border, #ced4da); border-radius: 999px; overflow: hidden; }
+        .ana-note-opt {
+            border: none;
+            background: var(--bg-card, #fff);
+            color: var(--text-gray, #6c757d);
+            font-size: 0.86rem;
+            font-weight: 900;
+            line-height: 1;
+            padding: 5px 12px;
+            cursor: pointer;
+        }
+        .ana-note-opt.est-active { background: #7c3aed; color: #fff; }
+        .ana-note-opt:hover:not(.est-active) { color: #6d28d9; background: rgba(124, 58, 237, 0.08); }
         @media (max-width: 720px) {
             .ana-corps { flex-direction: column; }
             .ana-manche-zone { align-self: center; }
@@ -3699,7 +3752,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.6.1</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.6.2</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4994,7 +5047,7 @@
                 </div>
             </div>
             <div class="biblio-pied">
-                <span>💡 Cliquez sur une <b>case</b> pour poser une note (re-cliquez pour la retirer), sur <b>○</b> pour une corde à vide, sur <b>×</b> pour étouffer. Notation internationale : C = Do, D = Ré, E = Mi, F = Fa, G = Sol, A = La, B = Si.</span>
+                <span>💡 Cliquez sur une <b>case</b> pour poser une note (re-cliquez pour la retirer), sur <b>○</b> pour une corde à vide, sur <b>×</b> pour étouffer. Basculez la notation <b>♯/♭</b> (D# = Eb) dans le panneau de droite. Notation internationale : C = Do, D = Ré, E = Mi, F = Fa, G = Sol, A = La, B = Si.</span>
                 <button type="button" id="btnFermerAnalyseur" class="biblio-btn-fermer" onclick="fermerAnalyseur()">Fermer</button>
             </div>
         </div>
@@ -11531,33 +11584,36 @@ let anaNomCourant = null;    // nom de l'accord reconnu (pour la bibliothèque)
 let anaDerniereSignature = null;   // pour conserver la lecture choisie tant que les notes ne changent pas
 
 // Familles reconnues. req = intervalles obligatoires (demi-tons depuis
-// la fondamentale) qui définissent la famille ; opt = notes de couleur
-// admises mais facultatives (la quinte manque souvent aux doigtés de
-// neuvièmes, 6/9 compris — v1.6.1) ; prio = préférence entre deux
-// lectures exactes à égalité.
+// la fondamentale) qui définissent la famille ; opt = notes admises mais
+// facultatives — depuis la v1.6.2 la quinte (7) y figure pour toutes les
+// familles qui en contiennent une : un accord sans sa quinte garde son
+// nom, les doigtés réels l'omettent très souvent (les familles à quinte
+// altérée — dim, m7b5, 7b5, 7#5, aug — et le power 5 gardent la leur
+// obligatoire, elle fait partie de leur identité). prio = préférence
+// entre deux lectures exactes à égalité.
 const ANALYSEUR_FORMULES = [
-    { type: "maj",   suffixe: "",         req: [0, 4, 7],       opt: [],   prio: 0 },
-    { type: "min",   suffixe: "m",        req: [0, 3, 7],       opt: [],   prio: 1 },
+    { type: "maj",   suffixe: "",         req: [0, 4],          opt: [7],  prio: 0 },
+    { type: "min",   suffixe: "m",        req: [0, 3],          opt: [7],  prio: 1 },
     { type: "5",     suffixe: "5",        req: [0, 7],          opt: [],   prio: 2 },
     { type: "7",     suffixe: "7",        req: [0, 4, 10],      opt: [7],  prio: 3 },
     { type: "maj7",  suffixe: "Maj7",     req: [0, 4, 11],      opt: [7],  prio: 4 },
     { type: "m7",    suffixe: "m7",       req: [0, 3, 10],      opt: [7],  prio: 5 },
-    { type: "sus4",  suffixe: "sus4",     req: [0, 5, 7],       opt: [],   prio: 6 },
-    { type: "sus2",  suffixe: "sus2",     req: [0, 2, 7],       opt: [],   prio: 7 },
-    { type: "6",     suffixe: "6",        req: [0, 4, 7, 9],    opt: [],   prio: 8 },
-    { type: "m6",    suffixe: "m6",       req: [0, 3, 7, 9],    opt: [],   prio: 9 },
-    { type: "add9",  suffixe: "add9",     req: [0, 4, 7, 2],    opt: [],   prio: 10 },
-    { type: "madd9", suffixe: "m(add9)",  req: [0, 3, 7, 2],    opt: [],   prio: 11 },
-    { type: "7sus4", suffixe: "7sus4",    req: [0, 5, 7, 10],   opt: [],   prio: 12 },
+    { type: "sus4",  suffixe: "sus4",     req: [0, 5],          opt: [7],  prio: 6 },
+    { type: "sus2",  suffixe: "sus2",     req: [0, 2],          opt: [7],  prio: 7 },
+    { type: "6",     suffixe: "6",        req: [0, 4, 9],       opt: [7],  prio: 8 },
+    { type: "m6",    suffixe: "m6",       req: [0, 3, 9],       opt: [7],  prio: 9 },
+    { type: "add9",  suffixe: "add9",     req: [0, 4, 2],       opt: [7],  prio: 10 },
+    { type: "madd9", suffixe: "m(add9)",  req: [0, 3, 2],       opt: [7],  prio: 11 },
+    { type: "7sus4", suffixe: "7sus4",    req: [0, 5, 10],      opt: [7],  prio: 12 },
     { type: "9",     suffixe: "9",        req: [0, 4, 10, 2],   opt: [7],  prio: 13 },
     { type: "maj9",  suffixe: "Maj9",     req: [0, 4, 11, 2],   opt: [7],  prio: 14 },
     { type: "m9",    suffixe: "m9",       req: [0, 3, 10, 2],   opt: [7],  prio: 15 },
-    { type: "69",    suffixe: "6/9",      req: [0, 4, 9, 2],    opt: [7],  prio: 16 },   // v1.6.1 : quinte facultative (le doigté standard x3223x l'omet)
+    { type: "69",    suffixe: "6/9",      req: [0, 4, 9, 2],    opt: [7],  prio: 16 },
     { type: "m7b5",  suffixe: "m7b5",     req: [0, 3, 6, 10],   opt: [],   prio: 17 },
     { type: "dim7",  suffixe: "dim7",     req: [0, 3, 6, 9],    opt: [],   prio: 18 },
     { type: "dim",   suffixe: "dim",      req: [0, 3, 6],       opt: [],   prio: 19 },
     { type: "aug",   suffixe: "aug",      req: [0, 4, 8],       opt: [],   prio: 20 },
-    { type: "mMaj7", suffixe: "mMaj7",    req: [0, 3, 7, 11],   opt: [],   prio: 21 },
+    { type: "mMaj7", suffixe: "mMaj7",    req: [0, 3, 11],      opt: [7],  prio: 21 },
     { type: "7b5",   suffixe: "7b5",      req: [0, 4, 6, 10],   opt: [],   prio: 22 },
     { type: "7#5",   suffixe: "7#5",      req: [0, 4, 8, 10],   opt: [],   prio: 23 },
     { type: "7b9",   suffixe: "7b9",      req: [0, 4, 10, 1],   opt: [7],  prio: 24 },
@@ -11570,8 +11626,13 @@ function anaIntervallesDepuis(pcs, racine) {
 
 /* Cœur de l'analyseur : essaie chaque note jouée comme fondamentale,
    retient les familles dont tous les intervalles obligatoires sonnent.
-   La fondamentale à la basse tranche les ambiguïtés classiques
-   (Am7 / C6, Sus4 / Sus2 renversé, les 4 noms d'un dim7…). */
+   Priorité v1.6.2 : 1) une lecture qui explique toutes les notes jouées
+   passe devant une lecture à notes étrangères ; 2) à couverture égale,
+   un accord dont la fondamentale est à la basse passe devant un
+   renversement (bonus 50, supérieur à l'écart maximal de priorité) ;
+   3) la famille la plus fondamentale l'emporte. C'est ce qui tranche les
+   ambiguïtés classiques (Am7 ↔ C6, Sus4 ↔ Sus2 renversé, les 4 noms
+   d'un dim7…) tout en gardant le nom de l'accord sans sa quinte. */
 function anaIdentifierAccord() {
     anaCandidats = [];
     anaNomCourant = null;
@@ -11594,9 +11655,8 @@ function anaIdentifierAccord() {
         ANALYSEUR_FORMULES.forEach(f => {
             if (!f.req.every(i => interv.includes(i))) return;
             const enTrop = interv.filter(i => !f.req.includes(i) && !f.opt.includes(i));
-            let score = enTrop.length * 100 + f.prio;
-            if (racine === pcBasse) score -= 5;
-            tout.push({ racine: racine, type: f.type, suffixe: f.suffixe, exact: enTrop.length === 0, score: score });
+            const score = enTrop.length * 100 + (racine === pcBasse ? 0 : 50) + f.prio;
+            tout.push({ racine: racine, type: f.type, suffixe: f.suffixe, exact: enTrop.length === 0, enTrop: enTrop, score: score });
         });
     });
     tout.sort((a, b) => a.score - b.score);
@@ -11605,15 +11665,32 @@ function anaIdentifierAccord() {
     return { etat: "accord", pcs: pcs, pcBasse: pcBasse, nbNotes: midis.length, candidats: anaCandidats };
 }
 
-function anaNomDu(c) { return BIBLIO_NOTES[c.racine] + c.suffixe; }
+// Notation des noms de notes (v1.6.2) : dièses par défaut, comme partout
+// dans l'appli, ou bémols — le même doigté se lit D# ou Eb. Le choix est
+// mémorisé localement et ne concerne que l'affichage de l'analyseur.
+const ANALYSEUR_NOTES_BEMOL = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+let anaNotationBemol = false;
+try { anaNotationBemol = localStorage.getItem("analyseurNotation") === "bemol"; } catch (e) {}
 
-/* Nom affiché : renversement « Am/C » quand la basse n'est pas la fondamentale
-   mais appartient bien à l'accord. */
+function anaNote(pc) {
+    const p = ((pc % 12) + 12) % 12;
+    return (anaNotationBemol ? ANALYSEUR_NOTES_BEMOL : BIBLIO_NOTES)[p];
+}
+
+function anaDefinirNotation(bemol) {
+    anaNotationBemol = !!bemol;
+    try { localStorage.setItem("analyseurNotation", bemol ? "bemol" : "diese"); } catch (e) {}
+    anaRendre();
+}
+
+function anaNomDu(c) { return BIBLIO_NOTES[c.racine] + c.suffixe; }   // nom canonique (bibliothèque, ♯)
+
+/* Nom affiché : suit la notation ♯/♭ choisie ; renversement « Am/C » quand
+   la basse n'est pas la fondamentale. */
 function anaNomAffiche(c, pcBasse) {
-    const base = anaNomDu(c);
+    const base = anaNote(c.racine) + c.suffixe;
     if (pcBasse === c.racine) return base;
-    const degBasse = ((pcBasse - c.racine) % 12 + 12) % 12;
-    return base + "/" + BIBLIO_NOTES[pcBasse];
+    return base + "/" + anaNote(pcBasse);
 }
 
 /* Degré d'une note pour la lecture choisie — même convention que la
@@ -11690,7 +11767,7 @@ function anaRendreManche() {
         const x = startX + i * sg;
         if (st >= 0) {
             const pc = ((ANALYSEUR_CORDES_A_VIDE[i] + st) % 12 + 12) % 12;
-            s += '<text x="' + x + '" y="' + yNote + '" text-anchor="middle" font-size="8.6" font-weight="800" fill="currentColor" opacity="0.85">' + BIBLIO_NOTES[pc] + '</text>';
+            s += '<text x="' + x + '" y="' + yNote + '" text-anchor="middle" font-size="8.6" font-weight="800" fill="currentColor" opacity="0.85">' + anaNote(pc) + '</text>';
         } else {
             s += '<text x="' + x + '" y="' + yNote + '" text-anchor="middle" font-size="8" font-weight="700" fill="#ef4444" opacity="0.7">×</text>';
         }
@@ -11706,6 +11783,11 @@ function anaBoutonsHTML(avecBiblio) {
         (avecBiblio ? '<button type="button" class="biblio-btn appliquer" onclick="anaOuvrirBibliotheque()" title="Ouvrir ce accord dans la bibliothèque (diagrammes, renversements, voicings)">📚 Bibliothèque</button>' : "") +
         '<button type="button" class="biblio-btn" onclick="anaChargerAccordActuel()" title="Recharger sur le manche le doigté de l\'accord du temps sélectionné">📥 Accord actuel</button>' +
         '<button type="button" class="biblio-btn" onclick="anaEffacer()" title="Étouffer toutes les cordes">🧹 Effacer</button>' +
+        '<span class="ana-notes-groupe"><span class="ana-notes-label">Notation</span>' +
+        '<span class="ana-notes-switch" role="group" aria-label="Notation des notes, dièses ou bémols">' +
+        '<button type="button" id="anaOptDiese" class="ana-note-opt' + (!anaNotationBemol ? " est-active" : "") + '" onclick="anaDefinirNotation(false)" title="Noms avec dièses (C#, D#, F#…)">♯</button>' +
+        '<button type="button" id="anaOptBemol" class="ana-note-opt' + (anaNotationBemol ? " est-active" : "") + '" onclick="anaDefinirNotation(true)" title="Noms avec bémols (Db, Eb, Bb…)">♭</button>' +
+        '</span></span>' +
         '</div>';
 }
 
@@ -11715,13 +11797,13 @@ function anaRendreResultat() {
     const res = anaIdentifierAccord();
     if (res.etat === "vide") {
         anaNomCourant = null;
-        zone.innerHTML = '<div class="ana-accueil">👆 <b>Posez des doigts sur le manche</b> : cliquez sur une case pour y placer une note (re-cliquez pour la retirer), sur <b>○</b> pour une corde à vide, sur <b>×</b> pour l\'étouffer.<br><br>L\'accord se nomme en direct — renversements (<b>Am/C</b>, <b>G/B</b>…), lectures alternatives (<b>Am7</b> ↔ <b>C6</b>…) et degrés de chaque note.<br><br>💡 Le bouton <b>📥 Accord actuel</b> recharge le doigté de l\'accord du temps sélectionné.</div>' +
+        zone.innerHTML = '<div class="ana-accueil">👆 <b>Posez des doigts sur le manche</b> : cliquez sur une case pour y placer une note (re-cliquez pour la retirer), sur <b>○</b> pour une corde à vide, sur <b>×</b> pour l\'étouffer.<br><br>L\'accord se nomme en direct — renversements (<b>Am/C</b>, <b>G/B</b>…), lectures alternatives (<b>Am7</b> ↔ <b>C6</b>…) et degrés de chaque note.<br><br>Un accord sans sa quinte garde son nom, et la bascule <b>♯/♭</b> choisit la lecture des notes (D# ↔ Eb).<br><br>💡 Le bouton <b>📥 Accord actuel</b> recharge le doigté de l\'accord du temps sélectionné.</div>' +
             anaBoutonsHTML(false);
         return;
     }
     if (res.etat === "note") {
         anaNomCourant = null;
-        zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">' + BIBLIO_NOTES[res.pc] + '</div>' +
+        zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">' + anaNote(res.pc) + '</div>' +
             '<div class="ana-sous-nom">Note seule — ajoutez au moins une autre note pour former un accord.</div>' +
             anaBoutonsHTML(false);
         return;
@@ -11730,7 +11812,7 @@ function anaRendreResultat() {
         anaNomCourant = null;
         const intervTxt = anaIntervallesDepuis(res.pcs, res.pcBasse).map(i => BIBLIO_DEGRES[i] || String(i)).join(" · ");
         zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">?</div>' +
-            '<div class="ana-sous-nom">Ces ' + res.nbNotes + ' notes ne correspondent pas à une famille du catalogue.<br>Intervalles depuis la basse (' + BIBLIO_NOTES[res.pcBasse] + ') : ' + intervTxt + '</div>' +
+            '<div class="ana-sous-nom">Ces ' + res.nbNotes + ' notes ne correspondent pas à une famille du catalogue.<br>Intervalles depuis la basse (' + anaNote(res.pcBasse) + ') : ' + intervTxt + '</div>' +
             anaBoutonsHTML(false);
         return;
     }
@@ -11741,7 +11823,7 @@ function anaRendreResultat() {
        « 6/9 » contient lui-même une barre oblique. */
     const formuleDe = ANALYSEUR_FORMULES.find(f => f.type === c.type) || { req: [], opt: [] };
     const degBasse = ((res.pcBasse - c.racine) % 12 + 12) % 12;
-    const slashNote = (res.pcBasse !== c.racine && (formuleDe.req.includes(degBasse) || formuleDe.opt.includes(degBasse))) ? BIBLIO_NOTES[res.pcBasse] : null;
+    const slashNote = (res.pcBasse !== c.racine && (formuleDe.req.includes(degBasse) || formuleDe.opt.includes(degBasse))) ? anaNote(res.pcBasse) : null;
     anaNomCourant = anaNomDu(c);
     let puces = "";
     anaCordes.forEach((st, i) => {
@@ -11749,17 +11831,25 @@ function anaRendreResultat() {
         const pc = ((ANALYSEUR_CORDES_A_VIDE[i] + st) % 12 + 12) % 12;
         const deg = anaDegre(pc, c);
         const estRacine = (deg === "1");
-        puces += '<span class="ana-puce' + (estRacine ? " est-racine" : "") + '">' + BIBLIO_NOTES[pc] + ' <b>' + deg + '</b></span>';
+        puces += '<span class="ana-puce' + (estRacine ? " est-racine" : "") + '">' + anaNote(pc) + ' <b>' + deg + '</b></span>';
     });
     let alts = "";
     if (res.candidats.length > 1) {
         alts = '<div class="ana-alt-titre">Aussi possible — cliquez pour changer de lecture</div><div class="ana-alts">' +
-            res.candidats.map((cc, j) => '<button type="button" class="ana-alt' + (j === anaCandidatActif ? " est-active" : "") + '" onclick="anaChoisirCandidat(' + j + ')">' + anaNomDu(cc) + '</button>').join("") +
+            res.candidats.map((cc, j) => '<button type="button" class="ana-alt' + (j === anaCandidatActif ? " est-active" : "") + '" onclick="anaChoisirCandidat(' + j + ')">' + anaNote(cc.racine) + cc.suffixe + '</button>').join("") +
             '</div>';
+    }
+    /* v1.6.2 : une lecture qui laisse des notes de côté est signalée honnêtement */
+    let avertissement = "";
+    if (c.enTrop && c.enTrop.length) {
+        const hors = c.enTrop.map(i => anaNote(c.racine + i));
+        avertissement = '<div class="ana-sous-nom" style="color:#b45309;">⚠️ Lecture approchée : ' + hors.join(", ") +
+            (hors.length > 1 ? " ne font pas partie" : " ne fait pas partie") + ' de cet accord.</div>';
     }
     const typeConnue = BIBLIO_TYPES.some(t => t.cle === c.type);
     zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">' + nom + '</div>' +
         (slashNote ? '<div class="ana-sous-nom">renversement — ' + slashNote + ' à la basse</div>' : "") +
+        avertissement +
         '<div class="ana-puces">' + puces + '</div>' + alts +
         '<div class="ana-sous-nom">Degrés : 1 = fondamentale · 3m = tierce mineure · 3 = tierce majeure · 5 = quinte · 6 = sixte · 7 = septième · 7M = septième majeure · 9 = neuvième</div>' +
         anaBoutonsHTML(typeConnue);
@@ -11868,6 +11958,7 @@ window.anaEcouter = anaEcouter;
 window.anaChargerAccordActuel = anaChargerAccordActuel;
 window.anaOuvrirBibliotheque = anaOuvrirBibliotheque;
 window.anaIdentifierAccord = anaIdentifierAccord;
+window.anaDefinirNotation = anaDefinirNotation;
 
     function selectionnerPasScore(indexGlobal) {
         selectionnerPas(indexGlobal);

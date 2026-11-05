@@ -86,6 +86,61 @@ try {
     } else {
         console.log("Analyseur d'accords OK — doigté x3223x reconnu comme C6/9.");
     }
+    // v1.6.2 : un accord sans sa quinte garde son nom — C sans Sol (x32x1x) → C
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    await page.click('#anaMancheZone [data-ana="s1"][data-fret="3"]');
+    await page.click('#anaMancheZone [data-ana="s2"][data-fret="2"]');
+    await page.click('#anaMancheZone [data-ana="s4"][data-fret="1"]');
+    await page.waitForTimeout(400);
+    const nomCSansQuinte = await page.evaluate(
+        () => (document.getElementById("anaNomGrand")?.textContent || "").trim()
+    );
+    if (nomCSansQuinte !== "C") {
+        console.error("ÉCHEC : le doigté C sans quinte (x32x1x) affiche « " + nomCSansQuinte + " » au lieu de C.");
+        echec = true;
+    } else {
+        console.log("Analyseur d'accords OK — accord sans quinte conservé (« " + nomCSansQuinte + " »).");
+    }
+    // v1.6.2 : la basse = fondamentale l'emporte — doigté ouvert de C6 (x3221x) → C6
+    // (et non plus un renversement de la triade La-Do-Mi)
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    await page.click('#anaMancheZone [data-ana="s1"][data-fret="3"]');
+    await page.click('#anaMancheZone [data-ana="s2"][data-fret="2"]');
+    await page.click('#anaMancheZone [data-ana="s3"][data-fret="2"]');
+    await page.click('#anaMancheZone [data-ana="s4"][data-fret="1"]');
+    await page.waitForTimeout(400);
+    const nomC6 = await page.evaluate(
+        () => (document.getElementById("anaNomGrand")?.textContent || "").trim()
+    );
+    if (nomC6 !== "C6") {
+        console.error("ÉCHEC : le doigté ouvert x3221x affiche « " + nomC6 + " » au lieu de C6.");
+        echec = true;
+    } else {
+        console.log("Analyseur d'accords OK — doigté x3221x reconnu comme C6.");
+    }
+    // v1.6.2 : bascule de notation ♯/♭ — le doigté de Eb affiche Eb en bémols
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    await page.click('#anaResultatZone #anaOptBemol', { timeout: 5000 });
+    await page.waitForTimeout(200);
+    await page.click('#anaMancheZone [data-ana="s1"][data-fret="6"]');
+    await page.click('#anaMancheZone [data-ana="s2"][data-fret="8"]');
+    await page.click('#anaMancheZone [data-ana="s3"][data-fret="8"]');
+    await page.click('#anaMancheZone [data-ana="s4"][data-fret="8"]');
+    await page.waitForTimeout(400);
+    const nomEb = await page.evaluate(
+        () => (document.getElementById("anaNomGrand")?.textContent || "").trim()
+    );
+    if (nomEb !== "Eb") {
+        console.error("ÉCHEC : le doigté x6888x affiche « " + nomEb + " » en notation bémols au lieu de Eb.");
+        echec = true;
+    } else {
+        console.log("Analyseur d'accords OK — notation bémols (« " + nomEb + " »).");
+    }
+    // retour à la notation par défaut (dièses) pour ne pas polluer l'état
+    await page.click('#anaResultatZone #anaOptDiese', { timeout: 5000 }).catch(() => {});
     await page.click("#btnFermerAnalyseur", { timeout: 3000 }).catch(() => {});
 } catch (e) {
     console.error("ÉCHEC : l'analyseur d'accords n'a pas pu être testé : " + e.message);

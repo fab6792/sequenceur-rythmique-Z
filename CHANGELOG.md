@@ -3,6 +3,22 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.6.2 (2026-11-05)
+
+Analyseur d'accords : **la quinte facultative partout + la lecture ♯/♭** 🎯 — et le bouton ⏳ qui montre enfin son état
+
+**Tes trois remarques, corrigées**
+- « Un accord sans sa quinte reste le même accord » : tu as raison, et la règle est désormais **générale** — la quinte est facultative dans **toutes** les familles qui en contiennent une (majeur, mineur, 6, m6, sus2, sus4, add9, m(add9), 7sus4, mMaj7, en plus des 7/9/Maj9/m9/6/9 déjà assouplies en v1.6.1). Le doigté Do–Mi–Do (x32x1x) s'affiche « **C** » au lieu de « ? », un La–Do–Si sans Mi reste « Am », un Cadd9 sans Sol reste « Cadd9 ». Seules exceptions, volontaires : le power 5 et les familles à quinte altérée (dim, m7b5, 7b5, 7♯5, aug), dont la quinte (diminuée ou augmentée) fait partie de l'identité
+- Nouvelle **bascule ♯/♭** dans le panneau de l'analyseur : le même doigté se lit **D♯** (notation dièses, défaut, cohérente avec la bibliothèque) ou **Eb** (notation bémols) — comme D♯ = Eb, c'est le même accord sous deux orthographes. Le choix est **mémorisé** d'une session à l'autre et s'applique partout : nom principal, renversement, notes sous le manche et lectures alternatives
+- Le bouton **⏳ Décompte** restait identique allumé ou éteint dans les thèmes Studio, Vintage et Neon : les surcharges de boutons de ces thèmes écrasaient son état actif (le thème clair, lui, fonctionnait). Corrigé : il s'allume **bleu ciel / ambre / cyan** (selon le thème) quand le décompte est armé, et reste discret sinon — comme dans le thème clair
+
+**Au passage, dans l'analyseur**
+- La **fondamentale à la basse l'emporte désormais systématiquement** sur un renversement : l'ancien bonus basse était plus faible que l'écart de priorité entre familles, et le doigté ouvert de C6 (x3221x) était lu « Am/C ». Il s'affiche « **C6** » ; la lecture Am reste proposée d'un clic dans « Aussi possible », où l'on retrouve le renversement « Am/C » et sa mention « Do à la basse »
+- Une lecture qui laisse une note de côté (aucune famille exacte ne convient) est signalée « **lecture approchée** » avec la ou les notes en cause, au lieu d'être présentée sans explication
+- Test automatique étendu : C sans quinte → « C », doigté ouvert de C6 → « C6 » (et non Am/C), doigté x6888x → « Eb » en notation bémols
+
+Aucun changement du moteur audio, du format des projets (2.3), des raccourcis clavier ni des thèmes.
+
 ## v1.6.1 (2026-11-05)
 
 Analyseur d'accords : **le doigté standard du C6/9 reconnu** 🎯 — et sa lecture « Am/C » corrigée
