@@ -3,6 +3,23 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.6.0 (2026-11-05)
+
+Analyseur d'accords : **la recherche inversée** 🔍 — pose tes doigts sur le manche, l'appli devine l'accord
+
+**La nouvelle fenêtre 🔍 Analyseur**
+- Le chemin inverse de la bibliothèque : au lieu de partir du nom de l'accord, tu poses tes doigts et l'analyseur nomme l'accord — parfait pour identifier un doigté trouvé dans un tab ou un songbook
+- Un manche interactif (6 cordes × 12 cases, sillet en haut, repères de position) : clique sur une **case** pour y poser une note (re-clique pour la retirer), sur **○** pour une corde à vide, sur **×** pour l'étouffer — chaque note posée s'entend immédiatement
+- Le nom de l'accord s'affiche en direct, avec le **renversement** quand la basse n'est pas la fondamentale (Am/C, G/B…) et la mention « Do à la basse »
+- **Lectures alternatives cliquables** : les ambiguïtés classiques sont assumées et tranchées par la basse — Am7 ↔ C6, Sus4 ↔ Sus2 renversé, les 4 noms équivalents d'un dim7 ; un clic suffit pour changer de lecture, les degrés suivent
+- **26 familles reconnues** : les 16 familles de la bibliothèque + sus2, 7sus4, 6/9, m(add9), dim, aug, 7b5, 7#5, 7b9 et le 7#9 « Hendrix » (détecté dès que la tierce et le ♯9 sonnent ensemble)
+- Sous le manche : la **note jouée** par corde ; dans le panneau : notes + **degrés** avec la convention v1.5.3 (3m = tierce mineure, 7M = septième majeure, bb7 pour la septième diminuée du dim7, #9 en couleur)
+- 🔊 **Écouter** joue les notes exactes posées sur le manche (moteur audio de l'appli), 📚 **Bibliothèque** envoie le résultat vers le catalogue de diagrammes (si la famille y figure), 📥 **Accord actuel** recharge le doigté de l'accord du temps sélectionné, 🧹 **Effacer** remet le manche à zéro
+- Points d'entrée : bouton **🔍 Analyseur** dans la barre du manche et bouton 🔍 dans le pied de la bibliothèque d'accords ; fermeture par Échap, clic à l'extérieur ou bouton Fermer
+- Test automatique étendu : le test fantôme de l'intégration continue pose un Am sur le manche de l'analyseur et vérifie que l'accord est reconnu
+
+Aucun changement du moteur audio, du format des projets (2.3), des raccourcis clavier ni des thèmes.
+
 ## v1.5.3 (2026-11-05)
 
 Bibliothèque d'accords : **8 nouvelles familles + le catalogue de diagrammes de référence** 🎸 — et les défauts que tu as trouvés, corrigés
@@ -46,7 +63,7 @@ Bibliothèque d'accords : **le grand catalogue** 🎸 — CAGED complet, couleur
 
 ## v1.5 (2026-11-03)
 
-Nouvelle fonctionnalité : **la bibliothèque d'accords** 📚 (façon Oolimo) — et adieu la fenêtre fantôme 👻
+Nouvelle fonctionnalité : **la bibliothèque d'accords** 📚 (le grand catalogue de diagrammes) — et adieu la fenêtre fantôme 👻
 
 - **Un clic sur n'importe quel diagramme d'accord de la portée** ouvre la bibliothèque sur cet accord : toutes ses positions rassemblées au même endroit, avec un rappel d'où on vient (badge « Portée — TEMPS 2 », etc.)
 - La bibliothèque présente **4 sections** : 🏠 Position ouverte · 🔒 Formes barrées transposables (formes de Mi et de La, valables dans les 12 tonalités) · 🔄 Renversements (accords slash comme Am/C, G/B) · 🎷 Voicings jazz & compact

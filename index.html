@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.5.3</title>
+    <title>Séquenceur Rythmique v1.6.0</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.5.3" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.6.0" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3004,6 +3004,76 @@
             .biblio-pied .biblio-legende { display: none; }
         }
 
+        /* --- v1.6 : analyseur d'accords (recherche inversée) --- */
+        .ana-corps {
+            display: flex;
+            gap: 18px;
+            padding: 16px 18px;
+            overflow-y: auto;
+            flex: 1;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .ana-manche-zone {
+            flex: 0 0 auto;
+            border: 1.5px solid var(--panel-border, #ced4da);
+            border-radius: 12px;
+            padding: 8px 10px 4px;
+            background: var(--bg-card, #fff);
+        }
+        .ana-manche-zone svg { display: block; }
+        .ana-case { fill: transparent; cursor: pointer; }
+        .ana-case:hover { fill: rgba(245, 158, 11, 0.18); }
+        .ana-bascule { cursor: pointer; }
+        .ana-resultat-zone {
+            flex: 1 1 300px;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .ana-nom-grand { font-size: 2.2rem; font-weight: 900; line-height: 1.05; color: var(--text-dark, #212529); }
+        .ana-sous-nom { font-size: 0.78rem; color: var(--text-gray, #6c757d); line-height: 1.45; }
+        .ana-accueil { font-size: 0.88rem; color: var(--text-gray, #6c757d); line-height: 1.6; }
+        .ana-puces { display: flex; flex-wrap: wrap; gap: 6px; }
+        .ana-puce {
+            font-size: 0.72rem;
+            font-weight: 700;
+            border: 1.5px solid var(--panel-border, #ced4da);
+            border-radius: 999px;
+            padding: 3px 10px;
+            background: var(--bg-card, #fff);
+            color: var(--text-dark, #212529);
+        }
+        .ana-puce.est-racine { border-color: #f59e0b; color: #b45309; background: rgba(245, 158, 11, 0.12); }
+        .ana-puce.etaouffee { opacity: 0.45; }
+        .ana-alt-titre {
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: var(--text-gray, #6c757d);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .ana-alts { display: flex; flex-wrap: wrap; gap: 6px; }
+        .ana-alt {
+            font-size: 0.74rem;
+            font-weight: 800;
+            border: 1.5px solid var(--panel-border, #ced4da);
+            border-radius: 999px;
+            padding: 4px 12px;
+            background: var(--bg-card, #fff);
+            color: var(--text-dark, #212529);
+            cursor: pointer;
+        }
+        .ana-alt:hover { border-color: #7c3aed; color: #6d28d9; }
+        .ana-alt.est-active { border-color: #7c3aed; color: #fff; background: #7c3aed; }
+        .ana-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+        .ana-actions .biblio-btn { flex: 0 0 auto; padding: 6px 12px; }
+        @media (max-width: 720px) {
+            .ana-corps { flex-direction: column; }
+            .ana-manche-zone { align-self: center; }
+        }
+
         /* --- v1.5 : les diagrammes de la portée ouvrent la bibliothèque --- */
         .score-chord-box-wrap { position: relative; }
         .score-chord-box-wrap .chord-diagram-svg { cursor: pointer; transition: transform 0.15s ease, filter 0.15s ease; }
@@ -3629,7 +3699,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.5.3</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.6.0</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4083,6 +4153,9 @@
                     </button>
                     <button type="button" class="btn-v2" onclick="ouvrirBibliothequeDepuisManche()" style="padding: 5px 10px; font-size: 0.75rem; font-weight: 800; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706;" title="Ouvrir la bibliothèque d'accords sur l'accord actif">
                         📚 Bibliothèque
+                    </button>
+                    <button type="button" id="btnOuvrirAnalyseur" class="btn-v2" onclick="ouvrirAnalyseur()" style="padding: 5px 10px; font-size: 0.75rem; font-weight: 800; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; border-color: #7c3aed;" title="Analyseur d'accords : posez vos doigts sur le manche, l'accord s'affiche en direct">
+                        🔍 Analyseur
                     </button>
                     <button class="btn-v2" onclick="toggleMancheGuitare(false)" style="padding: 5px 9px; font-size: 0.75rem; background: #374151; color: #ff8a80; border-color: #546e7a;" title="Masquer le manche">
                         ✖ Cacher
@@ -4889,7 +4962,40 @@
             </div>
             <div class="biblio-pied">
                 <span>💡 <span class="biblio-legende">Sous chaque diagramme : la <b>note</b> jouée et son <b>degré</b> — 1 = fondamentale, 3m = tierce mineure, 3 = tierce majeure, 4 = quarte, 5 = quinte, b5 = quinte diminuée, 6 = sixte, 7 = septième, 7M = septième majeure, 9 = neuvième, b9 = neuvième mineure, bb7 = septième diminuée (dim7). Notation internationale : C = Do, D = Ré, E = Mi, F = Fa, G = Sol, A = La, B = Si. Survolez un diagramme avec la souris pour l'agrandir 🔍. </span>Le bouton 🔊 joue exactement les notes affichées (moteur audio de l'appli).</span>
+                <button type="button" class="biblio-btn-fermer" style="margin-left: 0;" onclick="ouvrirAnalyseur()" title="Chercher un accord en posant des doigts sur le manche">🔍 Analyseur</button>
                 <button type="button" class="biblio-btn-fermer" onclick="fermerBibliothequeAccords()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================
+         v1.6 — FENÊTRE : ANALYSEUR D'ACCORDS (recherche inversée)
+         Posez des notes sur le manche interactif : l'analyseur
+         nomme l'accord (renversements, alternatives, degrés).
+         Ouvre par : bouton 🔍 de la barre du manche, bouton 🔍
+         du pied de la bibliothèque.
+         ========================================================== -->
+    <div id="analyseurModal" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.62); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 18px;" onclick="fermerAnalyseur()">
+        <div class="biblio-fenetre" style="width: min(820px, 100%);" onclick="event.stopPropagation()">
+            <div class="biblio-tete">
+                <span class="biblio-icone">🔍</span>
+                <div>
+                    <h3 class="biblio-titre-principal">Analyseur d'accords</h3>
+                    <p class="biblio-sous-titre">Posez vos doigts sur le manche — l'accord s'affiche en direct.</p>
+                </div>
+                <button type="button" class="biblio-fermer" style="margin-left: auto;" onclick="fermerAnalyseur()" title="Fermer [Échap]">✕</button>
+            </div>
+            <div class="ana-corps">
+                <div class="ana-manche-zone" id="anaMancheZone" onclick="anaClicZone(event)">
+                    <!-- Manche interactif généré -->
+                </div>
+                <div class="ana-resultat-zone" id="anaResultatZone">
+                    <!-- Résultat généré -->
+                </div>
+            </div>
+            <div class="biblio-pied">
+                <span>💡 Cliquez sur une <b>case</b> pour poser une note (re-cliquez pour la retirer), sur <b>○</b> pour une corde à vide, sur <b>×</b> pour étouffer. Notation internationale : C = Do, D = Ré, E = Mi, F = Fa, G = Sol, A = La, B = Si.</span>
+                <button type="button" id="btnFermerAnalyseur" class="biblio-btn-fermer" onclick="fermerAnalyseur()">Fermer</button>
             </div>
         </div>
     </div>
@@ -11404,6 +11510,364 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
     window.appliquerRenversement = appliquerRenversement;
     window.ouvrirInversionsDepuisPopover = ouvrirInversionsDepuisPopover;
 
+// ========================================================
+// --- v1.6 : ANALYSEUR D'ACCORDS (recherche inversée) ---
+// Le chemin inverse de la bibliothèque : au lieu de partir
+// du nom de l'accord pour trouver des diagrammes, on pose
+// les doigts sur un manche interactif et l'analyseur nomme
+// l'accord (nom principal, renversement, alternatives,
+// notes et degrés). Chaque note posée s'entend.
+// ========================================================
+const ANALYSEUR_CORDES_A_VIDE = [40, 45, 50, 55, 59, 64];   // corde 6 (E grave) → corde 1 (E aigu)
+const ANALYSEUR_NB_CASES = 12;
+const ANALYSEUR_NOMS_CORDES = ["E2", "A2", "D3", "G3", "B3", "E4"];
+
+// État des 6 cordes (index 0 = corde grave) :
+// -1 = étouffée (×), 0 = à vide (○), 1..12 = case jouée
+let anaCordes = [-1, -1, -1, -1, -1, -1];
+let anaCandidats = [];       // lectures possibles des notes posées
+let anaCandidatActif = 0;    // lecture affichée
+let anaNomCourant = null;    // nom de l'accord reconnu (pour la bibliothèque)
+let anaDerniereSignature = null;   // pour conserver la lecture choisie tant que les notes ne changent pas
+
+// Familles reconnues. req = intervalles obligatoires (demi-tons depuis
+// la fondamentale) qui définissent la famille ; opt = notes de couleur
+// admises mais facultatives (la quinte manque souvent aux doigtés de
+// neuvième) ; prio = préférence entre deux lectures exactes à égalité.
+const ANALYSEUR_FORMULES = [
+    { type: "maj",   suffixe: "",         req: [0, 4, 7],       opt: [],   prio: 0 },
+    { type: "min",   suffixe: "m",        req: [0, 3, 7],       opt: [],   prio: 1 },
+    { type: "5",     suffixe: "5",        req: [0, 7],          opt: [],   prio: 2 },
+    { type: "7",     suffixe: "7",        req: [0, 4, 10],      opt: [7],  prio: 3 },
+    { type: "maj7",  suffixe: "Maj7",     req: [0, 4, 11],      opt: [7],  prio: 4 },
+    { type: "m7",    suffixe: "m7",       req: [0, 3, 10],      opt: [7],  prio: 5 },
+    { type: "sus4",  suffixe: "sus4",     req: [0, 5, 7],       opt: [],   prio: 6 },
+    { type: "sus2",  suffixe: "sus2",     req: [0, 2, 7],       opt: [],   prio: 7 },
+    { type: "6",     suffixe: "6",        req: [0, 4, 7, 9],    opt: [],   prio: 8 },
+    { type: "m6",    suffixe: "m6",       req: [0, 3, 7, 9],    opt: [],   prio: 9 },
+    { type: "add9",  suffixe: "add9",     req: [0, 4, 7, 2],    opt: [],   prio: 10 },
+    { type: "madd9", suffixe: "m(add9)",  req: [0, 3, 7, 2],    opt: [],   prio: 11 },
+    { type: "7sus4", suffixe: "7sus4",    req: [0, 5, 7, 10],   opt: [],   prio: 12 },
+    { type: "9",     suffixe: "9",        req: [0, 4, 10, 2],   opt: [7],  prio: 13 },
+    { type: "maj9",  suffixe: "Maj9",     req: [0, 4, 11, 2],   opt: [7],  prio: 14 },
+    { type: "m9",    suffixe: "m9",       req: [0, 3, 10, 2],   opt: [7],  prio: 15 },
+    { type: "69",    suffixe: "6/9",      req: [0, 4, 7, 9, 2], opt: [],   prio: 16 },
+    { type: "m7b5",  suffixe: "m7b5",     req: [0, 3, 6, 10],   opt: [],   prio: 17 },
+    { type: "dim7",  suffixe: "dim7",     req: [0, 3, 6, 9],    opt: [],   prio: 18 },
+    { type: "dim",   suffixe: "dim",      req: [0, 3, 6],       opt: [],   prio: 19 },
+    { type: "aug",   suffixe: "aug",      req: [0, 4, 8],       opt: [],   prio: 20 },
+    { type: "mMaj7", suffixe: "mMaj7",    req: [0, 3, 7, 11],   opt: [],   prio: 21 },
+    { type: "7b5",   suffixe: "7b5",      req: [0, 4, 6, 10],   opt: [],   prio: 22 },
+    { type: "7#5",   suffixe: "7#5",      req: [0, 4, 8, 10],   opt: [],   prio: 23 },
+    { type: "7b9",   suffixe: "7b9",      req: [0, 4, 10, 1],   opt: [7],  prio: 24 },
+    { type: "7#9",   suffixe: "7#9",      req: [0, 4, 10, 3],   opt: [7],  prio: 25 }
+];
+
+function anaIntervallesDepuis(pcs, racine) {
+    return [...new Set(pcs.map(p => ((p - racine) % 12 + 12) % 12))].sort((a, b) => a - b);
+}
+
+/* Cœur de l'analyseur : essaie chaque note jouée comme fondamentale,
+   retient les familles dont tous les intervalles obligatoires sonnent.
+   La fondamentale à la basse tranche les ambiguïtés classiques
+   (Am7 / C6, Sus4 / Sus2 renversé, les 4 noms d'un dim7…). */
+function anaIdentifierAccord() {
+    anaCandidats = [];
+    anaNomCourant = null;
+    const signature = anaCordes.join(",");
+    if (signature !== anaDerniereSignature) {
+        anaCandidatActif = 0;              // nouvelles notes → retour à la lecture principale
+        anaDerniereSignature = signature;
+    }
+    const midis = [];
+    anaCordes.forEach((f, i) => { if (f >= 0) midis.push(ANALYSEUR_CORDES_A_VIDE[i] + f); });
+    if (midis.length === 0) return { etat: "vide" };
+    if (midis.length === 1) {
+        return { etat: "note", pc: ((midis[0] % 12) + 12) % 12 };
+    }
+    const pcs = [...new Set(midis.map(m => ((m % 12) + 12) % 12))];
+    const pcBasse = ((Math.min(...midis) % 12) + 12) % 12;
+    const tout = [];
+    pcs.forEach(racine => {
+        const interv = anaIntervallesDepuis(pcs, racine);
+        ANALYSEUR_FORMULES.forEach(f => {
+            if (!f.req.every(i => interv.includes(i))) return;
+            const enTrop = interv.filter(i => !f.req.includes(i) && !f.opt.includes(i));
+            let score = enTrop.length * 100 + f.prio;
+            if (racine === pcBasse) score -= 5;
+            tout.push({ racine: racine, type: f.type, suffixe: f.suffixe, exact: enTrop.length === 0, score: score });
+        });
+    });
+    tout.sort((a, b) => a.score - b.score);
+    const exactes = tout.filter(c => c.exact);
+    anaCandidats = (exactes.length ? exactes : tout.slice(0, 4)).slice(0, 8);
+    return { etat: "accord", pcs: pcs, pcBasse: pcBasse, nbNotes: midis.length, candidats: anaCandidats };
+}
+
+function anaNomDu(c) { return BIBLIO_NOTES[c.racine] + c.suffixe; }
+
+/* Nom affiché : renversement « Am/C » quand la basse n'est pas la fondamentale
+   mais appartient bien à l'accord. */
+function anaNomAffiche(c, pcBasse) {
+    const base = anaNomDu(c);
+    if (pcBasse === c.racine) return base;
+    const degBasse = ((pcBasse - c.racine) % 12 + 12) % 12;
+    return base + "/" + BIBLIO_NOTES[pcBasse];
+}
+
+/* Degré d'une note pour la lecture choisie — même convention que la
+   bibliothèque (v1.5.3) : 3m, 7M, bb7 pour la septième diminuée du dim7… */
+function anaDegre(pc, c) {
+    const i = ((pc - c.racine) % 12 + 12) % 12;
+    if (c.type === "dim7" && i === 9) return "bb7";
+    if (c.type === "7#9" && i === 3) return "#9";
+    if ((c.type === "aug" || c.type === "7#5") && i === 8) return "#5";
+    return BIBLIO_DEGRES[i] || String(i);
+}
+
+/* --- Rendu du manche interactif (SVG vertical, comme les diagrammes) --- */
+function anaRendreManche() {
+    const zone = document.getElementById("anaMancheZone");
+    if (!zone) return;
+    const sg = 36, fg = 26, startX = 24, yEtat = 34, ySillet = 54;
+    const W = startX + 5 * sg + 34, H = ySillet + ANALYSEUR_NB_CASES * fg + 22;
+    const yNote = H - 8;
+    let s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Manche interactif de l\'analyseur d\'accords">';
+    ANALYSEUR_NOMS_CORDES.forEach((n, i) => {
+        s += '<text x="' + (startX + i * sg) + '" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="currentColor" opacity="0.5">' + n + '</text>';
+    });
+    // Bascules par corde : × (étouffer) et ○ (à vide)
+    anaCordes.forEach((st, i) => {
+        const x = startX + i * sg;
+        s += '<g class="ana-bascule" data-ana="s' + i + '" data-fret="x" transform="translate(' + (x - 9) + ', ' + yEtat + ')">' +
+             '<rect x="-8" y="-11" width="16" height="22" fill="transparent"/>' +
+             '<text x="0" y="4.5" text-anchor="middle" font-size="13" font-weight="900" fill="' + (st === -1 ? "#ef4444" : "currentColor") + '" opacity="' + (st === -1 ? 1 : 0.32) + '">×</text></g>';
+        s += '<g class="ana-bascule" data-ana="s' + i + '" data-fret="0" transform="translate(' + (x + 9) + ', ' + yEtat + ')">' +
+             '<rect x="-8" y="-11" width="16" height="22" fill="transparent"/>' +
+             '<circle cx="0" cy="0" r="6.2" fill="' + (st === 0 ? "#f59e0b" : "none") + '" stroke="' + (st === 0 ? "#f59e0b" : "currentColor") + '" stroke-width="1.5" opacity="' + (st === 0 ? 1 : 0.32) + '"/></g>';
+    });
+    // Sillet, frettes, cordes
+    s += '<line x1="' + startX + '" y1="' + ySillet + '" x2="' + (startX + 5 * sg) + '" y2="' + ySillet + '" stroke="currentColor" stroke-width="3.6" opacity="0.9"/>';
+    for (let f = 1; f <= ANALYSEUR_NB_CASES; f++) {
+        const y = ySillet + f * fg;
+        s += '<line x1="' + startX + '" y1="' + y + '" x2="' + (startX + 5 * sg) + '" y2="' + y + '" stroke="currentColor" stroke-width="' + (f === ANALYSEUR_NB_CASES ? 1.8 : 1.1) + '" opacity="0.4"/>';
+    }
+    for (let i = 0; i < 6; i++) {
+        const x = startX + i * sg;
+        s += '<line x1="' + x + '" y1="' + ySillet + '" x2="' + x + '" y2="' + (ySillet + ANALYSEUR_NB_CASES * fg) + '" stroke="currentColor" stroke-width="1.3" opacity="0.65"/>';
+    }
+    // Numéros de cases et repères de position
+    for (let f = 1; f <= ANALYSEUR_NB_CASES; f++) {
+        const y = ySillet + (f - 0.5) * fg;
+        s += '<text x="' + (startX + 5 * sg + 16) + '" y="' + (y + 3) + '" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" opacity="0.55">' + f + '</text>';
+    }
+    [3, 5, 7, 9].forEach(f => {
+        const y = ySillet + (f - 0.5) * fg;
+        s += '<circle cx="' + (startX + 2.5 * sg) + '" cy="' + y + '" r="3.2" fill="currentColor" opacity="0.22"/>';
+    });
+    {
+        const y = ySillet + 11.5 * fg;
+        s += '<circle cx="' + (startX + 1.5 * sg) + '" cy="' + y + '" r="3.2" fill="currentColor" opacity="0.22"/>' +
+             '<circle cx="' + (startX + 3.5 * sg) + '" cy="' + y + '" r="3.2" fill="currentColor" opacity="0.22"/>';
+    }
+    // Cases cliquables + notes posées
+    for (let i = 0; i < 6; i++) {
+        const x = startX + i * sg;
+        for (let f = 1; f <= ANALYSEUR_NB_CASES; f++) {
+            const yHaut = ySillet + (f - 1) * fg;
+            s += '<rect class="ana-case" data-ana="s' + i + '" data-fret="' + f + '" x="' + (x - sg / 2 + 2) + '" y="' + (yHaut + 1) + '" width="' + (sg - 4) + '" height="' + (fg - 2) + '" rx="4"/>';
+        }
+        const st = anaCordes[i];
+        if (st >= 1) {
+            const yc = ySillet + (st - 0.5) * fg;
+            s += '<circle cx="' + x + '" cy="' + yc + '" r="9" fill="#f59e0b" pointer-events="none"/>' +
+                 '<text x="' + x + '" y="' + (yc + 3.2) + '" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fff" pointer-events="none">' + st + '</text>';
+        }
+    }
+    // Notes jouées, sous le manche (corde grave → corde aiguë)
+    anaCordes.forEach((st, i) => {
+        const x = startX + i * sg;
+        if (st >= 0) {
+            const pc = ((ANALYSEUR_CORDES_A_VIDE[i] + st) % 12 + 12) % 12;
+            s += '<text x="' + x + '" y="' + yNote + '" text-anchor="middle" font-size="8.6" font-weight="800" fill="currentColor" opacity="0.85">' + BIBLIO_NOTES[pc] + '</text>';
+        } else {
+            s += '<text x="' + x + '" y="' + yNote + '" text-anchor="middle" font-size="8" font-weight="700" fill="#ef4444" opacity="0.7">×</text>';
+        }
+    });
+    s += '</svg>';
+    zone.innerHTML = s;
+}
+
+/* --- Panneau de résultat --- */
+function anaBoutonsHTML(avecBiblio) {
+    return '<div class="ana-actions">' +
+        '<button type="button" class="biblio-btn ecouter" onclick="anaEcouter()" title="Écouter les notes exactes posées sur le manche">🔊 Écouter</button>' +
+        (avecBiblio ? '<button type="button" class="biblio-btn appliquer" onclick="anaOuvrirBibliotheque()" title="Ouvrir ce accord dans la bibliothèque (diagrammes, renversements, voicings)">📚 Bibliothèque</button>' : "") +
+        '<button type="button" class="biblio-btn" onclick="anaChargerAccordActuel()" title="Recharger sur le manche le doigté de l\'accord du temps sélectionné">📥 Accord actuel</button>' +
+        '<button type="button" class="biblio-btn" onclick="anaEffacer()" title="Étouffer toutes les cordes">🧹 Effacer</button>' +
+        '</div>';
+}
+
+function anaRendreResultat() {
+    const zone = document.getElementById("anaResultatZone");
+    if (!zone) return;
+    const res = anaIdentifierAccord();
+    if (res.etat === "vide") {
+        anaNomCourant = null;
+        zone.innerHTML = '<div class="ana-accueil">👆 <b>Posez des doigts sur le manche</b> : cliquez sur une case pour y placer une note (re-cliquez pour la retirer), sur <b>○</b> pour une corde à vide, sur <b>×</b> pour l\'étouffer.<br><br>L\'accord se nomme en direct — renversements (<b>Am/C</b>, <b>G/B</b>…), lectures alternatives (<b>Am7</b> ↔ <b>C6</b>…) et degrés de chaque note.<br><br>💡 Le bouton <b>📥 Accord actuel</b> recharge le doigté de l\'accord du temps sélectionné.</div>' +
+            anaBoutonsHTML(false);
+        return;
+    }
+    if (res.etat === "note") {
+        anaNomCourant = null;
+        zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">' + BIBLIO_NOTES[res.pc] + '</div>' +
+            '<div class="ana-sous-nom">Note seule — ajoutez au moins une autre note pour former un accord.</div>' +
+            anaBoutonsHTML(false);
+        return;
+    }
+    if (!res.candidats.length) {
+        anaNomCourant = null;
+        const intervTxt = anaIntervallesDepuis(res.pcs, res.pcBasse).map(i => BIBLIO_DEGRES[i] || String(i)).join(" · ");
+        zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">?</div>' +
+            '<div class="ana-sous-nom">Ces ' + res.nbNotes + ' notes ne correspondent pas à une famille du catalogue.<br>Intervalles depuis la basse (' + BIBLIO_NOTES[res.pcBasse] + ') : ' + intervTxt + '</div>' +
+            anaBoutonsHTML(false);
+        return;
+    }
+    const c = res.candidats[anaCandidatActif] || res.candidats[0];
+    const nom = anaNomAffiche(c, res.pcBasse);
+    /* Renversement : détecté structurellement (la basse n'est pas la fondamentale
+       et appartient à l'accord) — jamais en parcourant le nom, car le suffixe
+       « 6/9 » contient lui-même une barre oblique. */
+    const formuleDe = ANALYSEUR_FORMULES.find(f => f.type === c.type) || { req: [], opt: [] };
+    const degBasse = ((res.pcBasse - c.racine) % 12 + 12) % 12;
+    const slashNote = (res.pcBasse !== c.racine && (formuleDe.req.includes(degBasse) || formuleDe.opt.includes(degBasse))) ? BIBLIO_NOTES[res.pcBasse] : null;
+    anaNomCourant = anaNomDu(c);
+    let puces = "";
+    anaCordes.forEach((st, i) => {
+        if (st < 0) { puces += '<span class="ana-puce etaouffee">corde ' + (6 - i) + ' ×</span>'; return; }
+        const pc = ((ANALYSEUR_CORDES_A_VIDE[i] + st) % 12 + 12) % 12;
+        const deg = anaDegre(pc, c);
+        const estRacine = (deg === "1");
+        puces += '<span class="ana-puce' + (estRacine ? " est-racine" : "") + '">' + BIBLIO_NOTES[pc] + ' <b>' + deg + '</b></span>';
+    });
+    let alts = "";
+    if (res.candidats.length > 1) {
+        alts = '<div class="ana-alt-titre">Aussi possible — cliquez pour changer de lecture</div><div class="ana-alts">' +
+            res.candidats.map((cc, j) => '<button type="button" class="ana-alt' + (j === anaCandidatActif ? " est-active" : "") + '" onclick="anaChoisirCandidat(' + j + ')">' + anaNomDu(cc) + '</button>').join("") +
+            '</div>';
+    }
+    const typeConnue = BIBLIO_TYPES.some(t => t.cle === c.type);
+    zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">' + nom + '</div>' +
+        (slashNote ? '<div class="ana-sous-nom">renversement — ' + slashNote + ' à la basse</div>' : "") +
+        '<div class="ana-puces">' + puces + '</div>' + alts +
+        '<div class="ana-sous-nom">Degrés : 1 = fondamentale · 3m = tierce mineure · 3 = tierce majeure · 5 = quinte · 6 = sixte · 7 = septième · 7M = septième majeure · 9 = neuvième</div>' +
+        anaBoutonsHTML(typeConnue);
+}
+
+function anaRendre() {
+    anaRendreManche();
+    anaRendreResultat();
+}
+
+/* --- Interactions --- */
+function anaClicZone(event) {
+    const cible = event.target.closest("[data-ana]");
+    if (!cible) return;
+    const m = (cible.getAttribute("data-ana") || "").match(/^s(\d)$/);
+    if (!m) return;
+    const corde = parseInt(m[1], 10);
+    const fret = cible.getAttribute("data-fret");
+    if (fret === "x") {
+        anaCordes[corde] = -1;
+    } else if (fret === "0") {
+        anaCordes[corde] = (anaCordes[corde] === 0) ? -1 : 0;
+    } else {
+        const f = parseInt(fret, 10);
+        anaCordes[corde] = (anaCordes[corde] === f) ? -1 : f;
+    }
+    if (anaCordes[corde] >= 0) anaJouerNote(corde);
+    anaRendre();
+}
+
+function anaJouerNote(corde) {
+    try {
+        demarrerAudio();
+        if (!audioCtx) return;
+        const volG = parseFloat(document.getElementById("volGuitar")?.value || 0.7);
+        const styleG = document.getElementById("selectGuitarMode")?.value || "folk";
+        const midi = ANALYSEUR_CORDES_A_VIDE[corde] + anaCordes[corde];
+        const nomNote = BIBLIO_NOTES[midi % 12] + (Math.floor(midi / 12) - 1);
+        jouerNoteSynthetique(nomNote, audioCtx.currentTime + 0.02, 0.9, volG * 0.9, styleG, audioCtx, corde, false);
+    } catch (e) {}
+}
+
+function anaChoisirCandidat(j) {
+    anaCandidatActif = j;
+    anaRendre();
+}
+
+function anaEffacer() {
+    anaCordes = [-1, -1, -1, -1, -1, -1];
+    anaRendre();
+}
+
+function anaEcouter() {
+    const frets = anaCordes.map(f => (f >= 0) ? f : "x");
+    if (!frets.some(f => typeof f === "number")) {
+        afficherToast("Posez d'abord des notes sur le manche de l'analyseur", "info");
+        return;
+    }
+    ecouterRenversement(frets, anaNomCourant || "");
+}
+
+function anaChargerAccordActuel() {
+    let nom = null;
+    if (pasSelectionneIndex !== null && etatsCases[pasSelectionneIndex] && etatsCases[pasSelectionneIndex].chord) {
+        nom = etatsCases[pasSelectionneIndex].chord;
+    }
+    if (!nom) nom = detecterAccordDominantMesure(1) || "C";
+    const frets = trouverVoicingTab(nom);
+    if (!Array.isArray(frets)) {
+        afficherToast("Pas de doigté disponible pour " + nom, "info");
+        return;
+    }
+    if (frets.some(f => typeof f === "number" && f > ANALYSEUR_NB_CASES)) {
+        afficherToast("Ce doigté dépasse la 12ᵉ case du manche de l'analyseur", "info");
+        return;
+    }
+    anaCordes = frets.map(f => (typeof f === "number" && f >= 0) ? f : -1);
+    anaRendre();
+    afficherToast("Manche chargé avec " + nom, "success");
+}
+
+function anaOuvrirBibliotheque() {
+    if (!anaNomCourant) return;
+    ouvrirBibliothequeAccords(anaNomCourant, null, "Analyseur d'accords");
+}
+
+function ouvrirAnalyseur() {
+    fermerBibliothequeAccords();   // une seule fenêtre à la fois
+    const modal = document.getElementById("analyseurModal");
+    if (modal) modal.style.display = "flex";
+    anaRendre();
+}
+
+function fermerAnalyseur() {
+    const modal = document.getElementById("analyseurModal");
+    if (modal) modal.style.display = "none";
+}
+
+// Exposition immédiate pour les clics inline (analyseur v1.6)
+window.ouvrirAnalyseur = ouvrirAnalyseur;
+window.fermerAnalyseur = fermerAnalyseur;
+window.anaClicZone = anaClicZone;
+window.anaChoisirCandidat = anaChoisirCandidat;
+window.anaEffacer = anaEffacer;
+window.anaEcouter = anaEcouter;
+window.anaChargerAccordActuel = anaChargerAccordActuel;
+window.anaOuvrirBibliotheque = anaOuvrirBibliotheque;
+window.anaIdentifierAccord = anaIdentifierAccord;
+
     function selectionnerPasScore(indexGlobal) {
         selectionnerPas(indexGlobal);
         demarrerAudio();
@@ -13812,6 +14276,11 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
             const modalStatsEl = document.getElementById("modalStatsPratique");
             if (modalStatsEl && modalStatsEl.style.display === "flex") {
                 fermerStatsPratique();
+                return;
+            }
+            const modalAnalyseurEl = document.getElementById("analyseurModal");
+            if (modalAnalyseurEl && modalAnalyseurEl.style.display === "flex") {
+                fermerAnalyseur();
                 return;
             }
             const modalBiblioEl = document.getElementById("bibliothequeAccordsModal");
