@@ -213,6 +213,107 @@ try {
     echec = true;
 }
 
+// v1.8.0 : « Maj-Min » / « min-Maj » — chaque famille porte sa description
+try {
+    // 1. les 44 options du menu portent une info-bulle (description en français)
+    const infoBulles = await page.evaluate(() => {
+        const sel = document.getElementById("biblioSelType");
+        const opts = [...sel.querySelectorAll("option")];
+        return { total: opts.length, avecTitre: opts.filter((o) => (o.getAttribute("title") || "").length > 5).length };
+    });
+    if (infoBulles.total !== 44 || infoBulles.avecTitre !== 44) {
+        console.error("ÉCHEC : info-bulles des familles incomplètes (" + infoBulles.avecTitre + "/" + infoBulles.total + ").");
+        echec = true;
+    } else {
+        console.log("Bibliothèque OK — 44 familles décrites en info-bulle du menu.");
+    }
+    // 2. la page C mMaj7 explique « min-Maj », la page C7 explique « Maj-Min »
+    await page.evaluate(() => window.ouvrirBibliothequeAccords("CmMaj7"));
+    await page.waitForTimeout(400);
+    const descMinMaj = await page.evaluate(
+        () => document.getElementById("biblioDescFamille")?.textContent || ""
+    );
+    if (!descMinMaj.includes("min-Maj") || !descMinMaj.includes("majeure")) {
+        console.error("ÉCHEC : la page C mMaj7 n'explique pas « min-Maj » (reçu : « " + descMinMaj + " »).");
+        echec = true;
+    } else {
+        console.log("Bibliothèque OK — C mMaj7 décrit comme accord « min-Maj ».");
+    }
+    await page.evaluate(() => window.ouvrirBibliothequeAccords("C7"));
+    await page.waitForTimeout(400);
+    const descMajMin = await page.evaluate(
+        () => document.getElementById("biblioDescFamille")?.textContent || ""
+    );
+    if (!descMajMin.includes("Maj-Min") || !descMajMin.includes("mineure")) {
+        console.error("ÉCHEC : la page C7 n'explique pas « Maj-Min » (reçu : « " + descMajMin + " »).");
+        echec = true;
+    } else {
+        console.log("Bibliothèque OK — C7 décrit comme accord « Maj-Min » (dominante).");
+    }
+    await page.evaluate(() => window.fermerBibliothequeAccords());
+    // 3. l'analyseur nomme le doigté ouvert EmMaj7 (021000) et affiche sa formule
+    await page.click("#btnOuvrirAnalyseur", { timeout: 5000 });
+    await page.waitForTimeout(300);
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    for (const [s, f] of [[0, 0], [1, 2], [2, 1], [3, 0], [4, 0], [5, 0]]) {
+        await page.click('#anaMancheZone [data-ana="s' + s + '"][data-fret="' + f + '"]');
+    }
+    await page.waitForTimeout(400);
+    const resEmMaj7 = await page.evaluate(() => ({
+        nom: (document.getElementById("anaNomGrand")?.textContent || "").trim(),
+        tout: document.getElementById("anaResultatZone")?.textContent || ""
+    }));
+    if (resEmMaj7.nom !== "EmMaj7") {
+        console.error("ÉCHEC : le doigté 021000 affiche « " + resEmMaj7.nom + " » au lieu de EmMaj7.");
+        echec = true;
+    } else if (!resEmMaj7.tout.includes("min-Maj")) {
+        console.error("ÉCHEC : la formule « min-Maj » n'est pas affichée sous EmMaj7.");
+        echec = true;
+    } else {
+        console.log("Analyseur OK — EmMaj7 reconnu avec sa formule « min-Maj ».");
+    }
+    // 4. v1.8.0 — priorité à la basse : le barré x8888x (F Bb Eb G C) doit renvoyer
+    //    F9sus4 (fondamentale à la basse) et non plus un renversement Eb6/9/F
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    for (const s of [1, 2, 3, 4, 5]) {
+        await page.click('#anaMancheZone [data-ana="s' + s + '"][data-fret="8"]');
+    }
+    await page.waitForTimeout(400);
+    const nomF9sus4 = await page.evaluate(
+        () => (document.getElementById("anaNomGrand")?.textContent || "").trim()
+    );
+    if (nomF9sus4 !== "F9sus4") {
+        console.error("ÉCHEC : le barré x8888x affiche « " + nomF9sus4 + " » au lieu de F9sus4.");
+        echec = true;
+    } else {
+        console.log("Analyseur OK — x8888x reconnu comme F9sus4 (fondamentale à la basse).");
+    }
+    // 5. v1.8.0 — voicing jazz sans fondamentale : x3x355 (C Bb E A) → C13
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.waitForTimeout(200);
+    await page.click('#anaMancheZone [data-ana="s1"][data-fret="3"]');
+    await page.click('#anaMancheZone [data-ana="s3"][data-fret="3"]');
+    await page.click('#anaMancheZone [data-ana="s4"][data-fret="5"]');
+    await page.click('#anaMancheZone [data-ana="s5"][data-fret="5"]');
+    await page.waitForTimeout(400);
+    const nomC13 = await page.evaluate(
+        () => (document.getElementById("anaNomGrand")?.textContent || "").trim()
+    );
+    if (nomC13 !== "C13") {
+        console.error("ÉCHEC : le voicing x3x355 affiche « " + nomC13 + " » au lieu de C13.");
+        echec = true;
+    } else {
+        console.log("Analyseur OK — voicing jazz x3x355 reconnu comme C13.");
+    }
+    await page.evaluate(() => window.anaEffacer && window.anaEffacer());
+    await page.click("#btnFermerAnalyseur", { timeout: 3000 }).catch(() => {});
+} catch (e) {
+    console.error("ÉCHEC : descriptions et familles jazz : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {

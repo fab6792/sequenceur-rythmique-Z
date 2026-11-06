@@ -3,6 +3,27 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.0 (2026-11-06)
+
+Analyseur d'accords : **la priorité à la basse tient aussi en jazz — 20 familles ajoutées à la reconnaissance** 🎺 et chaque famille de la bibliothèque explique maintenant ce qu'elle est
+
+**Ta remarque, corrigée**
+- « Il semble que la priorité à la basse ne soit pas toujours respectée dans l'analyseur » : bien vu — le barré x8888x (F, Bb, Eb, G, C) renvoyait « Eb6/9/F » alors que F est à la basse. La cause : la lecture **F9sus4** — parfaitement exacte, fondamentale à la basse — n'existait pas dans les formules de l'analyseur, qui ne connaissait que 26 familles contre 44 à la bibliothèque. Faute de vraie famille, la règle « fondamentale à la basse gagne » ne pouvait pas s'appliquer
+- Réparé : l'analyseur connaît désormais **toutes les 44 familles** de la bibliothèque (+ mMaj9 et dim, analyseur seul). Résultat : x8888x → **F9sus4** ; le voicing sans fondamentale x3x355 (C Bb E A) → **C13** ; les voicings rootless de m11, m13, Maj13, 13♭9, 7♭9♭13… sont enfin nommés à leur juste nom
+- Le classement reste le même : lecture exacte d'abord, fondamentale à la basse ensuite (+50 pour un renversement), famille la plus fondamentale en dernier critère — mais maintenant avec toutes les familles en lice
+
+**Couverture jazz, vérifiée**
+- Audit automatique du vocabulaire jazz courant (43 familles : Maj7/9/13, Maj7♯11, Maj7♯5, m7/m9/m11/m13, m6, m6/9, mMaj7, mMaj9, 6/9, 7/9/13, 13♭9, 9/13, 7♭9, 7♯9, 7♭5, 7♯5, 7♯11, 7♭13, 7♭9♭13, 7sus4, 9sus4, 13sus4, 7♭9sus4, m7♭5, m7♭5(11), dim7, aug…) : **44/44 familles reconnues par l'analyseur et disponibles dans la bibliothèque**
+- 10 voicings jazz réels testés case à case (barré F9sus4, C13 sans fondamentale, EmMaj7, Dm11, Cm9, CMaj9, CMaj13, BbMaj7♯11, CmMaj9, Cm11) : tous nommés avec leur fondamentale à la basse
+- Choix assumés, comme dans les recueils jazz : le « 11 » se joue et s'écrit 9sus4 (ou basse décalée), le « 7 altéré » se prend en 7♯9 / 7♭9♭13 / 7♯5, le 13♯11 se voix avec 7♯11 — le catalogue ne les duplique pas
+
+**Et chaque famille a son explication**
+- Une **ligne descriptive** sous le titre de la page bibliothèque : C mMaj7 affiche « Accord « min-Maj » : triade mineure + 7e majeure — la couleur « James Bond » », C7 affiche « Accord « Maj-Min » : triade majeure + 7e mineure — la dominante qui appelle la tonique » — les **44 familles** ont leur description
+- La même explication en **info-bulle** au survol de chaque option du menu (44/44), et l'**analyseur** affiche « 📐 Formule : … » sous le nom identifié (testé avec EmMaj7 posé au manche)
+
+**Rigueur, comme d'habitude**
+- Test CI étendu : 44/44 info-bulles, descriptions « min-Maj » / « Maj-Min », EmMaj7 + formule, x8888x → F9sus4, x3x355 → C13, régressions Am / C6/9 / accord sans quinte / C6 / bémols, audit harmonique des 7 993 diagrammes — tout est vert en local
+
 ## v1.7.0 (2026-11-06)
 
 Bibliothèque d'accords : **toutes les combinaisons possibles — 44 familles** 🎸 (les accords 6/9 quittent l'analyseur et entrent dans la bibliothèque)

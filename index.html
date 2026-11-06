@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.7.0</title>
+    <title>Séquenceur Rythmique v1.8.0</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.7.0" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.0" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -2903,6 +2903,7 @@
         .biblio-tete .biblio-icone { font-size: 1.6rem; }
         .biblio-titre-principal { font-size: 1.05rem; font-weight: 900; margin: 0; }
         .biblio-sous-titre { font-size: 0.72rem; color: var(--text-gray, #6c757d); margin: 1px 0 0; }
+        .biblio-desc-famille { font-size: 0.74rem; font-weight: 600; color: #b45309; margin: 3px 0 0; line-height: 1.4; }
         .biblio-contexte {
             font-size: 0.68rem;
             font-weight: 800;
@@ -3752,7 +3753,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.7.0</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.0</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4997,6 +4998,7 @@
                 <div>
                     <h3 class="biblio-titre-principal">Bibliothèque d'accords — <span id="biblioTitreAccord">Am</span></h3>
                     <p class="biblio-sous-titre">Must Know &amp; Moveable, renversements, blues et voicings jazz — chaque position s'écoute et s'applique.</p>
+                    <p class="biblio-desc-famille" id="biblioDescFamille"></p>
                 </div>
                 <span class="biblio-contexte" id="biblioContexte"></span>
                 <div class="biblio-nav">
@@ -10740,11 +10742,11 @@
     const BIBLIO_CORDES_MIDI = [40, 45, 50, 55, 59, 64];   // corde 6 (E grave) → corde 1 (E aigu)
     const BIBLIO_DEGRES = ["1", "b9", "9", "3m", "3", "4", "b5", "5", "b6", "6", "7", "7M"];   // v1.5.3 : 3m = tierce mineure, 7M = septième majeure, 7 = septième
     const BIBLIO_TYPES = [
-        { cle: "maj", label: "Majeur", grp: "Essentiels" }, { cle: "min", label: "Mineur", grp: "Essentiels" }, { cle: "7", label: "7 (dominante)", grp: "Essentiels" },
+        { cle: "maj", label: "Majeur", grp: "Essentiels" }, { cle: "min", label: "Mineur", grp: "Essentiels" }, { cle: "7", label: "7 (dominante, Maj-Min)", grp: "Essentiels" },
         { cle: "maj7", label: "Maj7", grp: "Essentiels" }, { cle: "m7", label: "m7", grp: "Essentiels" }, { cle: "sus4", label: "Sus4", grp: "Essentiels" },
         { cle: "add9", label: "Add9", grp: "Essentiels" }, { cle: "5", label: "Power (5)", grp: "Essentiels" },
         { cle: "6", label: "6", grp: "Essentiels" }, { cle: "m6", label: "m6", grp: "Essentiels" }, { cle: "9", label: "9", grp: "Essentiels" }, { cle: "m9", label: "m9", grp: "Essentiels" },
-        { cle: "maj9", label: "Maj9", grp: "Essentiels" }, { cle: "m7b5", label: "m7♭5", grp: "Essentiels" }, { cle: "dim7", label: "dim7", grp: "Essentiels" }, { cle: "mMaj7", label: "mMaj7", grp: "Essentiels" },
+        { cle: "maj9", label: "Maj9", grp: "Essentiels" }, { cle: "m7b5", label: "m7♭5", grp: "Essentiels" }, { cle: "dim7", label: "dim7", grp: "Essentiels" }, { cle: "mMaj7", label: "mMaj7 (min-Maj)", grp: "Essentiels" },
         // v1.7.0 — « toutes les combinaisons possibles à partir d'un accord »
         { cle: "sus2", label: "Sus2", grp: "Autres triades" }, { cle: "aug", label: "aug", grp: "Autres triades" }, { cle: "madd9", label: "m(add9)", grp: "Autres triades" },
         { cle: "69", label: "6/9", grp: "Sixtes" }, { cle: "m69", label: "m6/9", grp: "Sixtes" },
@@ -10761,6 +10763,59 @@
         { cle: "maj7#5", label: "Maj7♯5", grp: "Tensions majeures" }, { cle: "maj913", label: "Maj9/13", grp: "Tensions majeures" },
         { cle: "dim7b13", label: "dim7♭13", grp: "Tensions majeures" }
     ];
+    // v1.8.0 — « Maj-Min » et « min-Maj » : chaque famille porte maintenant une
+    // description en français, affichée à trois endroits : sous le titre de la
+    // page bibliothèque, en info-bulle du menu déroulant (attribut title) et
+    // sous le nom d'accord identifié par l'analyseur.
+    const BIBLIO_DESC = {
+        "maj": "Triade majeure — fondamentale, tierce majeure, quinte juste",
+        "min": "Triade mineure — fondamentale, tierce mineure, quinte juste",
+        "5": "Power chord — fondamentale + quinte, sans tierce (rock, punk)",
+        "7": "Accord « Maj-Min » : triade majeure + 7e mineure — la dominante qui appelle la tonique",
+        "maj7": "Triade majeure + 7e majeure — couleur jazz douce, détendue",
+        "m7": "Triade mineure + 7e mineure — couleur soul, feutrée",
+        "sus4": "La tierce est remplacée par la quarte — suspendu, ni majeur ni mineur",
+        "sus2": "La tierce est remplacée par la 2de — suspendu, son ouvert et aéré",
+        "6": "Triade majeure + 6te — douce, vintage",
+        "m6": "Triade mineure + 6te — manouche, nostalgique",
+        "add9": "Triade majeure + 9e ajoutée, sans 7e — pop moderne",
+        "madd9": "Triade mineure + 9e ajoutée, sans 7e — pop mélancolique",
+        "7sus4": "Dominante sans tierce — la quarte suspend la tension avant la résolution",
+        "9": "Dominante + 9e — funk, groove",
+        "maj9": "Triade majeure + 7e majeure + 9e — jazz feutré",
+        "m9": "Triade mineure + 7e mineure + 9e — soul, ambiance nocturne",
+        "69": "Triade majeure + 6te + 9e — pop des années 60, lumineuse",
+        "m69": "Triade mineure + 6te + 9e — manouche, bossa",
+        "m7b5": "Triade mineure + quinte diminuée + 7e mineure — le demi-diminué du jazz",
+        "dim7": "Accord symétrique en tierces mineures — tension maximale, un doigté vaut pour quatre noms",
+        "dim": "Triade diminuée — transition tendue",
+        "aug": "Triade augmentée (quinte augmentée) — tension ascendante",
+        "mMaj7": "Accord « min-Maj » : triade mineure + 7e majeure — la couleur « James Bond »",
+        "mMaj9": "Accord « min-Maj » + 9e — la couleur « James Bond », version feutrée",
+        "7b9": "Dominante + 9e mineure — tension qui pousse vers un accord mineur",
+        "7#9": "Dominante + 9e augmentée — le fameux accord de Hendrix (blues, funk)",
+        "7b5": "Dominante à quinte diminuée — substitution par tritone",
+        "7#5": "Dominante à quinte augmentée — résolution inattendue",
+        "7#11": "Dominante + 11e augmentée — couleur lydienne, jazz moderne",
+        "7b13": "Dominante + 13te mineure — appelle la sous-dominante mineure",
+        "7b9b13": "Dominante doublement altérée (b9 + b13) — tension maximale",
+        "13": "Dominante étoffée : 7e + 9e + 13te — jazz complet",
+        "13b9": "Dominante à 13te + 9e mineure — très tendue",
+        "913": "9e et 13te ensemble, sans 7e — hybride pop/jazz",
+        "m11": "Triade mineure + 7e mineure + 11e — ballade folk/jazz",
+        "m13": "Mineure étoffée jusqu'à la 13te — jazz modal",
+        "m7b13": "Triade mineure + 13te mineure — dorien sombre",
+        "m7b511": "Demi-diminué avec 11e — jazz modal tendu",
+        "maj13": "Majeur étoffé : 7e majeure + 9e + 13te — ballade jazz",
+        "maj7#11": "Majeur + 11e augmentée — couleur lydienne, cinéma",
+        "maj7#5": "Majeur à quinte augmentée — éclat harmonique",
+        "maj913": "7e majeure + 9e + 13te — voicing jazz étendu",
+        "dim7b13": "dim7 + 13te mineure — tension chromatique extrême",
+        "9sus4": "Quarte suspendue + 9e — groove posé",
+        "13sus4": "Quarte suspendue étoffée jusqu'à la 13te — vamps funk",
+        "7b9sus4": "Dominante suspendue + 9e mineure — tension suspendue"
+    };
+
     // v1.7.0 : étiquettes d'affichage des degrés de la base — « m3 » → « 3m »,
     // « maj7 » → « 7M » (convention v1.5.3), tensions affichées telles quelles.
     const BIBLIO_OL_DEGRE_AFFICHAGE = { "1": "1", "b9": "b9", "9": "9", "m3": "3m", "b3": "3m", "#9": "#9", "3": "3", "4": "4", "11": "11", "b5": "b5", "#11": "#11", "5": "5", "b6": "b6", "#5": "#5", "b13": "b13", "6": "6", "13": "13", "dim7": "bb7", "7": "7", "ma7": "7M", "maj7": "7M" };
@@ -11522,7 +11577,7 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
                         htmlT += '<optgroup label="' + t.grp + '">';
                         grpCourante = t.grp;
                     }
-                    htmlT += '<option value="' + t.cle + '">' + t.label + "</option>";
+                    htmlT += '<option value="' + t.cle + '" title="' + (BIBLIO_DESC[t.cle] || t.label) + '">' + t.label + "</option>";
                 });
                 if (grpCourante !== null) htmlT += "</optgroup>";
                 selT.innerHTML = htmlT;
@@ -11531,6 +11586,8 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
         }
         const titreEl = document.getElementById("biblioTitreAccord");
         if (titreEl) titreEl.textContent = biblioAccordCourant;
+        const descEl = document.getElementById("biblioDescFamille");   // description de la famille
+        if (descEl) descEl.textContent = BIBLIO_DESC[type] || "";
         const ctxEl = document.getElementById("biblioContexte");
         if (ctxEl) ctxEl.textContent = biblioContexteOuverture || "Ouverte depuis la bibliothèque";
 
@@ -11744,7 +11801,35 @@ const ANALYSEUR_FORMULES = [
     { type: "7b5",   suffixe: "7b5",      req: [0, 4, 6, 10],   opt: [],   prio: 22 },
     { type: "7#5",   suffixe: "7#5",      req: [0, 4, 8, 10],   opt: [],   prio: 23 },
     { type: "7b9",   suffixe: "7b9",      req: [0, 4, 10, 1],   opt: [7],  prio: 24 },
-    { type: "7#9",   suffixe: "7#9",      req: [0, 4, 10, 3],   opt: [7],  prio: 25 }
+    { type: "7#9",   suffixe: "7#9",      req: [0, 4, 10, 3],   opt: [7],  prio: 25 },
+    /* v1.8.0 — les familles jazz de la bibliothèque manquaient à l'analyseur :
+       un voicing de F9sus4 (x8888x), C13, Cm11 ou CMaj13 renvoyait un nom de
+       substitution (Eb6/9/F…) parce que la vraie famille n'existait pas ici, et la
+       règle « fondamentale à la basse » ne pouvait pas s'appliquer. Même scoring :
+       lecture exacte, bonus 0 si la fondamentale est à la basse, +50 sinon.
+       mMaj9 et dim (triade) n'ont pas de page bibliothèque — l'analyseur les nomme,
+       le bouton 📚 reste simplement absent pour eux. Prio 26 → 45, après les accords
+       de base : entre deux lectures exactes, la plus fondamentale gagne. */
+    { type: "mMaj9",   suffixe: "mMaj9",    req: [0, 3, 11, 2],    opt: [7],     prio: 26 },
+    { type: "9sus4",   suffixe: "9sus4",    req: [0, 2, 5, 10],    opt: [7],     prio: 27 },
+    { type: "m69",     suffixe: "m6/9",     req: [0, 3, 9, 2],     opt: [7],     prio: 28 },
+    { type: "m11",     suffixe: "m11",      req: [0, 3, 10, 5],    opt: [7, 2],  prio: 29 },
+    { type: "m13",     suffixe: "m13",      req: [0, 3, 10, 9],    opt: [7, 2, 5], prio: 30 },
+    { type: "m7b13",   suffixe: "m7b13",    req: [0, 3, 10, 8],    opt: [7],     prio: 31 },
+    { type: "m7b511",  suffixe: "m7b5(11)", req: [0, 3, 6, 10],    opt: [5],     prio: 32 },
+    { type: "13",      suffixe: "13",       req: [0, 4, 10, 9],    opt: [7, 2],  prio: 33 },
+    { type: "13b9",    suffixe: "13b9",     req: [0, 4, 10, 9, 1], opt: [7],     prio: 34 },
+    { type: "913",     suffixe: "9/13",     req: [0, 4, 10, 2, 9], opt: [7],     prio: 35 },
+    { type: "13sus4",  suffixe: "13sus4",   req: [0, 5, 10, 9],    opt: [7, 2],  prio: 36 },
+    { type: "7b9sus4", suffixe: "7b9sus4",  req: [0, 5, 10, 1],    opt: [7],     prio: 37 },
+    { type: "7#11",    suffixe: "7#11",     req: [0, 4, 6, 10],    opt: [7],     prio: 38 },
+    { type: "7b13",    suffixe: "7b13",     req: [0, 4, 8, 10],    opt: [7],     prio: 39 },
+    { type: "7b9b13",  suffixe: "7b9b13",   req: [0, 4, 10, 1, 8], opt: [7],     prio: 40 },
+    { type: "maj13",   suffixe: "Maj13",    req: [0, 4, 11, 9],    opt: [7, 2],  prio: 41 },
+    { type: "maj7#11", suffixe: "Maj7#11",  req: [0, 4, 11, 6],    opt: [7, 2],  prio: 42 },
+    { type: "maj7#5",  suffixe: "Maj7#5",   req: [0, 4, 11, 8],    opt: [7],     prio: 43 },
+    { type: "maj913",  suffixe: "Maj9/13",  req: [0, 4, 11, 9, 2], opt: [7],     prio: 44 },
+    { type: "dim7b13", suffixe: "dim7b13",  req: [0, 3, 6, 8, 9],  opt: [],      prio: 45 }
 ];
 
 function anaIntervallesDepuis(pcs, racine) {
@@ -11973,10 +12058,13 @@ function anaRendreResultat() {
         avertissement = '<div class="ana-sous-nom" style="color:#b45309;">⚠️ Lecture approchée : ' + hors.join(", ") +
             (hors.length > 1 ? " ne font pas partie" : " ne fait pas partie") + ' de cet accord.</div>';
     }
+    // v1.8.0 : la formule de la famille, lisible sous le nom identifié
+    const descType = BIBLIO_DESC[c.type] || "";
+    const descLigne = descType ? '<div class="ana-sous-nom">📐 Formule : ' + descType + '</div>' : "";
     const typeConnue = BIBLIO_TYPES.some(t => t.cle === c.type);
     zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">' + nom + '</div>' +
         (slashNote ? '<div class="ana-sous-nom">renversement — ' + slashNote + ' à la basse</div>' : "") +
-        avertissement +
+        avertissement + descLigne +
         '<div class="ana-puces">' + puces + '</div>' + alts +
         '<div class="ana-sous-nom">Degrés : 1 = fondamentale · 3m = tierce mineure · 3 = tierce majeure · 5 = quinte · 6 = sixte · 7 = septième · 7M = septième majeure · 9 = neuvième · 11 = onzième · 13 = treizième</div>' +
         anaBoutonsHTML(typeConnue);
