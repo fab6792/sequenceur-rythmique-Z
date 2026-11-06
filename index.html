@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.0</title>
+    <title>Séquenceur Rythmique v1.8.1</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.0" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.1" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3753,7 +3753,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.0</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.1</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4633,6 +4633,10 @@
 
             <!-- CONTENU -->
             <div style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- v1.8.1 : bandeau de mise à jour du guide -->
+                <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
+                    Guide à jour de la <strong>v1.8.1</strong> — nouvelles sections : <strong>5. Bibliothèque d'accords</strong>, <strong>6. Analyseur d'accords</strong>, <strong>7. Partition &amp; Tablature</strong> et <strong>11. Statistiques de pratique</strong>.
+                </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
                 <div style="background: rgba(33, 150, 243, 0.07); border-left: 4px solid #2196f3; padding: 10px 14px; border-radius: 0 6px 6px 0;">
@@ -4648,6 +4652,7 @@
                         <li><strong>Vider un pas :</strong> Cliquez sur la case et appuyez sur <kbd>Suppr</kbd> / <kbd>⌫</kbd> (ou choisissez le silence <code>Ø</code>).</li>
                         <li><strong>Lier deux notes (<kbd>L</kbd>) :</strong> Prolonge la résonance d'une note sur le pas suivant sans ré-attaquer les cordes.</li>
                         <li><strong>Accents & Vélocité (<kbd>V</kbd>) :</strong> Cliquez sur la coche pour alterner entre Normal <code>•</code>, Accentué <code>➢</code> (+50% vol) et Décroissant <code>⇣</code>.</li>
+                        <li><strong>Annuler / Rétablir (<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd>) :</strong> chaque modification (note, durée, accord, preset, manche…) est enregistrée dans un historique ; les boutons <code>↩️</code> / <code>↪️</code> de la barre d'outils parcourent l'historique sans risque d'abîmer votre morceau.</li>
                     </ul>
                 </div>
 
@@ -4755,9 +4760,50 @@
                     </ul>
                 </div>
 
-                <!-- SECTION 5 : TRANSPORT & LECTURE -->
+                <!-- SECTION 5 : BIBLIOTHÈQUE D'ACCORDS (44 FAMILLES) -->
+                <div style="background: rgba(180, 83, 9, 0.07); border-left: 4px solid #b45309; padding: 12px 14px; border-radius: 0 6px 6px 0;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 0.98rem; color: #b45309; display: flex; align-items: center; gap: 6px;">
+                        <span>📚 5. Bibliothèque d'accords — 44 familles × 12 tonalités</span>
+                    </h3>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>Ouvrir le recueil :</strong> bouton <code>📚 Biblio.</code> de la ligne de partition (il s'ouvre sur l'accord en cours), ou le bouton bibliothèque du manche. Feuilletez par <strong>tonalité</strong> puis par <strong>famille</strong> : près de <strong>8 000 diagrammes</strong> vérifiés par un audit automatique intégré.</li>
+                        <li><strong>Toutes les familles utiles :</strong> Essentiels (M, m, 7, mMaj7…), Sixtes (6, 6/9, m6…), Sus étendus, Dominantes (9, 13, 7♭9, 7♯9…), Treizièmes et Tensions (Maj7♯11, 13♭9, dim7♭13…) — le vocabulaire du jazz moderne, du « Must Know » aux voicings avancés.</li>
+                        <li><strong>Chaque famille est expliquée :</strong> une ligne descriptive sous le titre de la page (ex. mMaj7 = « min-Maj : triade mineure + 7e majeure — la couleur James Bond », 7 = « Maj-Min : triade majeure + 7e mineure — la dominante ») et la même explication en <strong>info-bulle</strong> au survol du menu des familles.</li>
+                        <li><strong>Diagrammes pédagogiques :</strong> sous chaque corde jouée, la <strong>note et son degré</strong> (annotations 3m / 7M), la difficulté (●●○ Facile / Moyen / Exigeant), le badge <code>● voicing actuel</code> quand le doigté correspond à votre manche, et le <strong>zoom au survol</strong> pour lire les petits doigtés.</li>
+                        <li><strong>Cliquez, écoutez, appliquez :</strong> chaque diagramme s'écoute et peut être appliqué à votre grille — la bibliothèque devient votre recueil d'accords vivant.</li>
+                        <li><strong>Notation unifiée :</strong> noms d'accords en notation anglo-saxonne internationale (C, D, E… ♯/♭) partout — grille, manche, bibliothèque, analyseur — avec la bascule ♯/♭ si besoin.</li>
+                    </ul>
+                </div>
+
+                <!-- SECTION 6 : ANALYSEUR D'ACCORDS INVERSÉ -->
+                <div style="background: rgba(124, 58, 237, 0.07); border-left: 4px solid #7c3aed; padding: 12px 14px; border-radius: 0 6px 6px 0;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 0.98rem; color: #6d28d9; display: flex; align-items: center; gap: 6px;">
+                        <span>🔍 6. Analyseur d'accords — posez vos doigts, l'app devine !</span>
+                    </h3>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>Le principe inversé :</strong> au lieu de choisir un accord dans un menu, vous <strong>posez vos notes</strong> sur le manche dédié (6 cordes × 24 cases) et l'application identifie l'accord en temps réel. Cliquez sur les cases pour poser vos doigts, utilisez la case de gauche pour étouffer (mute) ou libérer une corde.</li>
+                        <li><strong>Priorité à la basse :</strong> la corde la plus grave jouée fixe la basse de l'accord — Do puis Mi grave s'appelle « C/E », jamais l'inverse. Depuis la v1.8, la règle tient aussi en jazz : le barré x8888x est lu <strong>F9sus4</strong> (F à la basse), et le voicing sans fondamentale x3x355 est reconnu comme <strong>C13</strong>.</li>
+                        <li><strong>Lecture nuancée :</strong> sous le grand nom s'affichent les <strong>lectures alternatives</strong> (« Aussi possible — cliquez pour changer de lecture ») et la <strong>📐 Formule</strong> de la famille reconnue (ex. « min-Maj : triade mineure + 7e majeure »).</li>
+                        <li><strong>Vocabulaire jazz complet :</strong> les 44 familles de la bibliothèque sont reconnues — m7♭5, 13♭9, 9sus4, 6/9, mMaj7, dim7, aug… y compris les <strong>voicings sans fondamentale</strong> (rootless) chers au jazz moderne.</li>
+                        <li><strong>Boutons utiles :</strong> <code>🔊 Écouter</code> pour entendre votre doigté, <code>📥 Accord actuel</code> pour recharger le doigté de l'accord du pas sélectionné, <code>🧹 Effacer</code> pour étouffer toutes les cordes, et l'option ♯/♭ pour choisir l'orthographe des noms (D♯ ou E♭).</li>
+                    </ul>
+                </div>
+
+                <!-- SECTION 7 : PARTITION & TABLATURE -->
+                <div style="background: rgba(0, 105, 92, 0.07); border-left: 4px solid #00897b; padding: 12px 14px; border-radius: 0 6px 6px 0;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 0.98rem; color: #00695c; display: flex; align-items: center; gap: 6px;">
+                        <span>📜 7. Mode Partition & Tablature — 3 vues + impression</span>
+                    </h3>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>Trois vues de vos mesures :</strong> <code>Grille</code> (les cases pas-à-pas classiques), <code>Partition</code> (portée & tablature rythmique simplifiée, lisible par tous) et <code>Mixte</code> (les deux côte à côte — idéal pour apprendre à lire la rythmique).</li>
+                        <li><strong>Imprimer / PDF :</strong> bouton <code>Imprimer</code> du panneau partition : mise en page papier propre de votre morceau, exportable en PDF via la boîte d'impression du navigateur — parfait pour le cours, l'élève ou le pupitre.</li>
+                        <li><strong>Bibliothèque à portée de main :</strong> depuis la partition, le bouton <code>📚 Biblio.</code> ouvre le recueil directement sur l'accord de la mesure (Must Know, formes transposables, renversements, voicings jazz…).</li>
+                    </ul>
+                </div>
+
+                <!-- SECTION 8 : TRANSPORT & LECTURE -->
                 <div style="background: rgba(76, 175, 80, 0.07); border-left: 4px solid #4caf50; padding: 10px 14px; border-radius: 0 6px 6px 0;">
-                    <h3 style="margin: 0 0 6px 0; font-size: 0.95rem; color: #2e7d32;">5. 🚀 Barre de Transport (collée à la Mesure 1)</h3>
+                    <h3 style="margin: 0 0 6px 0; font-size: 0.95rem; color: #2e7d32;">8. 🚀 Barre de Transport (collée à la Mesure 1)</h3>
                     <ul style="margin: 0; padding-left: 20px;">
                         <li><strong>Lecture / Pause :</strong> Cliquez sur <strong>[▶ Lecture]</strong> ou appuyez sur la barre <kbd>Espace</kbd>.</li>
                         <li><strong>Stop :</strong> Arrête et replace la tête de lecture au premier temps de votre boucle.</li>
@@ -4767,10 +4813,10 @@
                     </ul>
                 </div>
 
-                <!-- SECTION 6 : MÉDIATOR & JEU MAIN DROITE -->
+                <!-- SECTION 9 : MÉDIATOR & JEU MAIN DROITE -->
                 <div style="background: rgba(33, 150, 243, 0.08); border-left: 4px solid #2196f3; padding: 12px 14px; border-radius: 0 6px 6px 0;">
                     <h3 style="margin: 0 0 8px 0; font-size: 0.98rem; color: #1565c0; display: flex; align-items: center; gap: 6px;">
-                        <span>🎸 6. Mode Médiator & Jeu Main Droite (Sens, Doigtés, Jauge & Strum [Touche M])</span>
+                        <span>🎸 9. Mode Médiator & Jeu Main Droite (Sens, Doigtés, Jauge & Strum [Touche M])</span>
                     </h3>
                     <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
                         <li><strong>Sens d'attaque en direct sur la grille :</strong>
@@ -4799,9 +4845,9 @@
                     </ul>
                 </div>
 
-                <!-- SECTION 7 : OUTILS GUITARISTE -->
+                <!-- SECTION 10 : OUTILS GUITARISTE -->
                 <div style="background: rgba(255, 152, 0, 0.07); border-left: 4px solid #ff9800; padding: 10px 14px; border-radius: 0 6px 6px 0;">
-                    <h3 style="margin: 0 0 6px 0; font-size: 0.95rem; color: #e65100;">7. ⚡ Outils d'entraînement au tempo & Son Studio</h3>
+                    <h3 style="margin: 0 0 6px 0; font-size: 0.95rem; color: #e65100;">10. ⚡ Outils d'entraînement au tempo & Son Studio</h3>
                     <ul style="margin: 0; padding-left: 20px;">
                         <li><strong>Moteur Audio Studio :</strong> 4 timbres physiques dédiés (Acoustique Folk bronze, Électrique Clean Strat, Jazz Demi-Caisse 335, Rock Crunch lampes), simulation réaliste du coup de médiator (balayage grave➔aigu en Down, aigu➔grave en Up), réverbe studio stéréo et compresseur bus master.</li>
                         <li><strong>Boîte à rythmes d'accompagnement :</strong> 8 grooves vivants avec gestion des vélocités et ghosts (Rock 8-Beat, Rock Punchy, Pop/Folk acoustique, Funk 16-Beat, Blues Shuffle, Reggae One Drop authentique, Bossa Nova brésilienne, Half-Time lourd).</li>
@@ -4809,14 +4855,27 @@
                         <li><strong>Speed Trainer :</strong> Accélère automatiquement le BPM toutes les X boucles pour monter en vitesse sans lâcher votre guitare.</li>
                         <li><strong>Gap Click (Tempo intérieur) :</strong> Coupe le clic métronome pendant 1 ou 2 mesures pour tester votre régularité rythmique sans repère audio.</li>
                         <li><strong>Groove / Swing :</strong> Ajustez de 50% (droit) à 70% (swing ternaire) pour faire swinger vos rythmes.</li>
+                        <li><strong>Basse automatique :</strong> le menu <code>Basse</code> ajoute une vraie ligne de basse qui suit les accords de la grille — <strong>tonique tenue par mesure</strong>, <strong>tonique à chaque temps</strong> ou <strong>tonique–quinte alternée</strong> — avec son volume dédié. Incluse dans l'export WAV.</li>
                     </ul>
                 </div>
 
-                <!-- SECTION 8 : RACCOURCIS CLAVIER -->
+                <!-- SECTION 11 : STATISTIQUES DE PRATIQUE -->
+                <div style="background: rgba(194, 24, 91, 0.07); border-left: 4px solid #c2185b; padding: 12px 14px; border-radius: 0 6px 6px 0;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 0.98rem; color: #ad1457; display: flex; align-items: center; gap: 6px;">
+                        <span>📊 11. Statistiques de pratique</span>
+                    </h3>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>Suivez votre assiduité :</strong> bouton <code>Statistiques</code> de la barre d'outils : temps de jeu, jours pratiqués et activité des <strong>14 derniers jours</strong> — un petit calendrier de motivation.</li>
+                        <li><strong>100 % privé :</strong> tout est conservé sur cet appareil uniquement ; les statistiques ne font partie ni des projets sauvegardés, ni d'aucun envoi réseau.</li>
+                    </ul>
+                </div>
+
+                <!-- SECTION 12 : RACCOURCIS CLAVIER -->
                 <div style="background: rgba(0, 0, 0, 0.03); padding: 12px 14px; border-radius: 6px; border: 1px solid var(--panel-border, #e9ecef);">
-                    <h3 style="margin: 0 0 8px 0; font-size: 0.95rem;">⌨️ 8. Raccourcis clavier indispensables</h3>
+                    <h3 style="margin: 0 0 8px 0; font-size: 0.95rem;">⌨️ 12. Raccourcis clavier indispensables</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; font-size: 0.82rem;">
                         <div><kbd>Espace</kbd> Lecture / Pause</div>
+                        <div><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd> Annuler / Rétablir</div>
                         <div><kbd>←</kbd> <kbd>→</kbd> Déplacer curseur</div>
                         <div><kbd>1</kbd> à <kbd>0</kbd> Durées & Silences</div>
                         <div><kbd>G</kbd> Ghost note (étouffée)</div>
@@ -4838,12 +4897,12 @@
                     </div>
                 </div>
 
-                <!-- SECTION 9 : EXPORTS ET FICHIERS -->
+                <!-- SECTION 13 : EXPORTS ET FICHIERS -->
                 <div style="background: rgba(103, 58, 183, 0.07); border-left: 4px solid #673ab7; padding: 10px 14px; border-radius: 0 6px 6px 0;">
-                    <h3 style="margin: 0 0 6px 0; font-size: 0.95rem; color: #512da8;">9. 📦 Sauvegardes & Audio Studio</h3>
+                    <h3 style="margin: 0 0 6px 0; font-size: 0.95rem; color: #512da8;">13. 📦 Sauvegardes & Audio Studio</h3>
                     <ul style="margin: 0; padding-left: 20px;">
                         <li><strong>Slots Mémoire (1 à 10) :</strong> Sauvegardez vos motifs instantanément dans votre navigateur.</li>
-                        <li><strong>Export / Import JSON :</strong> Téléchargez le fichier complet de votre morceau pour le conserver ou le partager avec un ami ou élève.</li>
+                        <li><strong>Export / Import JSON :</strong> Téléchargez le fichier complet de votre morceau pour le conserver ou le partager avec un ami ou élève. Le mode de <strong>basse automatique</strong> et son volume voyagent avec le projet.</li>
                         <li><strong>Export Audio (WAV) :</strong> Génère en un clic un fichier audio WAV studio de qualité CD (44.1 kHz stéréo) de votre boucle pour l'importer dans votre DAW (Cubase, Logic, Reaper, Ableton) ou vous entraîner sur votre ampli.</li>
                     </ul>
                 </div>

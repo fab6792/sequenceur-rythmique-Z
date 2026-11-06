@@ -3,6 +3,27 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.1 (2026-11-06)
+
+Guide d'utilisation : **l'aide rattrape l'application** 📖 — tout ce qui a été construit de la v1.2 à la v1.8 est enfin documenté
+
+**Pourquoi cette version**
+- Ta remarque : « il faut mettre à jour le fichier d'aide qui n'a pas été révisé depuis longtemps ». Vérification faite : l'aide s'arrêtait aux fonctions d'origine — ni un mot sur Annuler/Rétablir, la basse automatique, les statistiques, la partition imprimable, la bibliothèque d'accords XL ni l'analyseur inversé
+
+**Quatre nouvelles sections dans l'aide (bouton ❓)**
+- 📚 **5. Bibliothèque d'accords** : 44 familles × 12 tonalités (~8 000 diagrammes audités), navigation tonalité → famille, descriptions de familles (mMaj7 « min-Maj », 7 « Maj-Min »), notes et degrés sous chaque corde, zoom au survol, difficultés, « cliquez, écoutez, appliquez »
+- 🔍 **6. Analyseur d'accords** : le principe inversé (posez vos doigts, l'app devine), la **priorité à la basse** (x8888x → F9sus4, x3x355 → C13), les lectures alternatives, la 📐 formule, les boutons 🔊 Écouter / 📥 Accord actuel / 🧹 Effacer
+- 📜 **7. Mode Partition & Tablature** : les 3 vues (Grille / Partition / Mixte) et l'impression papier-PDF
+- 📊 **11. Statistiques de pratique** : temps de jeu des 14 derniers jours, 100 % local, jamais envoyé nulle part
+
+**Mises à jour des sections existantes**
+- Section 1 : **Annuler / Rétablir** (boutons ↩️ / ↪️, Ctrl+Z / Ctrl+Y) rejoint les gestes de base
+- Section Outils : la **basse automatique** documentée (tonique tenue par mesure, tonique à chaque temps, tonique–quinte alternée, volume dédié, incluse dans l'export WAV) ; l'export JSON précise qu'elle voyage avec le projet
+- Table des raccourcis : **Ctrl+Z / Ctrl+Y** ajoutés ; sections renumérotées proprement de 1 à 13 ; bandeau « Guide à jour de la v1.8.1 » en tête de modale
+
+**Rigueur, comme d'habitude**
+- Test CI étendu : la modale d'aide doit contenir les 9 marqueurs des nouvelles sections et renumérotations — tout est vert en local
+
 ## v1.8.0 (2026-11-06)
 
 Analyseur d'accords : **la priorité à la basse tient aussi en jazz — 20 familles ajoutées à la reconnaissance** 🎺 et chaque famille de la bibliothèque explique maintenant ce qu'elle est

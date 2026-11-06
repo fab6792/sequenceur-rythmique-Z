@@ -314,6 +314,39 @@ try {
     echec = true;
 }
 
+// 12. v1.8.1 — l'aide est à jour : les nouvelles fonctions sont documentées
+try {
+    await page.click("#btnHelp");
+    await page.waitForTimeout(300);
+    const aideTxt = await page.evaluate(
+        () => document.getElementById("modalAide")?.innerText || ""
+    );
+    const attendus = [
+        ["Ctrl+Z", "raccourci Annuler/Rétablir"],
+        ["Bibliothèque d'accords — 44 familles", "section bibliothèque d'accords"],
+        ["posez vos doigts", "section analyseur d'accords"],
+        ["Mode Partition & Tablature", "section partition"],
+        ["Statistiques de pratique", "section statistiques"],
+        ["Basse automatique", "basse automatique documentée"],
+        ["Annuler / Rétablir", "geste Annuler/Rétablir en section 1"],
+        ["13. 📦", "sections renumérotées jusqu'à 13"],
+        ["Guide à jour de la", "bandeau de mise à jour"],
+    ];
+    for (const [motif, quoi] of attendus) {
+        if (!aideTxt.includes(motif)) {
+            console.error("ÉCHEC aide : « " + motif + " » absent (" + quoi + ").");
+            echec = true;
+        } else {
+            console.log("Aide OK — " + quoi + " présente.");
+        }
+    }
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(200);
+} catch (e) {
+    console.error("ÉCHEC : test de l'aide : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {
