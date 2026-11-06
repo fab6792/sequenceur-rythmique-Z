@@ -3,6 +3,21 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.2 (2026-11-06)
+
+Retouches d'interface : **le tempo sort des réglages** 🥁 et le bouton Bibliothèque quitte le noir 📚
+
+**Vos deux demandes, corrigées**
+- « Le bouton de la bibliothèque dans le même style que les autres (actuellement noir) » : bien vu — le bouton 📚 Biblio. de la ligne de partition gardait dans les thèmes sombres (Studio, le thème par défaut) le style « toggle non actif » : fond quasi noir, texte terne. Il adopte désormais la **couleur ambre de la bibliothèque** — la même que le popover d'accord, l'analyseur et la section 5 de l'aide — et reste lisible dans les 5 thèmes : Clair, Studio (défaut), Vintage, Neon et sombre
+- « Retrouver le réglage du tempo dans la barre de lecture » : le bloc **🥁 − 120 BPM +** s'installe au centre de la barre de transport, entre ⏳ et le chronomètre : glissez le curseur pour un réglage fin, cliquez **−** / **+** pour ±1 BPM (Maj = ±5, comme au clavier), et la touche **T** reste le Tap Tempo. Le curseur BPM du panneau réglages reste en place, et tout reste **synchronisé dans les deux sens** : curseur transport ↔ réglages, Tap Tempo, raccourcis clavier + / −, chargement d'un projet JSON, réinitialisation
+
+**Rigueur, comme d'habitude**
+- Test CI étendu : le bloc 🥁 est présent, le curseur du transport répercute bien 95 BPM sur tous les affichages (label transport, label et curseur des réglages), les boutons − / + fonctionnent, et le bouton Biblio. est bien ambre en thème Studio et en thème clair — tout est vert en local
+- Aide mise à jour : bandeau « Guide à jour de la v1.8.2 », nouveau point « Tempo à portée de main » dans la section Barre de Transport
+
+**Et la suite**
+- La traduction anglaise (v1.9.0) attend comme convenu ; vos observations sont notées au passage : des éléments restent à traduire autour du manche, dans le bandeau des notes et dans la table des raccourcis — ils rejoindront le dictionnaire
+
 ## v1.8.1 (2026-11-06)
 
 Guide d'utilisation : **l'aide rattrape l'application** 📖 — tout ce qui a été construit de la v1.2 à la v1.8 est enfin documenté

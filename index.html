@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.1</title>
+    <title>Séquenceur Rythmique v1.8.2</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.1" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.2" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -189,6 +189,64 @@
             padding: 10px 18px !important;
             font-weight: 800 !important;
         }
+
+        /* --- v1.8.2 : tempo à portée de main dans la barre de lecture --- */
+        .transport-tempo {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.045);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 999px;
+            padding: 4px 12px;
+        }
+        .transport-tempo-icone { font-size: 0.85rem; }
+        .transport-tempo-btn {
+            width: 22px;
+            height: 22px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            font-size: 0.9rem;
+            font-weight: 900;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .transport-tempo-btn:hover { background: #e2e8f0; }
+        .transport-tempo-btn:active { transform: scale(0.9); }
+        .transport-tempo-valeur {
+            font-family: monospace;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #1b5e20;
+            min-width: 3ch;
+            text-align: center;
+        }
+        .transport-tempo-unite {
+            font-size: 0.6rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #64748b;
+        }
+        .transport-tempo-slider { width: 110px; height: 4px; accent-color: #2e7d32; cursor: pointer; margin: 0; }
+        body.dark-mode .transport-tempo {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+        body.dark-mode .transport-tempo-btn {
+            background: #2a3646;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+        body.dark-mode .transport-tempo-btn:hover { background: #37475c; }
+        body.dark-mode .transport-tempo-valeur { color: #81c784; }
+        body.dark-mode .transport-tempo-unite { color: #94a3b8; }
 
         .control-group {
             display: flex;
@@ -1297,6 +1355,19 @@
             border-color: #34d399 !important;
             box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4) !important;
         }
+        body.theme-studio .transport-tempo {
+            background: rgba(56, 189, 248, 0.08);
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+        body.theme-studio .transport-tempo-btn {
+            background: #19222f;
+            border-color: #2a384c;
+            color: #cbd5e1;
+        }
+        body.theme-studio .transport-tempo-btn:hover { background: #243244; }
+        body.theme-studio .transport-tempo-valeur { color: #38bdf8; }
+        body.theme-studio .transport-tempo-unite { color: #94a3b8; }
+        body.theme-studio .transport-tempo-slider { accent-color: #38bdf8; }
         body.theme-studio .settings-panel {
             background: #111721;
             border-color: #243040;
@@ -1412,6 +1483,19 @@
             border-color: #f59e0b !important;
             box-shadow: 0 2px 10px rgba(217, 119, 6, 0.5) !important;
         }
+        body.theme-vintage .transport-tempo {
+            background: rgba(217, 119, 6, 0.1);
+            border-color: rgba(217, 119, 6, 0.4);
+        }
+        body.theme-vintage .transport-tempo-btn {
+            background: #2a211a;
+            border-color: #5c4a38;
+            color: #e7d5be;
+        }
+        body.theme-vintage .transport-tempo-btn:hover { background: #3a2d22; }
+        body.theme-vintage .transport-tempo-valeur { color: #fbbf24; }
+        body.theme-vintage .transport-tempo-unite { color: #b8a188; }
+        body.theme-vintage .transport-tempo-slider { accent-color: #d97706; }
         body.theme-vintage .settings-panel {
             background: #1b1613;
             border-color: #382d26;
@@ -1528,6 +1612,19 @@
             border-color: #67e8f9 !important;
             box-shadow: 0 0 14px rgba(0, 229, 255, 0.6) !important;
         }
+        body.theme-neon .transport-tempo {
+            background: rgba(0, 229, 255, 0.07);
+            border-color: rgba(0, 229, 255, 0.35);
+        }
+        body.theme-neon .transport-tempo-btn {
+            background: #10161d;
+            border-color: #212936;
+            color: #cfd8dc;
+        }
+        body.theme-neon .transport-tempo-btn:hover { background: #18202a; }
+        body.theme-neon .transport-tempo-valeur { color: #00e5ff; text-shadow: 0 0 8px rgba(0, 229, 255, 0.5); }
+        body.theme-neon .transport-tempo-unite { color: #6b8a93; }
+        body.theme-neon .transport-tempo-slider { accent-color: #00e5ff; }
         body.theme-neon .settings-panel {
             background: #0d0f14;
             border-color: #212936;
@@ -2288,6 +2385,49 @@
             border-color: #38bdf8;
             color: #0369a1;
             font-weight: 700;
+        }
+
+        /* v1.8.2 : le bouton 📚 Biblio. porte la couleur ambre de la bibliothèque,
+           lisible dans tous les thèmes (fini le bouton noir en Studio/sombre) */
+        #btnOpenInversions {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #b45309;
+        }
+        #btnOpenInversions:hover {
+            background: #fde68a;
+            border-color: #d97706;
+            color: #92400e;
+        }
+        body.dark-mode #btnOpenInversions,
+        body.theme-studio #btnOpenInversions {
+            background: rgba(245, 158, 11, 0.16);
+            border-color: #d97706;
+            color: #fbbf24;
+        }
+        body.dark-mode #btnOpenInversions:hover,
+        body.theme-studio #btnOpenInversions:hover {
+            background: rgba(245, 158, 11, 0.3);
+            border-color: #f59e0b;
+            color: #fde68a;
+        }
+        body.theme-vintage #btnOpenInversions {
+            background: rgba(245, 158, 11, 0.18);
+            border-color: #d97706;
+            color: #fcd34d;
+        }
+        body.theme-vintage #btnOpenInversions:hover {
+            background: rgba(245, 158, 11, 0.32);
+            border-color: #f59e0b;
+        }
+        body.theme-neon #btnOpenInversions {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: #f59e0b;
+            color: #fbbf24;
+        }
+        body.theme-neon #btnOpenInversions:hover {
+            background: rgba(245, 158, 11, 0.26);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
         }
 
         .btn-score-action {
@@ -3702,6 +3842,9 @@
             .harmony-toolbar, .score-mode-toolbar { padding: 6px 8px; gap: 6px; }
             .harmony-toolbar-left, .harmony-toolbar-right, .score-mode-left, .score-mode-right { gap: 6px; }
             .main-header { margin-bottom: 10px; }
+            .transport-tempo { gap: 5px; padding: 3px 8px; }
+            .transport-tempo-slider { width: 72px !important; }
+            .transport-tempo-unite { display: none; }
         }
     </style>
     <style id="dock-v143">
@@ -3753,7 +3896,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.1</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.2</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4067,6 +4210,15 @@
                 <button id="btnPlay" class="btn-v2 btn-play btn-transport-play" onclick="basculerLecture()" title="Lancer / Mettre en pause la lecture [Espace]" aria-label="Lecture / pause (Espace)">▶</button>
                 <button class="btn-v2 btn-stop btn-transport-stop" onclick="stopperLecture()" title="Arrêter la lecture et revenir au début" aria-label="Arrêter la lecture et revenir au début">⏹</button>
                 <button id="btnCountIn" class="btn-v2 btn-toggle active" onclick="toggleDecompte()" title="Activer / Désactiver le décompte 1-2-3-4" aria-label="Décompte 1-2-3-4" aria-pressed="true">⏳</button>
+                <!-- v1.8.2 : tempo à portée de main, synchronisé avec les réglages -->
+                <div class="transport-tempo" id="transportTempo" title="Tempo : glissez le curseur ou cliquez − / + (Maj = ±5) — la touche T reste le Tap Tempo">
+                    <span class="transport-tempo-icone" aria-hidden="true">🥁</span>
+                    <button id="btnTempoMoins" type="button" class="transport-tempo-btn" onclick="ajusterTempoDelta(event.shiftKey ? -5 : -1)" title="BPM −1 (Maj : −5)" aria-label="Diminuer le tempo">−</button>
+                    <span id="labelTempoTransport" class="transport-tempo-valeur">120</span>
+                    <span class="transport-tempo-unite">BPM</span>
+                    <button id="btnTempoPlus" type="button" class="transport-tempo-btn" onclick="ajusterTempoDelta(event.shiftKey ? 5 : 1)" title="BPM +1 (Maj : +5)" aria-label="Augmenter le tempo">+</button>
+                    <input type="range" id="inputTempoTransport" class="transport-tempo-slider" min="60" max="220" value="120" oninput="changerTempo(this.value)" title="Glisser pour régler le tempo" aria-label="Curseur de tempo">
+                </div>
             </div>
 
             <!-- DROITE : STATISTIQUES DE PRATIQUE (v1.4) + CHRONOMÈTRE DE TRAVAIL -->
@@ -4633,9 +4785,9 @@
 
             <!-- CONTENU -->
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <!-- v1.8.1 : bandeau de mise à jour du guide -->
+                <!-- v1.8.2 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.1</strong> — nouvelles sections : <strong>5. Bibliothèque d'accords</strong>, <strong>6. Analyseur d'accords</strong>, <strong>7. Partition &amp; Tablature</strong> et <strong>11. Statistiques de pratique</strong>.
+                    Guide à jour de la <strong>v1.8.2</strong> — le <strong>tempo</strong> se règle désormais directement dans la <strong>barre de lecture</strong> (bloc 🥁 BPM) et le bouton <strong>📚 Biblio.</strong> porte la couleur ambre de la bibliothèque.
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
@@ -4808,6 +4960,7 @@
                         <li><strong>Lecture / Pause :</strong> Cliquez sur <strong>[▶ Lecture]</strong> ou appuyez sur la barre <kbd>Espace</kbd>.</li>
                         <li><strong>Stop :</strong> Arrête et replace la tête de lecture au premier temps de votre boucle.</li>
                         <li><strong>Décompte métronome :</strong> Activez <code>⏳:ON</code> pour avoir 4 temps de préparation avant le départ.</li>
+                        <li><strong>Tempo à portée de main (v1.8.2) :</strong> Le bloc <code>🥁 − 120 BPM +</code> au centre de la barre règle le tempo sans ouvrir les réglages : glissez le curseur ou cliquez <code>−</code> / <code>+</code> (Maj = ±5). Il reste synchronisé avec le curseur BPM du panneau réglages.</li>
                         <li><strong>Travail en Boucle :</strong> Configurez <code>De Mesure X À Mesure Y</code> dans les réglages pour répéter une section précise.</li>
                         <li><strong>Barre Sticky :</strong> La barre de transport reste fixée en haut de l'écran lors du défilement.</li>
                     </ul>
@@ -9039,9 +9192,22 @@
         renderTout();
     }
 
+    // v1.8.2 : un seul point de synchronisation pour tous les affichages du tempo
+    // (curseur BPM des réglages + bloc 🥁 de la barre de lecture)
+    function majAffichageTempo() {
+        const lbl = document.getElementById("labelTempo");
+        if (lbl) lbl.textContent = tempo;
+        const inp = document.getElementById("inputTempo");
+        if (inp && parseInt(inp.value, 10) !== tempo) inp.value = tempo;
+        const lblT = document.getElementById("labelTempoTransport");
+        if (lblT) lblT.textContent = tempo;
+        const inpT = document.getElementById("inputTempoTransport");
+        if (inpT && parseInt(inpT.value, 10) !== tempo) inpT.value = tempo;
+    }
+
     function changerTempo(val) {
         tempo = parseInt(val);
-        document.getElementById("labelTempo").textContent = tempo;
+        majAffichageTempo();
         // Avec l'horloge Lookahead, aucun redémarrage d'intervalle n'est nécessaire !
         // Le prochain pas s'ajustera automatiquement au nouveau tempo.
     }
@@ -9077,8 +9243,7 @@
         if (selectNb) selectNb.value = 1;
 
         document.getElementById("selectPickingMode").value = "alternate";
-        document.getElementById("inputTempo").value = 120;
-        document.getElementById("labelTempo").textContent = 120;
+        majAffichageTempo();
 
         document.getElementById("selectSignature").value = "4/4";
         document.getElementById("preset-select").selectedIndex = 0;
@@ -13774,10 +13939,7 @@ window.anaDefinirNotation = anaDefinirNotation;
 
         if (data.bpm) {
             tempo = data.bpm;
-            const inTempo = document.getElementById("inputTempo");
-            if (inTempo) inTempo.value = tempo;
-            const lblTempo = document.getElementById("labelTempo");
-            if (lblTempo) lblTempo.textContent = tempo;
+            majAffichageTempo();
         }
         if (data.swingPourcent !== undefined) {
             changerSwing(data.swingPourcent);

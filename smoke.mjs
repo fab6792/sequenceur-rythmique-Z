@@ -347,6 +347,69 @@ try {
     echec = true;
 }
 
+// 13. v1.8.2 — tempo dans la barre de lecture + bouton Biblio. ambre
+try {
+    const tempoOk = await page.evaluate(() => {
+        const lblT = document.getElementById("labelTempoTransport");
+        const inpT = document.getElementById("inputTempoTransport");
+        const btnMoins = document.getElementById("btnTempoMoins");
+        const btnPlus = document.getElementById("btnTempoPlus");
+        return !!(lblT && inpT && btnMoins && btnPlus);
+    });
+    if (!tempoOk) throw new Error("bloc tempo de la barre de lecture incomplet");
+    console.log("Tempo transport OK — bloc 🥁 présent dans la barre de lecture.");
+
+    // Le curseur du transport pilote le tempo global (réglages synchronisés)
+    await page.evaluate(() => {
+        const inpT = document.getElementById("inputTempoTransport");
+        inpT.value = "95";
+        inpT.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const sync = await page.evaluate(() => ({
+        transport: document.getElementById("labelTempoTransport").textContent,
+        reglages: document.getElementById("labelTempo").textContent,
+        curseur: document.getElementById("inputTempo").value,
+    }));
+    if (sync.transport !== "95" || sync.reglages !== "95" || sync.curseur !== "95") {
+        throw new Error("désynchronisation tempo : " + JSON.stringify(sync));
+    }
+    console.log("Tempo transport OK — curseur transport → 95 répercuté (label transport, réglages, curseur).");
+
+    // Boutons − / + : ±1 BPM (±5 avec Maj)
+    await page.click("#btnTempoPlus");
+    await page.waitForTimeout(120);
+    const apresPlus = await page.evaluate(() => document.getElementById("labelTempoTransport").textContent);
+    if (apresPlus !== "96") throw new Error("bouton + inopérant : " + apresPlus);
+    await page.click("#btnTempoMoins");
+    await page.waitForTimeout(120);
+    const apresMoins = await page.evaluate(() => document.getElementById("labelTempoTransport").textContent);
+    if (apresMoins !== "95") throw new Error("bouton − inopérant : " + apresMoins);
+    console.log("Tempo transport OK — boutons − / + fonctionnels (±1 BPM).");
+
+    // Le bouton 📚 Biblio. n'est plus noir : ambre en thème Studio (défaut)...
+    const fondStudio = await page.evaluate(() =>
+        getComputedStyle(document.getElementById("btnOpenInversions")).backgroundColor
+    );
+    if (!fondStudio.includes("245, 158, 11")) {
+        throw new Error("bouton Biblio. toujours noir en Studio : " + fondStudio);
+    }
+    console.log("Biblio OK — bouton ambre en thème Studio (fond " + fondStudio + ").");
+
+    // ...et couleur signature en thème clair
+    await page.evaluate(() => changerTheme("light"));
+    await page.waitForTimeout(300);
+    const bordureClair = await page.evaluate(() =>
+        getComputedStyle(document.getElementById("btnOpenInversions")).borderTopColor
+    );
+    if (bordureClair !== "rgb(245, 158, 11)") {
+        throw new Error("bouton Biblio. non ambre en clair : " + bordureClair);
+    }
+    console.log("Biblio OK — bordure ambre signature en thème clair (rgb(245, 158, 11)).");
+} catch (e) {
+    console.error("ÉCHEC : tempo transport / bouton Biblio : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {
