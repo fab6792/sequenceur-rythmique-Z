@@ -3,6 +3,17 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.3 (2026-11-06)
+
+Le bouton 📚 Biblio. se comporte **exactement comme Tab et Fig.** — et plus aucun bouton noir dans les thèmes sombres
+
+**Ta remarque, corrigée**
+- « Je voyais plutôt le même style que les boutons Tab et Fig., en fonction du mode d'affichage » : compris — la couleur ambre de la v1.8.2 s'efface. Le bouton 📚 Biblio. appartient maintenant à la même famille que 🎸 Tab et 📐 Fig. : éteint au repos, **illuminé en bleu quand la bibliothèque est ouverte**, éteint à nouveau à la fermeture (bouton Fermer ou touche Échap) — le même cycle que les toggles d'affichage
+- Bonus cohérence : les toggles **éteints** restent maintenant lisibles dans tous les thèmes sombres (Studio, Sombre, Vintage, Neon) — Tab, Fig. et Biblio. éteints partagent le même gris-bleu lisible ; fini le point noir signalé au départ
+
+**Rigueur, comme d'habitude**
+- Test CI étendu : le bouton porte bien la classe commune aux toggles (même style que Tab/Fig.), il est éteint au démarrage, illuminé exactement comme Tab quand la bibliothèque s'ouvre (mêmes couleurs calculées), et retourne au repos à la fermeture — tout est vert en local
+
 ## v1.8.2 (2026-11-06)
 
 Retouches d'interface : **le tempo sort des réglages** 🥁 et le bouton Bibliothèque quitte le noir 📚

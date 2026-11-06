@@ -347,7 +347,7 @@ try {
     echec = true;
 }
 
-// 13. v1.8.2 — tempo dans la barre de lecture + bouton Biblio. ambre
+// 13. v1.8.2 — tempo dans la barre de lecture ; v1.8.3 — bouton Biblio. comme Tab/Fig.
 try {
     const tempoOk = await page.evaluate(() => {
         const lblT = document.getElementById("labelTempoTransport");
@@ -386,25 +386,55 @@ try {
     if (apresMoins !== "95") throw new Error("bouton − inopérant : " + apresMoins);
     console.log("Tempo transport OK — boutons − / + fonctionnels (±1 BPM).");
 
-    // Le bouton 📚 Biblio. n'est plus noir : ambre en thème Studio (défaut)...
-    const fondStudio = await page.evaluate(() =>
-        getComputedStyle(document.getElementById("btnOpenInversions")).backgroundColor
-    );
-    if (!fondStudio.includes("245, 158, 11")) {
-        throw new Error("bouton Biblio. toujours noir en Studio : " + fondStudio);
+    // v1.8.3 : le bouton 📚 Biblio. adopte le style des toggles Tab / Fig.
+    // (même classe .btn-score-toggle, + classe "active" quand la bibliothèque est ouverte)
+    // NB : on compare par les classes et, pour les couleurs, on laisse finir la
+    // transition CSS (150 ms) et on ne touche pas à Tab/Fig. (renderTout les rétablit).
+    const repos = await page.evaluate(() => {
+        const biblio = document.getElementById("btnOpenInversions");
+        return {
+            memeClasse: biblio.classList.contains("btn-score-toggle"),
+            eteint: !biblio.classList.contains("active"),
+        };
+    });
+    if (!repos.memeClasse || !repos.eteint) {
+        throw new Error("Biblio. au repos anormale : " + JSON.stringify(repos));
     }
-    console.log("Biblio OK — bouton ambre en thème Studio (fond " + fondStudio + ").");
+    console.log("Biblio OK — au repos : classe .btn-score-toggle, éteint comme Tab/Fig. désactivés.");
 
-    // ...et couleur signature en thème clair
-    await page.evaluate(() => changerTheme("light"));
-    await page.waitForTimeout(300);
-    const bordureClair = await page.evaluate(() =>
-        getComputedStyle(document.getElementById("btnOpenInversions")).borderTopColor
-    );
-    if (bordureClair !== "rgb(245, 158, 11)") {
-        throw new Error("bouton Biblio. non ambre en clair : " + bordureClair);
+    // 2) Bibliothèque ouverte : le bouton s'illumine exactement comme Tab/Fig. actifs
+    await page.click("#btnOpenInversions");
+    await page.waitForTimeout(400);
+    const ouvert = await page.evaluate(() => {
+        const biblio = document.getElementById("btnOpenInversions");
+        return {
+            active: biblio.classList.contains("active"),
+            fondBiblio: getComputedStyle(biblio).backgroundColor,
+            fondTab: getComputedStyle(document.getElementById("btnToggleTablature")).backgroundColor,
+            modal: document.getElementById("bibliothequeAccordsModal")?.style.display,
+        };
+    });
+    if (!ouvert.active || ouvert.modal !== "flex") {
+        throw new Error("bibliothèque non ouverte ou bouton non activé : " + JSON.stringify(ouvert));
     }
-    console.log("Biblio OK — bordure ambre signature en thème clair (rgb(245, 158, 11)).");
+    if (ouvert.fondBiblio !== ouvert.fondTab) {
+        throw new Error("Biblio. ouverte ≠ style actif de Tab (transition ?) : " +
+            ouvert.fondBiblio + " vs " + ouvert.fondTab);
+    }
+    console.log("Biblio OK — bibliothèque ouverte, fond " + ouvert.fondBiblio +
+        " identique à Tab actif (Tab/Fig. éclairés).");
+
+    // 3) Fermeture par Échap : retour au repos
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(250);
+    const ferme = await page.evaluate(() => ({
+        active: document.getElementById("btnOpenInversions").classList.contains("active"),
+        modal: document.getElementById("bibliothequeAccordsModal")?.style.display,
+    }));
+    if (ferme.active || ferme.modal === "flex") {
+        throw new Error("retour au repos raté après fermeture : " + JSON.stringify(ferme));
+    }
+    console.log("Biblio OK — bibliothèque fermée (Échap), bouton retourné au repos.");
 } catch (e) {
     console.error("ÉCHEC : tempo transport / bouton Biblio : " + e.message);
     echec = true;

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.2</title>
+    <title>Séquenceur Rythmique v1.8.3</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.2" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.3" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -2387,47 +2387,34 @@
             font-weight: 700;
         }
 
-        /* v1.8.2 : le bouton 📚 Biblio. porte la couleur ambre de la bibliothèque,
-           lisible dans tous les thèmes (fini le bouton noir en Studio/sombre) */
-        #btnOpenInversions {
-            background: #fef3c7;
-            border-color: #f59e0b;
-            color: #b45309;
+        /* v1.8.3 : les toggles éteints restent lisibles dans tous les thèmes sombres
+           (Tab / Fig. / Biblio. — même style, aucun bouton noir) */
+        body.dark-mode .btn-score-toggle {
+            background: #232d3a;
+            border-color: #3d4a5c;
+            color: #b8c7d9;
         }
-        #btnOpenInversions:hover {
-            background: #fde68a;
-            border-color: #d97706;
-            color: #92400e;
+        body.dark-mode .btn-score-toggle:hover {
+            background: #2d3a4b;
+            color: #dbe7f3;
         }
-        body.dark-mode #btnOpenInversions,
-        body.theme-studio #btnOpenInversions {
-            background: rgba(245, 158, 11, 0.16);
-            border-color: #d97706;
-            color: #fbbf24;
+        body.theme-vintage .btn-score-toggle {
+            background: #3a2d22;
+            border-color: #5c4a38;
+            color: #e7d5be;
         }
-        body.dark-mode #btnOpenInversions:hover,
-        body.theme-studio #btnOpenInversions:hover {
-            background: rgba(245, 158, 11, 0.3);
-            border-color: #f59e0b;
-            color: #fde68a;
+        body.theme-vintage .btn-score-toggle:hover {
+            background: #4a3a2b;
+            color: #f3e5cf;
         }
-        body.theme-vintage #btnOpenInversions {
-            background: rgba(245, 158, 11, 0.18);
-            border-color: #d97706;
-            color: #fcd34d;
+        body.theme-neon .btn-score-toggle {
+            background: #18202a;
+            border-color: #2a3646;
+            color: #9fd8e8;
         }
-        body.theme-vintage #btnOpenInversions:hover {
-            background: rgba(245, 158, 11, 0.32);
-            border-color: #f59e0b;
-        }
-        body.theme-neon #btnOpenInversions {
-            background: rgba(245, 158, 11, 0.12);
-            border-color: #f59e0b;
-            color: #fbbf24;
-        }
-        body.theme-neon #btnOpenInversions:hover {
-            background: rgba(245, 158, 11, 0.26);
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        body.theme-neon .btn-score-toggle:hover {
+            background: #202b38;
+            color: #c8ecf6;
         }
 
         .btn-score-action {
@@ -3321,9 +3308,14 @@
             border-color: #38bdf8;
         }
         body.theme-studio .btn-score-toggle {
-            background: #19222f;
-            border-color: #2a384c;
-            color: #94a3b8;
+            background: #233044;
+            border-color: #3b4d66;
+            color: #b8c7d9;
+        }
+        body.theme-studio .btn-score-toggle:hover {
+            background: #2d3d55;
+            border-color: #4a617f;
+            color: #dbe7f3;
         }
         body.theme-studio .btn-score-toggle.active {
             background: #0c4a6e;
@@ -3896,7 +3888,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.2</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.3</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4785,9 +4777,9 @@
 
             <!-- CONTENU -->
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <!-- v1.8.2 : bandeau de mise à jour du guide -->
+                <!-- v1.8.3 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.2</strong> — le <strong>tempo</strong> se règle désormais directement dans la <strong>barre de lecture</strong> (bloc 🥁 BPM) et le bouton <strong>📚 Biblio.</strong> porte la couleur ambre de la bibliothèque.
+                    Guide à jour de la <strong>v1.8.3</strong> — le <strong>tempo</strong> se règle directement dans la <strong>barre de lecture</strong> (bloc 🥁 BPM) et le bouton <strong>📚 Biblio.</strong> s'illumine en bleu comme Tab et Fig. quand la bibliothèque est ouverte.
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
@@ -11843,11 +11835,17 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
         rendreBibliothequeAccords();
         const modal = document.getElementById("bibliothequeAccordsModal");
         if (modal) modal.style.display = "flex";
+        // v1.8.3 : le bouton 📚 Biblio. s'illumine comme les toggles Tab / Fig.
+        const btnBiblio = document.getElementById("btnOpenInversions");
+        if (btnBiblio) btnBiblio.classList.add("active");
     }
     function fermerBibliothequeAccords() {
         biblioZoomMasquer();   // v1.5.3 : pas de zoom fantôme après fermeture de la fenêtre
         const modal = document.getElementById("bibliothequeAccordsModal");
         if (modal) modal.style.display = "none";
+        // v1.8.3 : retour à l'état repos, comme Tab / Fig. quand ils sont désactivés
+        const btnBiblio = document.getElementById("btnOpenInversions");
+        if (btnBiblio) btnBiblio.classList.remove("active");
     }
     function allerVersAccordBibliotheque(nom) {
         if (!nom) return;
