@@ -440,6 +440,77 @@ try {
     echec = true;
 }
 
+// 14. v1.8.4 — bascule ♯/♭ globale : bibliothèque d'accords + accords fréquents
+try {
+    // 1) Mode dièses (défaut) : rien ne change pour les chips
+    const chipD = await page.evaluate(() => {
+        const chip = document.querySelector('.popover-chip[data-acc="F#m"]');
+        return chip ? chip.textContent : null;
+    });
+    if (chipD !== "F#m") throw new Error("chip F#m absente ou incorrecte en mode dièses : " + chipD);
+    console.log("Bascule ♯/♭ OK — mode dièses : la pastille affiche F#m.");
+
+    // 2) Mode bémols : la chip s'affiche Gbm et la bibliothèque suit
+    await page.evaluate(() => window.anaDefinirNotation(true));
+    await page.waitForTimeout(150);
+    const etatBemol = await page.evaluate(() => {
+        const chip = document.querySelector('.popover-chip[data-acc="F#m"]');
+        window.ouvrirBibliothequeAccords("C#m", null, "Test v1.8.4");
+        const selR = document.getElementById("biblioSelFondamento");
+        const optFsharp = selR ? selR.querySelector('option[value="F#"]') : null;
+        return {
+            chip: chip ? chip.textContent : null,
+            titre: document.getElementById("biblioTitreAccord").textContent,
+            labelGb: optFsharp ? optFsharp.textContent : null,
+            cartes: document.getElementById("biblioCorps").textContent.includes("Dbm"),
+        };
+    });
+    if (etatBemol.chip !== "Gbm") throw new Error("chip non convertie en bémol : " + etatBemol.chip);
+    if (etatBemol.titre !== "Dbm") throw new Error("titre biblio non converti : " + etatBemol.titre);
+    if (etatBemol.labelGb !== "Gb") throw new Error("sélecteur de tonique non converti : " + etatBemol.labelGb);
+    if (!etatBemol.cartes) throw new Error("titres de cartes non convertis (Dbm attendu)");
+    console.log('Bascule ♯/♭ OK — mode ♭ : chip "Gbm", titre biblio "Dbm", sélecteur "Gb", cartes "Dbm …".');
+
+    // 3) Retour dièses : la bibliothèque ouverte se re-rend immédiatement
+    await page.evaluate(() => window.anaDefinirNotation(false));
+    await page.waitForTimeout(150);
+    const retour = await page.evaluate(() => ({
+        titre: document.getElementById("biblioTitreAccord").textContent,
+        labelF: document.querySelector('#biblioSelFondamento option[value="F#"]')?.textContent,
+    }));
+    if (retour.titre !== "C#m") throw new Error("retour dièses raté : " + retour.titre);
+    if (retour.labelF !== "F#") throw new Error("sélecteur non restauré : " + retour.labelF);
+    console.log("Bascule ♯/♭ OK — retour dièses instantané dans la bibliothèque ouverte.");
+
+    // 4) Popover ouvert en mode bémols : la banque complète propose Gbm (valeur cliquable)
+    await page.evaluate(() => window.anaDefinirNotation(true));
+    await page.evaluate(() => window.ouvrirPopoverAccord(new Event("click", { bubbles: true }), 0));
+    await page.waitForTimeout(200);
+    // Pose l'accord via la pastille F#m (affichée Gbm), puis rouvre : le titre doit suivre
+    await page.click('.popover-chip[data-acc="F#m"]');
+    await page.evaluate(() => window.fermerPopoverAccord());
+    await page.evaluate(() => window.ouvrirPopoverAccord(new Event("click", { bubbles: true }), 0));
+    await page.waitForTimeout(150);
+    const pop = await page.evaluate(() => {
+        const select = document.getElementById("popoverSelectAccordComplet");
+        const chip = document.querySelector('.popover-chip[data-acc="F#m"]');
+        const opt = select ? select.querySelector('option[value="Gbm"]') : null;
+        const titre = document.getElementById("chordPopoverTitle").textContent;
+        window.fermerPopoverAccord();
+        return { optGbm: !!opt, chip: chip?.textContent, titreGbm: titre.includes("Gbm") };
+    });
+    if (!pop.optGbm) throw new Error("banque complète sans option Gbm en mode ♭");
+    if (pop.chip !== "Gbm") throw new Error("chip du popover non convertie : " + pop.chip);
+    if (!pop.titreGbm) throw new Error("titre du popover ne montre pas l'accord posé (Gbm)");
+    console.log('Bascule ♯/♭ OK — popover en ♭ : chip "Gbm", option value "Gbm" dans la banque complète.');
+
+    // 5) Nettoyage : retour au mode dièses
+    await page.evaluate(() => window.anaDefinirNotation(false));
+} catch (e) {
+    console.error("ÉCHEC : bascule ♯/♭ globale : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.3</title>
+    <title>Séquenceur Rythmique v1.8.4</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.3" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.4" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3888,7 +3888,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.3</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.4</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4777,9 +4777,9 @@
 
             <!-- CONTENU -->
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <!-- v1.8.3 : bandeau de mise à jour du guide -->
+                <!-- v1.8.4 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.3</strong> — le <strong>tempo</strong> se règle directement dans la <strong>barre de lecture</strong> (bloc 🥁 BPM) et le bouton <strong>📚 Biblio.</strong> s'illumine en bleu comme Tab et Fig. quand la bibliothèque est ouverte.
+                    Guide à jour de la <strong>v1.8.4</strong> — la bascule <strong>♯ / ♭</strong> de l'analyseur est désormais <strong>globale</strong> : elle s'applique aussi à la bibliothèque d'accords (sélecteurs, titres, renversements) et aux accords fréquents du popover d'accord.
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
@@ -4952,6 +4952,8 @@
                         <li><strong>Lecture / Pause :</strong> Cliquez sur <strong>[▶ Lecture]</strong> ou appuyez sur la barre <kbd>Espace</kbd>.</li>
                         <li><strong>Stop :</strong> Arrête et replace la tête de lecture au premier temps de votre boucle.</li>
                         <li><strong>Décompte métronome :</strong> Activez <code>⏳:ON</code> pour avoir 4 temps de préparation avant le départ.</li>
+                        <li><strong>Bascule ♯/♭ globale (v1.8.4) :</strong> Le choix <code>♯</code> / <code>♭</code> de l'analyseur (fenêtre bleue) s'applique désormais aussi à la <strong>bibliothèque d'accords</strong> — sélecteur de tonique, titre, renversements (C#m → Gb) — et aux <strong>accords fréquents</strong> du popover : en mode ♭, la pastille <code>F#m</code> s'affiche <code>Gbm</code> et pose réellement un Gbm.
+                        </li>
                         <li><strong>Tempo à portée de main (v1.8.2) :</strong> Le bloc <code>🥁 − 120 BPM +</code> au centre de la barre règle le tempo sans ouvrir les réglages : glissez le curseur ou cliquez <code>−</code> / <code>+</code> (Maj = ±5). Il reste synchronisé avec le curseur BPM du panneau réglages.</li>
                         <li><strong>Travail en Boucle :</strong> Configurez <code>De Mesure X À Mesure Y</code> dans les réglages pour répéter une section précise.</li>
                         <li><strong>Barre Sticky :</strong> La barre de transport reste fixée en haut de l'écran lors du défilement.</li>
@@ -5078,42 +5080,42 @@
                     <div>
                         <div class="popover-row-label">Majeurs :</div>
                         <div class="popover-chips-row">
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('C')">C</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('D')">D</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('E')">E</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('F')">F</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('G')">G</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('A')">A</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('B')">B</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="C">C</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="D">D</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="E">E</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="F">F</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="G">G</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="A">A</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="B">B</button>
                         </div>
                     </div>
                     
                     <div style="margin-top: 4px;">
                         <div class="popover-row-label">Mineurs :</div>
                         <div class="popover-chips-row">
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('Am')">Am</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('Em')">Em</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('Dm')">Dm</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('Bm')">Bm</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('Cm')">Cm</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('F#m')">F#m</button>
-                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover('Gm')">Gm</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="Am">Am</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="Em">Em</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="Dm">Dm</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="Bm">Bm</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="Cm">Cm</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="F#m">F#m</button>
+                            <button type="button" class="popover-chip" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="Gm">Gm</button>
                         </div>
                     </div>
 
                     <div style="margin-top: 4px;">
                         <div class="popover-row-label">7èmes & Power :</div>
                         <div class="popover-chips-row">
-                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover('E7')">E7</button>
-                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover('A7')">A7</button>
-                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover('D7')">D7</button>
-                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover('G7')">G7</button>
-                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover('C7')">C7</button>
-                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover('E5')">E5</button>
-                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover('A5')">A5</button>
-                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover('D5')">D5</button>
-                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover('G5')">G5</button>
-                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover('C5')">C5</button>
+                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="E7">E7</button>
+                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="A7">A7</button>
+                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="D7">D7</button>
+                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="G7">G7</button>
+                            <button type="button" class="popover-chip chip-7" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="C7">C7</button>
+                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="E5">E5</button>
+                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="A5">A5</button>
+                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="D5">D5</button>
+                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="G5">G5</button>
+                            <button type="button" class="popover-chip chip-5" onclick="appliquerAccordDepuisPopover(nomAppliquable(this.dataset.acc))" data-acc="C5">C5</button>
                         </div>
                     </div>
                 </div>
@@ -9742,15 +9744,16 @@
 
     function genererOptionsAccordsHTML(accordActuel = "") {
         const accordCible = extraireNomAccordPourSelect(accordActuel);
+        const accordAff = nomAppliquable(accordActuel);   // v1.8.4 : l'orthographe réellement appliquée
         let matchTrouve = false;
         let html = "";
 
         for (const categorie in CHORDS) {
             html += `<optgroup label="${categorie}">`;
             for (const acc of Object.keys(CHORDS[categorie])) {
-                const sel = (!matchTrouve && (acc === accordActuel || acc === accordCible)) ? ' selected' : '';
+                const sel = (!matchTrouve && (acc === accordActuel || acc === accordCible || acc === accordAff)) ? ' selected' : '';
                 if (sel) matchTrouve = true;
-                html += `<option value="${acc}"${sel}>${acc}</option>`;
+                html += `<option value="${nomAppliquable(acc)}"${sel}>${nomAccordAffiche(acc)}</option>`;   // v1.8.4 : orthographe ♯/♭
             }
             html += `</optgroup>`;
         }
@@ -10189,15 +10192,11 @@
 
         if (!modal || !etat) return;
 
-        if (title) {
-            const numMesure = Math.floor(indexGlobal / pasParMesure) + 1;
-            const numPasDansMesure = (indexGlobal % pasParMesure) + 1;
-            title.innerHTML = `🎸 Accord du Pas <span style="color:#2563eb;">#${numPasDansMesure}</span> (Mesure ${numMesure}) — Actuel : <strong>${etat.chord}</strong>`;
-        }
+        majTitrePopover(indexGlobal);   // v1.8.4 : titre partagé, suit la bascule ♯/♭
 
         if (select) {
             select.innerHTML = '<option value="">-- Choisir dans toute la bibliothèque --</option>' + genererOptionsAccordsHTML(etat.chord);
-            select.value = etat.chord;
+            select.value = nomAppliquable(etat.chord);   // v1.8.4 : correspond à l'option affichée
         }
 
         modal.style.display = "flex";
@@ -11579,6 +11578,7 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
 
     function biblioConstruireSections(nomComplet) {
         const { root, type } = biblioDecouper(nomComplet);
+        const nomAff = nomAccordAffiche(nomComplet);   // v1.8.4 : orthographe affichée (♯/♭)
         const rootPc = BIBLIO_NOTES.indexOf(root);
         const sections = [];
         const fE = biblioFretteRacine(root, 40);   // corde 6 à vide = E2 (midi 40)
@@ -11602,7 +11602,7 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
             return d;
         };
         const carteOL = (spot, frets, cleH, desc) => ({
-            nom: nomComplet + (spot.metriques.caseMin === 0 ? " — ouvert" : " — case " + spot.metriques.caseMin),
+            nom: nomAff + (spot.metriques.caseMin === 0 ? " — ouvert" : " — case " + spot.metriques.caseMin),
             frets: frets, nomAppliquer: nomComplet, cleHarmonie: cleH, desc: desc, olDegres: degresOL(spot)
         });
         const descRacine = spot => spot.metriques.cordeRacineIdx >= 0
@@ -11654,7 +11654,7 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
                 if (dejaVues.has(JSON.stringify(frets))) return;
                 dejaVues.add(JSON.stringify(frets));
                 couleurs.push({
-                    nom: nomComplet + " — " + md.label + biblioCaseTxt(frets),
+                    nom: nomAff + " — " + md.label + biblioCaseTxt(frets),
                     frets: frets, nomAppliquer: nomComplet, cleHarmonie: md.cleHarmonie, desc: md.desc
                 });
             });
@@ -11670,8 +11670,8 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
         // avec déduplication (le même diagramme ne s'affiche jamais deux fois).
         const invsBrutes = [];
         ol.renversements.forEach(rv => {
-            const lettreBasse = BIBLIO_NOTES[(rootPc + rv.demitons) % 12];
-            const nomSlash = nomComplet + "/" + lettreBasse;
+            const lettreBasse = anaNote((rootPc + rv.demitons) % 12);   // v1.8.4 : suit la bascule ♯/♭
+            const nomSlash = nomAff + "/" + lettreBasse;
             invsBrutes.push({
                 nom: nomSlash, frets: fretsOL(rv), nomAppliquer: nomSlash, cleHarmonie: type, basseDemitons: rv.demitons,
                 desc: "Basse " + lettreBasse + " (" + (BIBLIO_OL_BASSE_NOMS[rv.basse] || "basse") + ") — diagramme « basse » transposable de la base de diagrammes.",
@@ -11704,7 +11704,7 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
                 if (dejaVues.has(JSON.stringify(frets))) return;
                 dejaVues.add(JSON.stringify(frets));
                 jazz.push({
-                    nom: nomComplet + " — " + mj.label + biblioCaseTxt(frets),
+                    nom: nomAff + " — " + mj.label + biblioCaseTxt(frets),
                     frets: frets, nomAppliquer: nomComplet, cleHarmonie: type, desc: mj.desc
                 });
             });
@@ -11780,7 +11780,7 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
         const selR = document.getElementById("biblioSelFondamento");
         const selT = document.getElementById("biblioSelType");
         if (selR) {
-            if (!selR.options.length) selR.innerHTML = BIBLIO_NOTES.map(n => '<option value="' + n + '">' + n + "</option>").join("");
+            selR.innerHTML = BIBLIO_NOTES.map(n => '<option value="' + n + '">' + nomAccordAffiche(n) + "</option>").join("");   // v1.8.4 : labels suivent la bascule ♯/♭
             selR.value = root;
         }
         if (selT) {
@@ -11801,7 +11801,7 @@ const BIBLIO_OL = {"5":[["C","1",1,"","1_5_1_x_x_x","68_510_410_3x_2x_1x","",""]
             selT.value = type || "maj";
         }
         const titreEl = document.getElementById("biblioTitreAccord");
-        if (titreEl) titreEl.textContent = biblioAccordCourant;
+        if (titreEl) titreEl.textContent = nomAccordAffiche(biblioAccordCourant);   // v1.8.4 : suit la bascule ♯/♭
         const descEl = document.getElementById("biblioDescFamille");   // description de la famille
         if (descEl) descEl.textContent = BIBLIO_DESC[type] || "";
         const ctxEl = document.getElementById("biblioContexte");
@@ -12115,6 +12115,76 @@ function anaDefinirNotation(bemol) {
     anaNotationBemol = !!bemol;
     try { localStorage.setItem("analyseurNotation", bemol ? "bemol" : "diese"); } catch (e) {}
     anaRendre();
+    majNotationGlobale();   // v1.8.4 : la bascule ♯/♭ pilote aussi bibliothèque et accords fréquents
+}
+
+/* v1.8.4 : orthographe d'affichage d'un nom d'accord selon la bascule ♯/♭ globale.
+   « C#m7/E » → « Dbm7/E » en mode bémols ; strictement identique en mode dièses. */
+function nomAccordAffiche(nom) {
+    if (!nom || !anaNotationBemol) return nom;
+    const convertirPartie = (partie) => {
+        const m = partie.match(/^([A-G][#b]?)(.*)$/);
+        if (!m) return partie;
+        return (DIESE_VERS_BEMOL[m[1]] || m[1]) + m[2];
+    };
+    return String(nom).split("/").map(convertirPartie).join("/");
+}
+
+/* v1.8.4 : nom réellement appliqué au clic — on préfère l'orthographe affichée si
+   le moteur la connaît (CHORDS), sinon on garde le canonique (son toujours juste). */
+function nomAppliquable(nom) {
+    if (!nom) return nom;
+    const aff = nomAccordAffiche(nom);
+    if (aff === nom) return nom;
+    const existe = Object.values(CHORDS).some(cat => cat && Object.prototype.hasOwnProperty.call(cat, aff));
+    return existe ? aff : nom;
+}
+
+/* v1.8.4 : rafraîchit bibliothèque et popover quand la bascule ♯/♭ change. */
+function majNotationGlobale() {
+    const selR = document.getElementById("biblioSelFondamento");
+    if (selR) {
+        const val = selR.value;
+        selR.innerHTML = BIBLIO_NOTES.map(n => '<option value="' + n + '">' + nomAccordAffiche(n) + "</option>").join("");
+        selR.value = val;
+    }
+    const modalBiblio = document.getElementById("bibliothequeAccordsModal");
+    if (modalBiblio && modalBiblio.style.display === "flex") rendreBibliothequeAccords();
+    // v1.8.4 : les pastilles existent dans le DOM même popover fermé — mise à jour permanente
+    document.querySelectorAll(".popover-chip").forEach(chip => {
+        const acc = chip.getAttribute("data-acc");
+        if (acc) chip.textContent = nomAccordAffiche(acc);
+    });
+    const pop = document.getElementById("chordPopoverModal");
+    if (pop && pop.style.display === "flex") majPopoverNotation();
+}
+
+/* v1.8.4 : met à jour les pastilles d'accords fréquents et la banque complète du
+   popover (appelé quand le popover est ouvert pendant un changement de notation). */
+function majPopoverNotation() {
+    document.querySelectorAll(".popover-chip").forEach(chip => {
+        const acc = chip.getAttribute("data-acc");
+        if (acc) chip.textContent = nomAccordAffiche(acc);
+    });
+    if (pasEnCoursPopover === null || !etatsCases[pasEnCoursPopover]) return;
+    const select = document.getElementById("popoverSelectAccordComplet");
+    const accActuel = etatsCases[pasEnCoursPopover].chord;
+    if (select) {
+        select.innerHTML = '<option value="">-- Choisir dans toute la bibliothèque --</option>' + genererOptionsAccordsHTML(accActuel);
+        select.value = nomAppliquable(accActuel);
+    }
+    majTitrePopover(pasEnCoursPopover);
+}
+
+/* v1.8.4 : titre du popover d'accord, partagé entre l'ouverture et le changement
+   de notation ; le nom affiché suit la bascule ♯/♭. */
+function majTitrePopover(indexGlobal) {
+    const title = document.getElementById("chordPopoverTitle");
+    const etat = etatsCases[indexGlobal];
+    if (!title || !etat) return;
+    const numMesure = Math.floor(indexGlobal / pasParMesure) + 1;
+    const numPasDansMesure = (indexGlobal % pasParMesure) + 1;
+    title.innerHTML = `🎸 Accord du Pas <span style="color:#2563eb;">#${numPasDansMesure}</span> (Mesure ${numMesure}) — Actuel : <strong>${nomAccordAffiche(etat.chord)}</strong>`;
 }
 
 function anaNomDu(c) { return BIBLIO_NOTES[c.racine] + c.suffixe; }   // nom canonique (bibliothèque, ♯)
@@ -14938,9 +15008,9 @@ window.anaDefinirNotation = anaDefinirNotation;
         glisserManchePourcent, glisserVersCases, importerBanqueSlots, importerJSON,
         imprimerPartition, init, initialiserHistorique, initialiserMancheGuitare, initialiserStatsPratique, interleaveWav, jouerApercuBasse, jouerGammeAudioDemo,
         jouerGuitare, jouerHiHat, jouerKick, jouerMetronome, jouerNoteBasse, jouerNoteSynthetique,
-        jouerSnare, majBoutonsHistorique, mettreAJourBadgeScoreEntrainement, mettreAJourCurseurGlissement,
+        jouerSnare, majBoutonsHistorique, majNotationGlobale, majPopoverNotation, majTitrePopover, mettreAJourBadgeScoreEntrainement, mettreAJourCurseurGlissement,
         mettreAJourVolumeReverbe, montrerIndicesBonnesReponses, nettoyerIndicesEntrainement,
-        normaliserPitchEnDemiTon, obtenirCourbeSaturation, obtenirDateFormatee,
+        nomAccordAffiche, nomAppliquable, normaliserPitchEnDemiTon, obtenirCourbeSaturation, obtenirDateFormatee,
         obtenirNotesAccord, obtenirRenversementsAccord, obtenirStudioBus,
         ouvrirEditeurBatterie, ouvrirInversionsDepuisPopover, ouvrirMancheDepuisPopover, ouvrirModalChoixProgression, ouvrirModalRenversements,
         ouvrirBibliothequeAccords, fermerBibliothequeAccords, majBibliothequeDepuisSelecteurs, ouvrirBibliothequeDepuisManche,

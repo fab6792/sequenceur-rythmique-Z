@@ -3,6 +3,20 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.4 (2026-11-09)
+
+La bascule ♯/♭ de la v1.6.2 **quitte l'analyseur** : elle s'applique maintenant à **toute l'application**
+
+**Ta demande, réalisée**
+- « On ne retrouve la bascule ♯/♭ que dans l'analyseur, il faut l'étendre à la bibliothèque et aux accords fréquents » : fait. Les boutons ♯ / ♭ de l'analyseur deviennent le réglage global de l'orthographe des accords — un seul réglage pour tout, mémorisé comme avant
+- **Bibliothèque d'accords** : le sélecteur de tonique (Db, Eb, Gb, Ab, Bb en mode ♭), le titre de la fenêtre, les noms des diagrammes (Dbm7 — case 4…) et les renversements (Dbm/Gb, basse Gb…) suivent le réglage — et si la bibliothèque est ouverte pendant la bascule, tout se réaffiche instantanément
+- **Accords fréquents** (popover d'un pas) : en mode ♭ la pastille F#m s'affiche Gbm et pose réellement un Gbm (le moteur, la tablature et la bibliothèque reconnaissent les deux orthographes depuis longtemps) ; la banque complète propose les mêmes noms convertis, et le titre du popover suit aussi
+- Mode ♯ (défaut) : strictement rien ne change — le comportement d'aujourd'hui est conservé à l'identique
+
+**Rigueur, comme d'habitude**
+- Le son reste juste dans tous les cas : si un nom converti n'existait pas dans le moteur, c'est l'orthographe canonique qui est appliquée en silence (aucun accord muet possible)
+- Test CI étendu (bloc 14) : pastille F#m → Gbm en mode ♭, titre de bibliothèque C#m → Dbm, sélecteur F# → Gb, cartes converties, retour ♯ instantané dans la bibliothèque ouverte, banque du popover proposant bien l'option Gbm — tout est vert en local
+
 ## v1.8.3 (2026-11-06)
 
 Le bouton 📚 Biblio. se comporte **exactement comme Tab et Fig.** — et plus aucun bouton noir dans les thèmes sombres
