@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.6</title>
+    <title>Séquenceur Rythmique v1.8.7</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.6" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.7" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3896,14 +3896,100 @@
                 display: none !important;
             }
         }
-    </style>
+            /* ═══ v1.8.7 — POINT 2 (maquette A validée) : barres de temps appuyées, double-croches pointillées ═══ */
+        /* Vue partition : barre verticale entre les temps, sur les 4 lignes */
+        .score-beat-chord-cell + .score-beat-chord-cell,
+        .score-beat-mediator-cell + .score-beat-mediator-cell,
+        .score-beat-rhythm-cell + .score-beat-rhythm-cell,
+        .score-beat-tab-cell + .score-beat-tab-cell {
+            border-left: 3px solid #2563eb;
+        }
+        body.dark-mode .score-beat-chord-cell + .score-beat-chord-cell,
+        body.dark-mode .score-beat-mediator-cell + .score-beat-mediator-cell,
+        body.dark-mode .score-beat-rhythm-cell + .score-beat-rhythm-cell,
+        body.dark-mode .score-beat-tab-cell + .score-beat-tab-cell,
+        body.theme-studio .score-beat-chord-cell + .score-beat-chord-cell,
+        body.theme-studio .score-beat-mediator-cell + .score-beat-mediator-cell,
+        body.theme-studio .score-beat-rhythm-cell + .score-beat-rhythm-cell,
+        body.theme-studio .score-beat-tab-cell + .score-beat-tab-cell {
+            border-left-color: #38bdf8;
+        }
+        body.theme-vintage .score-beat-chord-cell + .score-beat-chord-cell,
+        body.theme-vintage .score-beat-mediator-cell + .score-beat-mediator-cell,
+        body.theme-vintage .score-beat-rhythm-cell + .score-beat-rhythm-cell,
+        body.theme-vintage .score-beat-tab-cell + .score-beat-tab-cell {
+            border-left-color: #fbbf24;
+        }
+        body.theme-neon .score-beat-chord-cell + .score-beat-chord-cell,
+        body.theme-neon .score-beat-mediator-cell + .score-beat-mediator-cell,
+        body.theme-neon .score-beat-rhythm-cell + .score-beat-rhythm-cell,
+        body.theme-neon .score-beat-tab-cell + .score-beat-tab-cell {
+            border-left-color: #00e5ff;
+        }
+        /* Étiquettes TEMPS 1…4 mises en valeur */
+        .score-beat-tag {
+            background: rgba(37, 99, 235, 0.10);
+            color: #1d4ed8;
+            border-radius: 4px;
+            padding: 1px 9px;
+        }
+        body.dark-mode .score-beat-tag,
+        body.theme-studio .score-beat-tag { background: rgba(56, 189, 248, 0.14); color: #7dd3fc; }
+        body.theme-vintage .score-beat-tag { background: rgba(251, 191, 36, 0.14); color: #fde68a; }
+        body.theme-neon .score-beat-tag { background: rgba(0, 229, 255, 0.12); color: #80f8ff; }
+        /* Double-croches : pointillé léger entre les notes de la portée */
+        .rhythm-step-slot + .rhythm-step-slot { border-left: 1px dashed rgba(100, 116, 139, 0.45); }
+        body.dark-mode .rhythm-step-slot + .rhythm-step-slot,
+        body.theme-studio .rhythm-step-slot + .rhythm-step-slot { border-left: 1px dashed rgba(148, 163, 184, 0.30); }
+        /* Vue grille : pointillé entre double-croches, barre appuyée au début de chaque temps */
+        .step-cell:not(.beat-start) { border-left: 1px dashed #94a3b8; }
+        body.dark-mode .step-cell:not(.beat-start),
+        body.theme-studio .step-cell:not(.beat-start) { border-left: 1px dashed rgba(148, 163, 184, 0.30); }
+        .step-cell.beat-start { border-left: 4px solid #2563eb; box-shadow: inset 2px 0 0 rgba(37, 99, 235, 0.15); }
+        body.dark-mode .step-cell.beat-start,
+        body.theme-studio .step-cell.beat-start { border-left-color: #38bdf8; box-shadow: inset 2px 0 0 rgba(56, 189, 248, 0.15); }
+        body.theme-vintage .step-cell.beat-start { border-left-color: #fbbf24; box-shadow: inset 2px 0 0 rgba(251, 191, 36, 0.15); }
+        body.theme-neon .step-cell.beat-start { border-left-color: #00e5ff; box-shadow: inset 2px 0 0 rgba(0, 229, 255, 0.15); }
+
+        /* ═══ v1.8.7 — POINT 3 (maquette C validée) : mobile compact — les bandeaux s'effacent, la mesure respire ═══
+           S'applique aux petits écrans (≤720 px de large) ET aux écrans plats en
+           hauteur (≤500 px : téléphone en paysage) */
+        @media (max-width: 720px), (max-height: 500px) {
+            /* Transport : une seule ligne qui défile horizontalement */
+            .transport-strip { flex-wrap: nowrap; overflow-x: auto; align-items: center; padding: 6px 8px; gap: 6px; }
+            .transport-group-left, .transport-group-center, .transport-group-right { flex-wrap: nowrap; gap: 5px; }
+            .transport-strip .btn-v2 { padding: 4px 6px; flex: 0 0 auto; }
+            .chrono-led { font-size: 0.95rem; padding: 4px 7px; flex: 0 0 auto; }
+            .transport-tempo { gap: 3px; padding: 2px 7px; flex: 0 0 auto; }
+            .transport-tempo-slider { width: 54px !important; }
+            .main-header h1 { font-size: 1.05rem; }
+            .main-header { margin-bottom: 8px; }
+            /* Palette : une seule ligne qui défile, ~40 px au lieu de trois rangées */
+            .palette-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 6px 9px; gap: 6px; }
+            .palette-btn { padding: 4px 6px; font-size: 0.68rem; flex: 0 0 auto; white-space: nowrap; }
+            #paletteTitle { display: none; }
+            /* La mesure respire : cases au moins 26 px de large, défilement horizontal par mesure */
+            .mesure-box { overflow-x: auto; }
+            .grid-sequenceur, .time-headers-row, .mediator-headers-row {
+                grid-template-columns: repeat(var(--grid-cols, 32), minmax(26px, 1fr)) !important;
+            }
+            .step-cell { height: 46px; }
+        }
+        @media (max-width: 720px) and (orientation: landscape), (max-height: 500px) {
+            .main-header h1 { font-size: 0.95rem; }
+            .main-header { margin-bottom: 4px; }
+            .transport-strip { top: 4px; padding: 4px 6px; }
+            .step-cell { height: 40px; }
+        }
+
+</style>
 </head>
 <body>
 
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.6</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.7</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4794,7 +4880,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <!-- v1.8.4 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.6</strong> — la bascule <strong>♯ / ♭</strong> est maintenant visible <strong>partout</strong> : dans l'analyseur, en tête de la bibliothèque d'accords et dans l'en-tête du popover « Modifier l'accord du pas ». Un seul réglage global : cliquez ♭ n'importe où — sélecteurs, titres, renversements, pastilles et banque basculent instantanément (et la banque complète n'affiche plus aucun doublon en mode ♭).
+                    Guide à jour de la <strong>v1.8.7</strong> — <strong>barres de temps</strong> : dans la partition comme dans la grille, une barre appuyée marque chaque temps et des traits pointillés séparent les double-croches (lecture « papier » plus claire, dans les 5 thèmes). Et sur <strong>mobile</strong> (petit écran ou téléphone en paysage), le transport et la palette tiennent sur une ligne qui défile : la mesure reste visible, cases au moins 26 px. La bascule <strong>♯ / ♭</strong> reste disponible partout (analyseur, bibliothèque, popover).
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->

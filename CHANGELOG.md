@@ -3,6 +3,27 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.7 (2026-11-10)
+
+Deux améliorations validées ensemble : les **barres de temps** et le **mobile compact**
+
+**Point 2 — Barres de temps (maquette A, votre choix)**
+- **Vue Partition** : une barre verticale appuyée traverse les lignes de la mesure **à chaque temps** (bleu en jour, cyan en Studio/Sombre, ambre en Vintage, turquoise en Neon), et les étiquettes **Temps 1…4** sont mises en valeur en pastille
+- **Vue Grille** : même barre appuyée au début de chaque temps, et des **traits pointillés pâles** entre chaque double-croche — chaque temps respire, lecture « papier musicologique »
+- Les double-croches de la portée sont aussi séparées par le même pointillé léger
+- Cohérent dans les **5 thèmes**, desktop inchangé sinon
+
+**Point 3 — Mobile compact (maquette C)**
+- Votre retour : « les bandeaux scotchés masquent la mesure, même en paysage ». Corrigé :
+- **Transport** sur **une seule ligne qui défile** horizontalement (plus d'empilement en 5 rangées) ; **palette des notes** sur une ligne qui défile (~40 px au lieu d'un tiers d'écran)
+- **La mesure respire** : cases au moins **26 px** de large avec défilement horizontal par mesure — environ **11 cases visibles** en portrait (avant : cases écrasées), et environ **26 cases** en paysage (avant : **0** !)
+- S'applique aux écrans ≤ 720 px de large **ET** aux écrans plats en hauteur (≤ 500 px : téléphone en paysage). **Desktop strictement inchangé**
+- Les signatures 3/4, 6/8 et 12/8 restent correctes : le nombre de colonnes suit toujours la signature
+
+**Rigueur, comme d'habitude**
+- Les règles sont exactement celles des maquettes que vous avez essayées — rien d'autre n'a changé (la variante B « bandes alternées » n'est pas retenue, elle reste disponible si vous changez d'avis)
+- Test CI étendu (bloc 17) : règles embarquées dans la feuille de style (barres de temps partition + grille, media query mobile) et vérification réelle sur un écran de téléphone (390 px : transport sur une ligne, cases ≥ 26 px) — tout est vert en local
+
 ## v1.8.6 (2026-11-10)
 
 La bascule ♯/♭ est enfin **visible partout** — plus besoin de passer par l'analyseur

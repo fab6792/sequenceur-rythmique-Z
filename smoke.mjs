@@ -624,6 +624,67 @@ try {
     echec = true;
 }
 
+// 17. v1.8.7 — barres de temps (maquette A) + mobile compact (maquette C)
+try {
+    // a) Les règles sont bien embarquées dans la feuille de style inline
+    const css = await page.evaluate(() => {
+        let tout = "";
+        for (const feuille of document.styleSheets) {
+            try { tout += [...feuille.cssRules].map(r => r.cssText).join("\n") + "\n"; } catch (e) {}
+        }
+        return tout;
+    });
+    const verifs = {
+        partitionBarres: css.includes(".score-beat-chord-cell + .score-beat-chord-cell"),
+        grilleBarres: css.includes(".step-cell.beat-start"),
+        pointilles: css.includes(".rhythm-step-slot + .rhythm-step-slot"),
+        mediaMobile: css.includes("(max-width: 720px)") && css.includes("(max-height: 500px)"),
+        cases26: css.includes("minmax(26px, 1fr)"),
+    };
+    if (Object.values(verifs).some(v => !v)) {
+        throw new Error("règles v1.8.7 absentes : " + JSON.stringify(verifs));
+    }
+    console.log("v1.8.7 OK — règles barres de temps (partition + grille) et mobile compact embarquées.");
+
+    // b) Vérification réelle sur un téléphone en portrait (390 × 844)
+    const mobile = await navigateur.newPage({ viewport: { width: 390, height: 844 } });
+    const errsMobile = [];
+    mobile.on("pageerror", (err) => errsMobile.push(String(err)));
+    await mobile.goto(BASE, { waitUntil: "load", timeout: 30000 });
+    await mobile.waitForFunction(
+        () => document.querySelector("#mesuresContainer") && document.querySelector("#mesuresContainer").children.length > 0,
+        { timeout: 15000 }
+    );
+    // La vue par défaut est la partition : basculer en vue Grille pour vérifier les cases
+    await mobile.evaluate(() => { const b = document.getElementById("btnModeGrille"); if (b) b.click(); });
+    await mobile.waitForTimeout(600);
+    const etatMobile = await mobile.evaluate(() => {
+        const cell = document.querySelector(".step-cell");
+        const t = document.querySelector(".transport-strip");
+        const pal = document.querySelector(".palette-container");
+        return {
+            caseLargeur: cell ? Math.round(cell.getBoundingClientRect().width) : 0,
+            caseHauteur: cell ? Math.round(cell.getBoundingClientRect().height) : 0,
+            transportWrap: t ? getComputedStyle(t).flexWrap : null,
+            paletteWrap: pal ? getComputedStyle(pal).flexWrap : null,
+        };
+    });
+    if (etatMobile.caseLargeur < 26) {
+        throw new Error("mobile : cases trop étroites (" + etatMobile.caseLargeur + " px < 26)");
+    }
+    if (etatMobile.transportWrap !== "nowrap" || etatMobile.paletteWrap !== "nowrap") {
+        throw new Error("mobile : bandeaux non compactés : " + JSON.stringify(etatMobile));
+    }
+    if (errsMobile.length > 0) {
+        throw new Error("erreurs sur vue mobile : " + errsMobile[0]);
+    }
+    await mobile.close();
+    console.log("v1.8.7 OK — téléphone 390 px : cases ≥ 26 px, transport et palette sur une ligne qui défile.");
+} catch (e) {
+    console.error("ÉCHEC : barres de temps + mobile compact : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {
