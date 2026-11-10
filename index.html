@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.5</title>
+    <title>Séquenceur Rythmique v1.8.6</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.5" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.6" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3250,6 +3250,21 @@
         }
         .ana-note-opt.est-active { background: #7c3aed; color: #fff; }
         .ana-note-opt:hover:not(.est-active) { color: #6d28d9; background: rgba(124, 58, 237, 0.08); }
+        /* v1.8.6 : même pilule ♯/♭ dans la bibliothèque et le popover — un seul réglage global */
+        .nota-switch { display: inline-flex; align-items: center; border: 1.5px solid var(--panel-border, #ced4da); border-radius: 999px; overflow: hidden; flex: 0 0 auto; }
+        .nota-opt {
+            border: none;
+            background: var(--bg-card, #fff);
+            color: var(--text-gray, #6c757d);
+            font-size: 0.82rem;
+            font-weight: 900;
+            line-height: 1;
+            padding: 5px 11px;
+            cursor: pointer;
+        }
+        .nota-opt.est-active { background: #7c3aed; color: #fff; }
+        .nota-opt:hover:not(.est-active) { color: #6d28d9; background: rgba(124, 58, 237, 0.08); }
+        .chord-popover-header .nota-switch { margin-left: auto; margin-right: 10px; }
         @media (max-width: 720px) {
             .ana-corps { flex-direction: column; }
             .ana-manche-zone { align-self: center; }
@@ -3888,7 +3903,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.5</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.6</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4779,7 +4794,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <!-- v1.8.4 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.5</strong> — correctif : en mode <strong>♭</strong>, la banque complète d'accords n'affiche plus deux fois les accords enharmoniques (C# et Db partagent le même doigté → une seule entrée « Db »). La bascule <strong>♯ / ♭</strong> de l'analyseur reste <strong>globale</strong> : bibliothèque d'accords (sélecteurs, titres, renversements) et accords fréquents du popover suivent le réglage.
+                    Guide à jour de la <strong>v1.8.6</strong> — la bascule <strong>♯ / ♭</strong> est maintenant visible <strong>partout</strong> : dans l'analyseur, en tête de la bibliothèque d'accords et dans l'en-tête du popover « Modifier l'accord du pas ». Un seul réglage global : cliquez ♭ n'importe où — sélecteurs, titres, renversements, pastilles et banque basculent instantanément (et la banque complète n'affiche plus aucun doublon en mode ♭).
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
@@ -5070,6 +5085,7 @@
         <div class="chord-popover-card" onclick="event.stopPropagation()">
             <div class="chord-popover-header">
                 <span id="chordPopoverTitle" style="font-weight: bold; font-size: 0.95rem;">🎸 Modifier l'accord du pas</span>
+                <span class="nota-switch" id="notaSwitchPopover" role="group" title="Orthographe des accords : dièses ou bémols — réglage global partagé avec l'analyseur"><button type="button" class="nota-opt" data-bemol="0" onclick="anaDefinirNotation(false)" title="Noms avec dièses (C#, D#, F#…)">♯</button><button type="button" class="nota-opt" data-bemol="1" onclick="anaDefinirNotation(true)" title="Noms avec bémols (Db, Eb, Bb…)">♭</button></span>
                 <button type="button" class="chord-popover-close" onclick="fermerPopoverAccord(event)">✕</button>
             </div>
             
@@ -5208,6 +5224,7 @@
                 </div>
                 <span class="biblio-contexte" id="biblioContexte"></span>
                 <div class="biblio-nav">
+                    <span class="nota-switch" id="notaSwitchBiblio" role="group" title="Orthographe des accords : dièses ou bémols — réglage global partagé avec l'analyseur"><button type="button" class="nota-opt" data-bemol="0" onclick="anaDefinirNotation(false)" title="Noms avec dièses (C#, D#, F#…)">♯</button><button type="button" class="nota-opt" data-bemol="1" onclick="anaDefinirNotation(true)" title="Noms avec bémols (Db, Eb, Bb…)">♭</button></span>
                     <select id="biblioSelFondamento" onchange="majBibliothequeDepuisSelecteurs()" title="Choisir la fondamentale">
                         <!-- Rempli dynamiquement -->
                     </select>
@@ -7656,6 +7673,9 @@
 
         // v1.4 : charge les statistiques de pratique de cet appareil
         initialiserStatsPratique();
+
+        // v1.8.6 : pilules ♯/♭ (bibliothèque + popover) alignées sur le réglage mémorisé
+        majBoutonsNotation();
     }
 
     // --- MOTEUR DE SATURATION & COURBE ANALOGIQUE TUBE DRIVE ---
@@ -12120,6 +12140,7 @@ function anaDefinirNotation(bemol) {
     try { localStorage.setItem("analyseurNotation", bemol ? "bemol" : "diese"); } catch (e) {}
     anaRendre();
     majNotationGlobale();   // v1.8.4 : la bascule ♯/♭ pilote aussi bibliothèque et accords fréquents
+    majBoutonsNotation();   // v1.8.6 : pilules ♯/♭ de la bibliothèque et du popover
 }
 
 /* v1.8.4 : orthographe d'affichage d'un nom d'accord selon la bascule ♯/♭ globale.
@@ -12161,6 +12182,18 @@ function majNotationGlobale() {
     });
     const pop = document.getElementById("chordPopoverModal");
     if (pop && pop.style.display === "flex") majPopoverNotation();
+}
+
+/* v1.8.6 : synchronise TOUTES les pilules ♯/♭ (bibliothèque, popover, analyseur)
+   sur le réglage global — quel que soit l'endroit du clic, un seul état. */
+function majBoutonsNotation() {
+    document.querySelectorAll(".nota-opt").forEach(btn => {
+        btn.classList.toggle("est-active", (btn.getAttribute("data-bemol") === "1") === anaNotationBemol);
+    });
+    const d = document.getElementById("anaOptDiese");
+    const b = document.getElementById("anaOptBemol");
+    if (d) d.classList.toggle("est-active", !anaNotationBemol);
+    if (b) b.classList.toggle("est-active", anaNotationBemol);
 }
 
 /* v1.8.4 : met à jour les pastilles d'accords fréquents et la banque complète du

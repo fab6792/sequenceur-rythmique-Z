@@ -3,6 +3,22 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.6 (2026-11-10)
+
+La bascule ♯/♭ est enfin **visible partout** — plus besoin de passer par l'analyseur
+
+**Ta demande, réalisée**
+- « je ne vois pas comment on fait la bascule entre # et bémol ? il n'y a que le sélecteur présent dans l'analyseur, je ne peux pas choisir dans la bibliothèque ni dans le sélecteur d'accord » : compris et corrigé. La même pilule ♯ / ♭ (même style violet que l'analyseur) apparaît maintenant à **deux endroits supplémentaires** :
+  - **Bibliothèque d'accords** : en tête de la barre de navigation, à gauche des sélecteurs fondamentale × type ;
+  - **Popover « Modifier l'accord du pas »** : dans l'en-tête, juste à côté du bouton ✕.
+- **Un seul réglage global** : cliquez ♭ n'importe où (analyseur, bibliothèque ou popover) → sélecteurs de tonique, titres de fenêtres, diagrammes, renversements, pastilles d'accords fréquents et banque complète basculent **instantanément**, partout en même temps — et le réglage reste mémorisé comme avant
+- Au démarrage, les pilules affichent directement l'orthographe mémorisée (♯ ou ♭) — plus aucune surprise
+- Mode ♯ (défaut) : strictement rien ne change pour l'affichage existant
+
+**Rigueur, comme d'habitude**
+- Les 3 paires de boutons (analyseur, bibliothèque, popover) partagent **une seule fonction** de synchronisation : impossible qu'elles se contredisent
+- Test CI étendu (bloc 16) : pilules présentes aux 2 nouveaux emplacements (4 boutons, pilule du popover bien placée avant ✕), clic ♭ **dans la bibliothèque** → réglage mémorisé + pilule du popover synchronisée, clic ♯ **dans le popover** → retour global instantané — tout est vert en local
+
 ## v1.8.5 (2026-11-09)
 
 Correctif : plus aucun **doublon** dans la banque complète d'accords en mode ♭

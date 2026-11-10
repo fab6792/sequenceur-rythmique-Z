@@ -575,6 +575,55 @@ try {
     echec = true;
 }
 
+// 16. v1.8.6 — pilules ♯/♭ visibles dans la bibliothèque et le popover (réglage unique)
+try {
+    // Les deux pilules existent dans le DOM, avec 2 boutons chacune, celle du
+    // popover bien placée avant le bouton ✕
+    const pilules = await page.evaluate(() => {
+        const hd = document.querySelector("#chordPopoverModal .chord-popover-header");
+        const sw = hd ? hd.querySelector(".nota-switch") : null;
+        return {
+            biblio: !!document.querySelector("#bibliothequeAccordsModal .biblio-nav .nota-switch"),
+            popover: !!sw,
+            nbBtns: document.querySelectorAll(".nota-opt").length,
+            avantFermer: !!(sw && sw.nextElementSibling && sw.nextElementSibling.classList.contains("chord-popover-close")),
+        };
+    });
+    if (!pilules.biblio || !pilules.popover || pilules.nbBtns !== 4 || !pilules.avantFermer) {
+        throw new Error("pilules ♯/♭ mal placées : " + JSON.stringify(pilules));
+    }
+    console.log("Pilules ♯/♭ OK — présentes dans la bibliothèque et le popover (4 boutons, avant le ✕).");
+
+    // Clic ♭ DANS la bibliothèque : réglage global mémorisé + pilule du popover synchronisée
+    await page.evaluate(() => document.querySelector('#bibliothequeAccordsModal .biblio-nav .nota-opt[data-bemol="1"]').click());
+    await page.waitForTimeout(250);
+    const apresBiblio = await page.evaluate(() => ({
+        mem: localStorage.getItem("analyseurNotation"),
+        biblioBemolActive: document.querySelector('#bibliothequeAccordsModal .biblio-nav .nota-opt[data-bemol="1"]').classList.contains("est-active"),
+        popBemolActive: document.querySelector('#chordPopoverModal .chord-popover-header .nota-opt[data-bemol="1"]').classList.contains("est-active"),
+    }));
+    if (apresBiblio.mem !== "bemol" || !apresBiblio.biblioBemolActive || !apresBiblio.popBemolActive) {
+        throw new Error("clic ♭ bibliothèque non propagé : " + JSON.stringify(apresBiblio));
+    }
+    console.log("Pilules ♯/♭ OK — clic ♭ dans la bibliothèque : réglage mémorisé, pilule du popover synchronisée.");
+
+    // Clic ♯ DANS le popover : retour global instantané (bibliothèque resynchronisée)
+    await page.evaluate(() => document.querySelector('#chordPopoverModal .chord-popover-header .nota-opt[data-bemol="0"]').click());
+    await page.waitForTimeout(250);
+    const retour = await page.evaluate(() => ({
+        mem: localStorage.getItem("analyseurNotation"),
+        biblioDieseActive: document.querySelector('#bibliothequeAccordsModal .biblio-nav .nota-opt[data-bemol="0"]').classList.contains("est-active"),
+        popDieseActive: document.querySelector('#chordPopoverModal .chord-popover-header .nota-opt[data-bemol="0"]').classList.contains("est-active"),
+    }));
+    if (retour.mem === "bemol" || !retour.biblioDieseActive || !retour.popDieseActive) {
+        throw new Error("clic ♯ popover non propagé : " + JSON.stringify(retour));
+    }
+    console.log("Pilules ♯/♭ OK — clic ♯ dans le popover : retour global instantané (bibliothèque + popover + mémoire).");
+} catch (e) {
+    console.error("ÉCHEC : pilules ♯/♭ bibliothèque/popover : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {
