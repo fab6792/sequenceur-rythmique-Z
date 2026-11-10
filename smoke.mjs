@@ -511,6 +511,70 @@ try {
     echec = true;
 }
 
+// 15. v1.8.5 — banque complète d'accords : plus aucun doublon en mode ♭
+try {
+    // Mode dièses : la liste d'origine est intacte (les deux orthographes y figurent)
+    await page.evaluate(() => window.anaDefinirNotation(false));
+    await page.evaluate(() => window.ouvrirPopoverAccord(new Event("click", { bubbles: true }), 0));
+    await page.waitForTimeout(250);
+    const etatSharp = await page.evaluate(() => {
+        const sel = document.getElementById("popoverSelectAccordComplet");
+        const grpMaj = sel.querySelector('optgroup[label="Majeurs"]');
+        const vals = [...grpMaj.querySelectorAll("option")].map(o => o.value);
+        window.fermerPopoverAccord();
+        return { nb: vals.length, diese: vals.includes("C#"), bemol: vals.includes("Db"),
+                 doublons: vals.length !== new Set(vals).size };
+    });
+    if (etatSharp.nb !== 17 || !etatSharp.diese || !etatSharp.bemol || etatSharp.doublons) {
+        throw new Error("liste ♯ inattendue : " + JSON.stringify(etatSharp));
+    }
+    console.log("Banque d'accords OK — mode ♯ : 17 majeurs, C# et Db présents, aucun doublon.");
+
+    // Mode bémols : chaque accord une seule fois, en orthographe ♭
+    await page.evaluate(() => window.anaDefinirNotation(true));
+    await page.evaluate(() => window.ouvrirPopoverAccord(new Event("click", { bubbles: true }), 0));
+    await page.waitForTimeout(250);
+    const etatBemol = await page.evaluate(() => {
+        const sel = document.getElementById("popoverSelectAccordComplet");
+        const tous = [...sel.querySelectorAll("option")].map(o => o.value).filter(v => v);
+        const grpMaj = sel.querySelector('optgroup[label="Majeurs"]');
+        const valsMaj = [...grpMaj.querySelectorAll("option")].map(o => o.value);
+        window.fermerPopoverAccord();
+        return {
+            totalUnique: tous.length === new Set(tous).size,
+            maj: valsMaj.length,
+            majUnique: valsMaj.length === new Set(valsMaj).size,
+            pasDeDiese: valsMaj.every(v => !v.includes("#")),
+            gbm: [...sel.querySelectorAll("option")].some(o => o.value === "Gbm")
+        };
+    });
+    if (!etatBemol.totalUnique || etatBemol.maj !== 12 || !etatBemol.majUnique || !etatBemol.pasDeDiese || !etatBemol.gbm) {
+        throw new Error("liste ♭ inattendue : " + JSON.stringify(etatBemol));
+    }
+    console.log("Banque d'accords OK — mode ♭ : plus aucun doublon, 12 majeurs en orthographe bémol (C, Db, D, Eb…), Gbm présent.");
+
+    // L'accord posé reste sélectionné : pose Gbm via la pastille (affichée Gbm en ♭) puis rouvre
+    await page.evaluate(() => window.ouvrirPopoverAccord(new Event("click", { bubbles: true }), 0));
+    await page.waitForTimeout(150);
+    await page.click('.popover-chip[data-acc="F#m"]');
+    await page.evaluate(() => window.fermerPopoverAccord());
+    await page.evaluate(() => window.ouvrirPopoverAccord(new Event("click", { bubbles: true }), 0));
+    await page.waitForTimeout(200);
+    const selVal = await page.evaluate(() => {
+        const v = document.getElementById("popoverSelectAccordComplet").value;
+        window.fermerPopoverAccord();
+        return v;
+    });
+    if (selVal !== "Gbm") throw new Error("accord posé non sélectionné dans la banque : " + selVal);
+    console.log("Banque d'accords OK — l'accord posé (Gbm) reste sélectionné dans la liste.");
+
+    // Nettoyage : retour au mode dièses
+    await page.evaluate(() => window.anaDefinirNotation(false));
+} catch (e) {
+    console.error("ÉCHEC : banque complète d'accords (dédoublonnage ♭) : " + e.message);
+    echec = true;
+}
+
 await navigateur.close();
 
 if (!boutonLecture) {

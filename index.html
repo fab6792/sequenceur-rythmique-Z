@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.4</title>
+    <title>Séquenceur Rythmique v1.8.5</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.4" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.5" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3888,7 +3888,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.4</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.5</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4779,7 +4779,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <!-- v1.8.4 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.4</strong> — la bascule <strong>♯ / ♭</strong> de l'analyseur est désormais <strong>globale</strong> : elle s'applique aussi à la bibliothèque d'accords (sélecteurs, titres, renversements) et aux accords fréquents du popover d'accord.
+                    Guide à jour de la <strong>v1.8.5</strong> — correctif : en mode <strong>♭</strong>, la banque complète d'accords n'affiche plus deux fois les accords enharmoniques (C# et Db partagent le même doigté → une seule entrée « Db »). La bascule <strong>♯ / ♭</strong> de l'analyseur reste <strong>globale</strong> : bibliothèque d'accords (sélecteurs, titres, renversements) et accords fréquents du popover suivent le réglage.
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
@@ -9750,10 +9750,14 @@
 
         for (const categorie in CHORDS) {
             html += `<optgroup label="${categorie}">`;
+            const valeursDejaVues = new Set();   // v1.8.5 : dédoublonne les enharmoniques convertis en mode ♭ (C# → Db = Db)
             for (const acc of Object.keys(CHORDS[categorie])) {
-                const sel = (!matchTrouve && (acc === accordActuel || acc === accordCible || acc === accordAff)) ? ' selected' : '';
+                const valeur = nomAppliquable(acc);
+                if (valeursDejaVues.has(valeur)) continue;   // v1.8.5 : même accord converti = même doigté, une seule entrée
+                valeursDejaVues.add(valeur);
+                const sel = (!matchTrouve && (acc === accordActuel || acc === accordCible || acc === accordAff || valeur === accordAff)) ? ' selected' : '';
                 if (sel) matchTrouve = true;
-                html += `<option value="${nomAppliquable(acc)}"${sel}>${nomAccordAffiche(acc)}</option>`;   // v1.8.4 : orthographe ♯/♭
+                html += `<option value="${valeur}"${sel}>${nomAccordAffiche(acc)}</option>`;   // v1.8.4 : orthographe ♯/♭
             }
             html += `</optgroup>`;
         }

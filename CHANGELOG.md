@@ -3,6 +3,19 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.5 (2026-11-09)
+
+Correctif : plus aucun **doublon** dans la banque complète d'accords en mode ♭
+
+**Ta remarque, corrigée**
+- « la liste initiale incluait bien tous les accords avec les # et les bémols. Maintenant si je passe en bémol, j'ai deux fois les accords » : compris — la banque énumérait les deux orthographes (C# **et** Db, qui partagent exactement le même doigté) et la conversion en mode ♭ renommait les deux « Db » → doublons Db, Db, Eb, Eb, Gb, Gb…
+- **En mode ♭**, chaque accord n'apparaît plus qu'une fois, en orthographe bémol : C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B — aucune perte possible, les deux orthographes donnent le même son et le même doigté
+- **En mode ♯ (défaut)** : la liste reste **exactement celle d'origine** — C# et Db continuent d'y figurer toutes les deux, comme depuis le début
+- L'accord courant reste bien **sélectionné** dans la liste, quel que soit le mode ou l'orthographe sous laquelle il a été posé (C# posé en ♯ reste retrouvé après un passage en ♭)
+
+**Rigueur, comme d'habitude**
+- Test CI étendu (bloc 15) : en ♯, les 17 orthographes d'origine des majeurs sont intactes et sans doublon ; en ♭, plus aucune valeur dupliquée dans toute la liste, 12 majeurs en orthographe bémol, Gbm présent dans la banque ; l'accord posé (Gbm) reste sélectionné à la réouverture — tout est vert en local
+
 ## v1.8.4 (2026-11-09)
 
 La bascule ♯/♭ de la v1.6.2 **quitte l'analyseur** : elle s'applique maintenant à **toute l'application**
