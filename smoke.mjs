@@ -735,20 +735,73 @@ try {
         throw new Error("pointillés uniformes encore présents : " + grille.separateurGrille);
     }
 
-    // c) Vue partition : mêmes classes sur médiator et slots rythme
+    // c) Vue partition (v1.8.9) : les marges ont quitté les 3 rangées, la rangée RYTHME
+    //    porte le pointillé fin par groupe de 2 (variante A) ; les en-têtes de grille gardent leurs marges
     await page.click("#btnModePartition");
     await page.waitForTimeout(500);
-    const partition = await page.evaluate(() => ({
-        medPair: !!document.querySelector(".score-med-unit.pair-start"),
-        medCroche: !!document.querySelector(".score-med-unit.croche-start"),
-        rhythmPair: !!document.querySelector(".rhythm-step-slot.pair-start"),
-    }));
-    if (!partition.medPair || !partition.medCroche || !partition.rhythmPair) {
-        throw new Error("classes pair/croche absentes en partition : " + JSON.stringify(partition));
+    const partition = await page.evaluate(() => {
+        const cs = (e) => e ? getComputedStyle(e) : null;
+        const rhythm = cs(document.querySelector(".rhythm-step-slot.pair-start"));
+        const croche = cs(document.querySelector(".rhythm-step-slot.croche-start"));
+        const med = cs(document.querySelector(".score-med-unit.pair-start"));
+        const tab = cs(document.querySelector(".tab-step-slot.pair-start"));
+        return {
+            margeRhythm: rhythm?.marginLeft, ligneRhythm: rhythm?.borderLeftStyle,
+            margeCroche: croche?.marginLeft, margeMed: med?.marginLeft, margeTab: tab?.marginLeft,
+        };
+    });
+    if (partition.margeRhythm !== "0px" || partition.margeCroche !== "0px" || partition.margeMed !== "0px" || partition.margeTab !== "0px") {
+        throw new Error("marges encore présentes en partition (v1.8.9 = continu) : " + JSON.stringify(partition));
     }
-    console.log("v1.8.8 OK — espacement des groupes (5 px paires / 10 px croches, 3/6 px mobile) et liste « Autres noms possibles » en place.");
+    if (partition.ligneRhythm !== "dashed") {
+        throw new Error("pointillé de groupe absent sur la rangée rythme : " + JSON.stringify(partition));
+    }
+    await page.click("#btnModeGrille");
+    await page.waitForTimeout(500);
+    const grilleH = await page.evaluate(() => {
+        const pair = document.querySelector(".time-header-cell.pair-start");
+        const med = document.querySelector(".mediator-header-cell.pair-start");
+        return { h: pair ? getComputedStyle(pair).marginLeft : null, m: med ? getComputedStyle(med).marginLeft : null };
+    });
+    if (grilleH.h !== "5px" || grilleH.m !== "5px") {
+        throw new Error("marges des en-têtes de grille altérées : " + JSON.stringify(grilleH));
+    }
+    console.log("v1.8.8 OK — grille : espacement des groupes (5 px paires / 10 px croches) et liste « Autres noms possibles » en place.");
+
+    // 19. v1.8.9 — pastilles du manche de l'analyseur en degrés (variante A)
+    await page.evaluate(() => anaDefinirNotation(false));
+    const past = await page.evaluate(() => {
+        const lirePastilles = () => [...document.querySelectorAll('#anaMancheZone text[fill="#fff"]')].map(t => t.textContent);
+        anaCordes = [-1, 3, 5, 3, 3, 3];   // x35333 → C7sus2
+        anaRendre();
+        const x35333 = lirePastilles();
+        anaCordes = [-1, 3, 4, 3, 3, 3];   // x34333 → C7sus2(#11)
+        anaRendre();
+        const x34333 = lirePastilles();
+        anaCordes = [-1, 5];               // note seule → aucune lecture → repli n° de case
+        anaRendre();
+        const noteSeule = lirePastilles();
+        anaCordes = [-1, 3, 5, 3, 3, 3];
+        anaRendre();
+        anaChoisirCandidat(1);             // lecture alternative A#6/9/C → degrés recalculés
+        const autreLecture = lirePastilles();
+        return { x35333, x34333, noteSeule, autreLecture };
+    });
+    if (past.x35333.join(",") !== "1,5,7,9,5") {
+        throw new Error("pastilles x35333 attendues 1,5,7,9,5 : " + past.x35333.join(","));
+    }
+    if (past.x34333.join(",") !== "1,#11,7,9,5") {
+        throw new Error("pastilles x34333 attendues 1,#11,7,9,5 : " + past.x34333.join(","));
+    }
+    if (past.noteSeule.join(",") !== "5") {
+        throw new Error("repli n° de case attendu (note seule) : " + past.noteSeule.join(","));
+    }
+    if (past.autreLecture.join(",") !== "9,6,1,3,6") {
+        throw new Error("pastilles recalculées attendues 9,6,1,3,6 (A#6/9/C) : " + past.autreLecture.join(","));
+    }
+    console.log("v1.8.9 OK — partition : continu + pointillé par groupe de 2 ; pastilles de l'analyseur en degrés (suivent la lecture, repli n° de case).");
 } catch (e) {
-    console.error("ÉCHEC : groupes de double-croches + autres noms possibles : " + e.message);
+    console.error("ÉCHEC : partition pointillée / pastilles en degrés : " + e.message);
     echec = true;
 }
 

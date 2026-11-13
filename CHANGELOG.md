@@ -3,6 +3,20 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.9 (2026-11-13)
+
+Deux ajustements issus de l'essai de la v1.8.8 : la partition retrouve une lecture continue, et les pastilles de l'analyseur passent en degrés
+
+**Point 1 — Partition : fine ligne pointillée entre les groupes (variante A)**
+- La **grille** conserve l'espacement hiérarchisé v1.8.8 (paires 5 px / croches 10 px, en-têtes suivis, mobile 3/6 px)
+- La **partition** quitte le système d'espacement — ses 3 rangées (médiator, rythme, tablature) redeviennent continues — et la rangée **Rythme** marque chaque **début de groupe de 2 cases** (paires de doubles-croches, croches incluses) d'un **trait pointillé fin** ; les barres de temps restent en place
+- Trait adapté aux thèmes sombres (nuit, studio) ; pointillés de la v1.8.7 revenus, mais par groupe et non par case
+
+**Point 2 — Analyseur : pastilles du manche en degrés (variante A)**
+- Les pastilles ambres du manche affichent le **degré de chaque note dans la lecture choisie** (1, 5, 7, 9, 3m, **#11**…) au lieu du numéro de case — exactement le même degré que les puces sous le nom
+- Recalculées **quand on choisit une autre lecture** (ex. C7sus2 → A#6/9/C) ; repli sur le numéro de case si aucune lecture n'est possible (0 ou 1 note)
+- Les cordes à vide gardent leur ○ ambre (leur degré reste dans les puces) ; libellés longs (#11, bb7…) en taille réduite dans la pastille
+
 ## v1.8.8 (2026-11-12)
 
 Deux nouveautés validées ensemble : les **groupes de double-croches** et la section **« Autres noms possibles »** de l'analyseur

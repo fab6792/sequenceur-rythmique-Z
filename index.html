@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.8</title>
+    <title>Séquenceur Rythmique v1.8.9</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.8" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.9" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3933,31 +3933,33 @@
         body.theme-studio .score-beat-tag { background: rgba(56, 189, 248, 0.14); color: #7dd3fc; }
         body.theme-vintage .score-beat-tag { background: rgba(251, 191, 36, 0.14); color: #fde68a; }
         body.theme-neon .score-beat-tag { background: rgba(0, 229, 255, 0.12); color: #80f8ff; }
-        /* ═══ v1.8.8 — groupes de 2 cases = doubles croches isolées (variante V2 validée) ═══
-           Hiérarchie des espaces : case < double-croche (2 cases) < croche (4 cases) < temps (barre v1.8.7).
-           Les pointillés uniformes de la v1.8.7 laissent place à un espacement hiérarchisé. */
+        /* ═══ v1.8.9 — espacement des groupes : la GRILLE garde la hiérarchie v1.8.8 ═══
+           Paires de doubles-croches (5 px) et groupes de croches (10 px), en-têtes suivis ;
+           mobile réduit (3 px / 6 px). La PARTITION quitte ce système (trait pointillé v1.8.9). */
         .step-column-wrapper.pair-start,
         .time-header-cell.pair-start,
-        .mediator-header-cell.pair-start,
-        .rhythm-step-slot.pair-start,
-        .tab-step-slot.pair-start,
-        .score-med-unit.pair-start { margin-left: 5px; }
+        .mediator-header-cell.pair-start { margin-left: 5px; }
         /* Les croches (groupes de 4 cases) se détachent encore plus */
         .step-column-wrapper.croche-start,
         .time-header-cell.croche-start,
-        .mediator-header-cell.croche-start,
-        .rhythm-step-slot.croche-start,
-        .tab-step-slot.croche-start,
-        .score-med-unit.croche-start { margin-left: 10px; }
+        .mediator-header-cell.croche-start { margin-left: 10px; }
         /* Mobile : espaces réduits pour ne pas manger la largeur (compact v1.8.7 conservé) */
         @media (max-width: 720px), (max-height: 500px) {
             .step-column-wrapper.pair-start, .time-header-cell.pair-start,
-            .mediator-header-cell.pair-start, .rhythm-step-slot.pair-start,
-            .tab-step-slot.pair-start, .score-med-unit.pair-start { margin-left: 3px; }
+            .mediator-header-cell.pair-start { margin-left: 3px; }
             .step-column-wrapper.croche-start, .time-header-cell.croche-start,
-            .mediator-header-cell.croche-start, .rhythm-step-slot.croche-start,
-            .tab-step-slot.croche-start, .score-med-unit.croche-start { margin-left: 6px; }
+            .mediator-header-cell.croche-start { margin-left: 6px; }
         }
+        /* ═══ v1.8.9 — partition : fine ligne pointillée à chaque groupe de 2 cases (variante A validée) ═══
+           Les 3 rangées de la partition (médiator, rythme, tablature) redeviennent continues :
+           chaque début de groupe — paires de doubles-croches, croches incluses — est marqué d'un
+           trait pointillé fin sur la rangée RYTHME. Les barres de temps restent en place. */
+        .rhythm-step-slot.pair-start,
+        .rhythm-step-slot.croche-start { border-left: 1px dashed rgba(100, 116, 139, 0.55); }
+        body.dark-mode .rhythm-step-slot.pair-start,
+        body.dark-mode .rhythm-step-slot.croche-start,
+        body.theme-studio .rhythm-step-slot.pair-start,
+        body.theme-studio .rhythm-step-slot.croche-start { border-left-color: rgba(148, 163, 184, 0.42); }
         .step-cell.beat-start { border-left: 4px solid #2563eb; box-shadow: inset 2px 0 0 rgba(37, 99, 235, 0.15); }
         body.dark-mode .step-cell.beat-start,
         body.theme-studio .step-cell.beat-start { border-left-color: #38bdf8; box-shadow: inset 2px 0 0 rgba(56, 189, 248, 0.15); }
@@ -4002,7 +4004,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.8</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.9</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4893,7 +4895,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <!-- v1.8.4 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.8</strong> — <strong>groupes de double-croches</strong> : dans la partition comme dans la grille, les paires de 2 cases (double-croches) se détachent par un petit espace, et les groupes de 4 cases (croches) encore davantage — la mesure se lit par groupes, les barres de temps restent en place. Et l'analyseur d'accords présente ses <strong>autres noms possibles</strong> dans une liste claire : la note après le « / » est toujours votre basse, et une note « à côté » devient une altération du nom (ex. <strong>C7sus2(#11)</strong>). La bascule <strong>♯ / ♭</strong> reste disponible partout (analyseur, bibliothèque, popover).
+                    Guide à jour de la <strong>v1.8.9</strong> — <strong>partition : fine ligne pointillée</strong> : la grille garde son espacement par groupes (paires de doubles-croches, croches), et la partition, redevenue continue, marque chaque groupe de 2 cases d'un trait pointillé fin — les barres de temps restent en place. Et dans l'analyseur, les <strong>pastilles du manche affichent le degré</strong> de chaque note dans la lecture choisie (ex. x35333 → 1 · 5 · 7 · 9 · 5, Fa# devient <strong>#11</strong>) — recalculées quand vous choisissez une autre lecture. La section « autres noms possibles » et la bascule <strong>♯ / ♭</strong> restent en place.
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
@@ -12375,6 +12377,12 @@ function anaAlteration(c, pcBasse, pcs) {
 function anaRendreManche() {
     const zone = document.getElementById("anaMancheZone");
     if (!zone) return;
+    /* v1.8.9 : la lecture choisie (candidat actif) donne le degré de chaque note
+       posée — même info que les puces sous le nom ; recalculée par anaRendre()
+       quand on choisit une autre lecture. */
+    const resM = anaIdentifierAccord();
+    const cM = (resM.etat === "accord" && resM.candidats.length) ? (resM.candidats[anaCandidatActif] || resM.candidats[0]) : null;
+    const intervM = cM ? anaIntervallesDepuis(resM.pcs, cM.racine) : null;
     const sg = 36, fg = 26, startX = 24, yEtat = 34, ySillet = 54;
     const W = startX + 5 * sg + 34, H = ySillet + ANALYSEUR_NB_CASES * fg + 22;
     const yNote = H - 8;
@@ -12424,10 +12432,18 @@ function anaRendreManche() {
             s += '<rect class="ana-case" data-ana="s' + i + '" data-fret="' + f + '" x="' + (x - sg / 2 + 2) + '" y="' + (yHaut + 1) + '" width="' + (sg - 4) + '" height="' + (fg - 2) + '" rx="4"/>';
         }
         const st = anaCordes[i];
+        /* v1.8.9 : pastille en degré (lecture choisie) plutôt que n° de case —
+           repli n° de case si aucune lecture n'est possible (0-1 note). */
+        const degM = (cM && st >= 0) ? anaDegre(((ANALYSEUR_CORDES_A_VIDE[i] + st) % 12 + 12) % 12, cM, intervM) : null;
         if (st >= 1) {
             const yc = ySillet + (st - 0.5) * fg;
-            s += '<circle cx="' + x + '" cy="' + yc + '" r="9" fill="#f59e0b" pointer-events="none"/>' +
-                 '<text x="' + x + '" y="' + (yc + 3.2) + '" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fff" pointer-events="none">' + st + '</text>';
+            if (degM) {
+                s += '<circle cx="' + x + '" cy="' + yc + '" r="9" fill="#f59e0b" pointer-events="none"/>' +
+                     '<text x="' + x + '" y="' + (yc + 3.2) + '" text-anchor="middle" font-size="' + (degM.length > 2 ? 7.4 : 9) + '" font-weight="900" fill="#fff" pointer-events="none">' + degM + '</text>';
+            } else {
+                s += '<circle cx="' + x + '" cy="' + yc + '" r="9" fill="#f59e0b" pointer-events="none"/>' +
+                     '<text x="' + x + '" y="' + (yc + 3.2) + '" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fff" pointer-events="none">' + st + '</text>';
+            }
         }
     }
     // Notes jouées, sous le manche (corde grave → corde aiguë)
