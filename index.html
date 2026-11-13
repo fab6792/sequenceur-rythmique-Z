@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séquenceur Rythmique v1.8.7</title>
+    <title>Séquenceur Rythmique v1.8.8</title>
     <meta name="description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
-    <meta property="og:title" content="Séquenceur Rythmique v1.8.7" />
+    <meta property="og:title" content="Séquenceur Rythmique v1.8.8" />
     <meta property="og:description" content="Séquenceur rythmique guitare, métronome et batterie avec horloge Web Audio haute précision." />
     <style>
         :root {
@@ -3212,13 +3212,9 @@
         }
         .ana-puce.est-racine { border-color: #f59e0b; color: #b45309; background: rgba(245, 158, 11, 0.12); }
         .ana-puce.etaouffee { opacity: 0.45; }
-        .ana-alt-titre {
-            font-size: 0.68rem;
-            font-weight: 800;
-            color: var(--text-gray, #6c757d);
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
+        /* ═══ v1.8.8 — section « Autres noms possibles » de l'analyseur (liste plate) ═══ */
+        .ana-autres { margin-top: 12px; text-align: left; background: rgba(124, 58, 237, 0.07); border: 1px solid rgba(124, 58, 237, 0.22); border-radius: 9px; padding: 9px 11px; }
+        .ana-autres-titre { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #7c3aed; margin-bottom: 7px; }
         .ana-alts { display: flex; flex-wrap: wrap; gap: 6px; }
         .ana-alt {
             font-size: 0.74rem;
@@ -3937,14 +3933,31 @@
         body.theme-studio .score-beat-tag { background: rgba(56, 189, 248, 0.14); color: #7dd3fc; }
         body.theme-vintage .score-beat-tag { background: rgba(251, 191, 36, 0.14); color: #fde68a; }
         body.theme-neon .score-beat-tag { background: rgba(0, 229, 255, 0.12); color: #80f8ff; }
-        /* Double-croches : pointillé léger entre les notes de la portée */
-        .rhythm-step-slot + .rhythm-step-slot { border-left: 1px dashed rgba(100, 116, 139, 0.45); }
-        body.dark-mode .rhythm-step-slot + .rhythm-step-slot,
-        body.theme-studio .rhythm-step-slot + .rhythm-step-slot { border-left: 1px dashed rgba(148, 163, 184, 0.30); }
-        /* Vue grille : pointillé entre double-croches, barre appuyée au début de chaque temps */
-        .step-cell:not(.beat-start) { border-left: 1px dashed #94a3b8; }
-        body.dark-mode .step-cell:not(.beat-start),
-        body.theme-studio .step-cell:not(.beat-start) { border-left: 1px dashed rgba(148, 163, 184, 0.30); }
+        /* ═══ v1.8.8 — groupes de 2 cases = doubles croches isolées (variante V2 validée) ═══
+           Hiérarchie des espaces : case < double-croche (2 cases) < croche (4 cases) < temps (barre v1.8.7).
+           Les pointillés uniformes de la v1.8.7 laissent place à un espacement hiérarchisé. */
+        .step-column-wrapper.pair-start,
+        .time-header-cell.pair-start,
+        .mediator-header-cell.pair-start,
+        .rhythm-step-slot.pair-start,
+        .tab-step-slot.pair-start,
+        .score-med-unit.pair-start { margin-left: 5px; }
+        /* Les croches (groupes de 4 cases) se détachent encore plus */
+        .step-column-wrapper.croche-start,
+        .time-header-cell.croche-start,
+        .mediator-header-cell.croche-start,
+        .rhythm-step-slot.croche-start,
+        .tab-step-slot.croche-start,
+        .score-med-unit.croche-start { margin-left: 10px; }
+        /* Mobile : espaces réduits pour ne pas manger la largeur (compact v1.8.7 conservé) */
+        @media (max-width: 720px), (max-height: 500px) {
+            .step-column-wrapper.pair-start, .time-header-cell.pair-start,
+            .mediator-header-cell.pair-start, .rhythm-step-slot.pair-start,
+            .tab-step-slot.pair-start, .score-med-unit.pair-start { margin-left: 3px; }
+            .step-column-wrapper.croche-start, .time-header-cell.croche-start,
+            .mediator-header-cell.croche-start, .rhythm-step-slot.croche-start,
+            .tab-step-slot.croche-start, .score-med-unit.croche-start { margin-left: 6px; }
+        }
         .step-cell.beat-start { border-left: 4px solid #2563eb; box-shadow: inset 2px 0 0 rgba(37, 99, 235, 0.15); }
         body.dark-mode .step-cell.beat-start,
         body.theme-studio .step-cell.beat-start { border-left-color: #38bdf8; box-shadow: inset 2px 0 0 rgba(56, 189, 248, 0.15); }
@@ -3989,7 +4002,7 @@
     <div class="container">
         <!-- EN-TÊTE PRINCIPAL AVEC SÉLECTEUR DE THÈME & RÉGLAGES -->
         <div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.7</span></h1>
+            <h1 style="margin: 0; font-size: 1.55rem; letter-spacing: -0.5px;">🎸 Séquenceur Rythmique <span style="display: inline-block; vertical-align: middle; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(245, 124, 0, 0.4);">v1.8.8</span></h1>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <button id="btnHelp" class="btn-v2" onclick="toggleModalAide(true)" title="Guide d'utilisation et aide complète" style="font-size: 0.8rem; padding: 7px 13px; background: #fff; color: #495057; border-color: #ced4da; display: inline-flex; align-items: center; gap: 5px;">
                     <span>❓</span> <span>Aide</span>
@@ -4880,7 +4893,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <!-- v1.8.4 : bandeau de mise à jour du guide -->
                 <div style="background: rgba(33, 150, 243, 0.08); border: 1px dashed #90caf9; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #1565c0;">
-                    Guide à jour de la <strong>v1.8.7</strong> — <strong>barres de temps</strong> : dans la partition comme dans la grille, une barre appuyée marque chaque temps et des traits pointillés séparent les double-croches (lecture « papier » plus claire, dans les 5 thèmes). Et sur <strong>mobile</strong> (petit écran ou téléphone en paysage), le transport et la palette tiennent sur une ligne qui défile : la mesure reste visible, cases au moins 26 px. La bascule <strong>♯ / ♭</strong> reste disponible partout (analyseur, bibliothèque, popover).
+                    Guide à jour de la <strong>v1.8.8</strong> — <strong>groupes de double-croches</strong> : dans la partition comme dans la grille, les paires de 2 cases (double-croches) se détachent par un petit espace, et les groupes de 4 cases (croches) encore davantage — la mesure se lit par groupes, les barres de temps restent en place. Et l'analyseur d'accords présente ses <strong>autres noms possibles</strong> dans une liste claire : la note après le « / » est toujours votre basse, et une note « à côté » devient une altération du nom (ex. <strong>C7sus2(#11)</strong>). La bascule <strong>♯ / ♭</strong> reste disponible partout (analyseur, bibliothèque, popover).
                 </div>
                 
                 <!-- SECTION 1 : CRÉATION D'UN RYTHME -->
@@ -5028,7 +5041,7 @@
                     <ul style="margin: 0; padding-left: 20px;">
                         <li><strong>Le principe inversé :</strong> au lieu de choisir un accord dans un menu, vous <strong>posez vos notes</strong> sur le manche dédié (6 cordes × 24 cases) et l'application identifie l'accord en temps réel. Cliquez sur les cases pour poser vos doigts, utilisez la case de gauche pour étouffer (mute) ou libérer une corde.</li>
                         <li><strong>Priorité à la basse :</strong> la corde la plus grave jouée fixe la basse de l'accord — Do puis Mi grave s'appelle « C/E », jamais l'inverse. Depuis la v1.8, la règle tient aussi en jazz : le barré x8888x est lu <strong>F9sus4</strong> (F à la basse), et le voicing sans fondamentale x3x355 est reconnu comme <strong>C13</strong>.</li>
-                        <li><strong>Lecture nuancée :</strong> sous le grand nom s'affichent les <strong>lectures alternatives</strong> (« Aussi possible — cliquez pour changer de lecture ») et la <strong>📐 Formule</strong> de la famille reconnue (ex. « min-Maj : triade mineure + 7e majeure »).</li>
+                        <li><strong>Lecture nuancée :</strong> sous le grand nom s'affichent les <strong>autres noms possibles</strong> (cliquables — la note après le « / » est toujours votre basse réelle) et la <strong>📐 Formule</strong> de la famille reconnue (ex. « min-Maj : triade mineure + 7e majeure »). Si une note ne fait pas partie de l'accord nommé, elle apparaît comme altération du nom (ex. <strong>C7sus2(#11)</strong> : votre Fa# est la 11e augmentée).</li>
                         <li><strong>Vocabulaire jazz complet :</strong> les 44 familles de la bibliothèque sont reconnues — m7♭5, 13♭9, 9sus4, 6/9, mMaj7, dim7, aug… y compris les <strong>voicings sans fondamentale</strong> (rootless) chers au jazz moderne.</li>
                         <li><strong>Boutons utiles :</strong> <code>🔊 Écouter</code> pour entendre votre doigté, <code>📥 Accord actuel</code> pour recharger le doigté de l'accord du pas sélectionné, <code>🧹 Effacer</code> pour étouffer toutes les cordes, et l'option ♯/♭ pour choisir l'orthographe des noms (D♯ ou E♭).</li>
                     </ul>
@@ -11138,7 +11151,10 @@
         "dim7b13": "dim7 + 13te mineure — tension chromatique extrême",
         "9sus4": "Quarte suspendue + 9e — groove posé",
         "13sus4": "Quarte suspendue étoffée jusqu'à la 13te — vamps funk",
-        "7b9sus4": "Dominante suspendue + 9e mineure — tension suspendue"
+        "7b9sus4": "Dominante suspendue + 9e mineure — tension suspendue",
+        /* v1.8.8 : les deux nouvelles familles de l'analyseur */
+        "7sus2": "Dominante sans tierce — la 2de remplace la tierce, suspension ouverte et flottante",
+        "madd11": "Triade mineure + 11e ajoutée, sans 7e — modal, feutré"
     };
 
     // v1.7.0 : étiquettes d'affichage des degrés de la base — « m3 » → « 3m »,
@@ -12161,7 +12177,14 @@ const ANALYSEUR_FORMULES = [
     { type: "maj7#11", suffixe: "Maj7#11",  req: [0, 4, 11, 6],    opt: [7, 2],  prio: 42 },
     { type: "maj7#5",  suffixe: "Maj7#5",   req: [0, 4, 11, 8],    opt: [7],     prio: 43 },
     { type: "maj913",  suffixe: "Maj9/13",  req: [0, 4, 11, 9, 2], opt: [7],     prio: 44 },
-    { type: "dim7b13", suffixe: "dim7b13",  req: [0, 3, 6, 8, 9],  opt: [],      prio: 45 }
+    { type: "dim7b13", suffixe: "dim7b13",  req: [0, 3, 6, 8, 9],  opt: [],      prio: 45 },
+    /* v1.8.8 : deux familles manquantes. L'accord x35333 (Do-Sol-Sib-Ré) doit
+       se nommer C7sus2 — basse C = fondamentale, comme sur les analyseurs de
+       référence — au lieu d'un renversement de Bb6/9. Gm(add11) couvre la
+       lecture alternative pensée depuis Sol. Prios élevées : ces familles ne
+       prennent la main que si rien de mieux n'existe. */
+    { type: "7sus2",  suffixe: "7sus2",    req: [0, 2, 7, 10], opt: [], prio: 40 },
+    { type: "madd11", suffixe: "m(add11)", req: [0, 3, 5, 7],   opt: [], prio: 41 }
 ];
 
 function anaIntervallesDepuis(pcs, racine) {
@@ -12322,12 +12345,30 @@ function anaNomAffiche(c, pcBasse) {
 
 /* Degré d'une note pour la lecture choisie — même convention que la
    bibliothèque (v1.5.3) : 3m, 7M, bb7 pour la septième diminuée du dim7… */
-function anaDegre(pc, c) {
+function anaDegre(pc, c, interv) {
     const i = ((pc - c.racine) % 12 + 12) % 12;
     if (c.type === "dim7" && i === 9) return "bb7";
     if (c.type === "7#9" && i === 3) return "#9";
     if ((c.type === "aug" || c.type === "7#5") && i === 8) return "#5";
+    /* v1.8.8 : 6 demi-tons = ♭5 ou ♯11 — la quinte juste tranche.
+       Sol joué → le Fa# s'épelle ♯11 (quinte ET ♯11 coexistent) ;
+       Sol absent → le Fa# EST la quinte abaissée → ♭5 (famille 7b5). */
+    if (i === 6 && Array.isArray(interv) && interv.includes(7)) return "#11";
     return BIBLIO_DEGRES[i] || String(i);
+}
+
+/* v1.8.8 : altération affichée dans le nom — quand la lecture honorant
+   la basse (fondamentale = basse réelle) laisse exactement UNE note hors
+   famille, le nom la mentionne : C7sus2 + Fa# → C7sus2(#11). Les lectures
+   dont la fondamentale n'est pas la basse restent sans suffixe (l'avertis-
+   sement orange suffit — un « A#6/9(b6)/C » alourdirait la liste), et dès
+   DEUX notes étrangères le nom reste entier. Le même libellé sert à la
+   puce degré et à l'avertissement : un seul vocabulaire, toujours cohérent. */
+function anaAlteration(c, pcBasse, pcs) {
+    if (!c || c.racine !== pcBasse) return "";
+    if (!c.enTrop || c.enTrop.length !== 1) return "";
+    const interv = anaIntervallesDepuis(pcs, c.racine);
+    return "(" + anaDegre(c.racine + c.enTrop[0], c, interv) + ")";
 }
 
 /* --- Rendu du manche interactif (SVG vertical, comme les diagrammes) --- */
@@ -12444,7 +12485,8 @@ function anaRendreResultat() {
         return;
     }
     const c = res.candidats[anaCandidatActif] || res.candidats[0];
-    const nom = anaNomAffiche(c, res.pcBasse);
+    const intervLues = anaIntervallesDepuis(res.pcs, c.racine);
+    const nom = anaNomAffiche(c, res.pcBasse) + anaAlteration(c, res.pcBasse, res.pcs);
     /* Renversement : détecté structurellement (la basse n'est pas la fondamentale
        et appartient à l'accord) — jamais en parcourant le nom, car le suffixe
        « 6/9 » contient lui-même une barre oblique. */
@@ -12456,20 +12498,30 @@ function anaRendreResultat() {
     anaCordes.forEach((st, i) => {
         if (st < 0) { puces += '<span class="ana-puce etaouffee">corde ' + (6 - i) + ' ×</span>'; return; }
         const pc = ((ANALYSEUR_CORDES_A_VIDE[i] + st) % 12 + 12) % 12;
-        const deg = anaDegre(pc, c);
+        const deg = anaDegre(pc, c, intervLues);
         const estRacine = (deg === "1");
         puces += '<span class="ana-puce' + (estRacine ? " est-racine" : "") + '">' + anaNote(pc) + ' <b>' + deg + '</b></span>';
     });
-    let alts = "";
+    /* ═══ v1.8.8 — « Autres noms possibles » : une simple liste plate de lectures
+       alternatives cliquables, comme sur les analyseurs de référence. La note
+       après le « / » est toujours la basse réellement jouée (aucun « / » quand
+       la basse est la fondamentale de la lecture). Pas de renversements
+       hypothétiques ici : les diagrammes de renversements restent dans la
+       Bibliothèque, qui est faite pour ça. ═══ */
+    let autres = "";
     if (res.candidats.length > 1) {
-        alts = '<div class="ana-alt-titre">Aussi possible — cliquez pour changer de lecture</div><div class="ana-alts">' +
-            res.candidats.map((cc, j) => '<button type="button" class="ana-alt' + (j === anaCandidatActif ? " est-active" : "") + '" onclick="anaChoisirCandidat(' + j + ')">' + anaNote(cc.racine) + cc.suffixe + '</button>').join("") +
+        autres += '<div class="ana-alts">' +
+            res.candidats.map((cc, j) => {
+                const role = res.pcBasse === cc.racine ? "Fondamentale à la basse" : anaNote(res.pcBasse) + " à la basse (renversement)";
+                return '<button type="button" class="ana-alt' + (j === anaCandidatActif ? " est-active" : "") + '" onclick="anaChoisirCandidat(' + j + ')" title="' + role + '">' + anaNomAffiche(cc, res.pcBasse) + anaAlteration(cc, res.pcBasse, res.pcs) + '</button>';
+            }).join("") +
             '</div>';
     }
+    if (autres) autres = '<div class="ana-autres"><div class="ana-autres-titre">Autres noms possibles</div>' + autres + '</div>';
     /* v1.6.2 : une lecture qui laisse des notes de côté est signalée honnêtement */
     let avertissement = "";
     if (c.enTrop && c.enTrop.length) {
-        const hors = c.enTrop.map(i => anaNote(c.racine + i));
+        const hors = c.enTrop.map(i => anaNote(c.racine + i) + " (" + anaDegre(c.racine + i, c, intervLues) + ")");
         avertissement = '<div class="ana-sous-nom" style="color:#b45309;">⚠️ Lecture approchée : ' + hors.join(", ") +
             (hors.length > 1 ? " ne font pas partie" : " ne fait pas partie") + ' de cet accord.</div>';
     }
@@ -12480,7 +12532,7 @@ function anaRendreResultat() {
     zone.innerHTML = '<div class="ana-nom-grand" id="anaNomGrand">' + nom + '</div>' +
         (slashNote ? '<div class="ana-sous-nom">renversement — ' + slashNote + ' à la basse</div>' : "") +
         avertissement + descLigne +
-        '<div class="ana-puces">' + puces + '</div>' + alts +
+        '<div class="ana-puces">' + puces + '</div>' + autres +
         '<div class="ana-sous-nom">Degrés : 1 = fondamentale · 3m = tierce mineure · 3 = tierce majeure · 5 = quinte · 6 = sixte · 7 = septième · 7M = septième majeure · 9 = neuvième · 11 = onzième · 13 = treizième</div>' +
         anaBoutonsHTML(typeConnue);
 }
@@ -12763,7 +12815,7 @@ window.anaDefinirNotation = anaDefinirNotation;
                 }
 
                 medUnitsHTML += `
-                    <div class="score-med-unit">
+                    <div class="score-med-unit ${ev.pDansMesure % 2 === 0 && ev.pDansMesure % 8 !== 0 ? 'pair-start ' : ''}${ev.pDansMesure % 4 === 0 && ev.pDansMesure % 8 !== 0 ? 'croche-start ' : ''}">
                         ${medSym ? `<span class="score-med-badge ${medClass}" onclick="event.stopPropagation(); cyclerSensMédiatorPas(${ev.indexGlobal})" title="Médiator : ${medSym} (Cliquer pour alterner)">${medSym}</span>` : '<span style="height:12px;"></span>'}
                         ${estAccent ? `<span class="score-accent-badge">></span>` : ''}
                     </div>
@@ -12798,7 +12850,7 @@ window.anaDefinirNotation = anaDefinirNotation;
                 }
 
                 rhythmSlotsHTML += `
-                    <div class="rhythm-step-slot ${estSelectionne ? 'selected-for-edit' : ''} ${estEnLecture ? 'lecture-active' : ''}"
+                    <div class="rhythm-step-slot ${ev.pDansMesure % 2 === 0 && ev.pDansMesure % 8 !== 0 ? 'pair-start ' : ''}${ev.pDansMesure % 4 === 0 && ev.pDansMesure % 8 !== 0 ? 'croche-start ' : ''}${estSelectionne ? 'selected-for-edit' : ''} ${estEnLecture ? 'lecture-active' : ''}"
                          data-score-index="${ev.indexGlobal}"
                          onclick="selectionnerPasScore(${ev.indexGlobal})"
                          ondblclick="cyclerTypePasScore(event, ${ev.indexGlobal})"
@@ -12828,7 +12880,7 @@ window.anaDefinirNotation = anaDefinirNotation;
                     }).join("");
 
                     tabSlotsHTML += `
-                        <div class="tab-step-slot ${estSelectionne ? 'selected-for-edit' : ''} ${estEnLecture ? 'lecture-active' : ''}"
+                        <div class="tab-step-slot ${ev.pDansMesure % 2 === 0 && ev.pDansMesure % 8 !== 0 ? 'pair-start ' : ''}${ev.pDansMesure % 4 === 0 && ev.pDansMesure % 8 !== 0 ? 'croche-start ' : ''}${estSelectionne ? 'selected-for-edit' : ''} ${estEnLecture ? 'lecture-active' : ''}"
                              data-score-index="${ev.indexGlobal}"
                              onclick="selectionnerPasScore(${ev.indexGlobal})"
                              ondblclick="cyclerTypePasScore(event, ${ev.indexGlobal})"
@@ -13144,6 +13196,9 @@ window.anaDefinirNotation = anaDefinirNotation;
 
             const cellTime = document.createElement("div");
             cellTime.className = "time-header-cell";
+            /* v1.8.8 : double-croche = groupe de 2 cases, croche = groupe de 4 */
+            if (i % 2 === 0 && i % 8 !== 0) cellTime.classList.add("pair-start");
+            if (i % 4 === 0 && i % 8 !== 0) cellTime.classList.add("croche-start");
             if (i % 8 === 0) cellTime.textContent = (i / 8) + 1;
             timeRow.appendChild(cellTime);
 
@@ -13153,6 +13208,8 @@ window.anaDefinirNotation = anaDefinirNotation;
 
             const cellMed = document.createElement("div");
             cellMed.className = "mediator-header-cell";
+            if (i % 2 === 0 && i % 8 !== 0) cellMed.classList.add("pair-start");
+            if (i % 4 === 0 && i % 8 !== 0) cellMed.classList.add("croche-start");
             cellMed.style.position = "relative";
             
             if (dureeAjustee > 1) {
@@ -13258,6 +13315,8 @@ window.anaDefinirNotation = anaDefinirNotation;
 
             const colWrapper = document.createElement("div");
             colWrapper.className = "step-column-wrapper";
+            if (i % 2 === 0 && i % 8 !== 0) colWrapper.classList.add("pair-start");
+            if (i % 4 === 0 && i % 8 !== 0) colWrapper.classList.add("croche-start");
             if (dureeAjustee > 1) {
                 colWrapper.classList.add("spanned-parent");
                 colWrapper.style.setProperty("--span-width", dureeAjustee);

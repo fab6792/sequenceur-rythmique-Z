@@ -637,7 +637,7 @@ try {
     const verifs = {
         partitionBarres: css.includes(".score-beat-chord-cell + .score-beat-chord-cell"),
         grilleBarres: css.includes(".step-cell.beat-start"),
-        pointilles: css.includes(".rhythm-step-slot + .rhythm-step-slot"),
+        groupes: css.includes(".step-column-wrapper.pair-start") && css.includes("margin-left: 10px"),
         mediaMobile: css.includes("(max-width: 720px)") && css.includes("(max-height: 500px)"),
         cases26: css.includes("minmax(26px, 1fr)"),
     };
@@ -682,6 +682,73 @@ try {
     console.log("v1.8.7 OK — téléphone 390 px : cases ≥ 26 px, transport et palette sur une ligne qui défile.");
 } catch (e) {
     console.error("ÉCHEC : barres de temps + mobile compact : " + e.message);
+    echec = true;
+}
+
+// 18. v1.8.8 — groupes de double-croches (V2) + « Autres noms possibles » + altération
+try {
+    // a) Nommage : x35333 → C7sus2 (exact), x34333 → C7sus2(#11) avec avertissement
+    await page.goto(BASE, { waitUntil: "load", timeout: 30000 });
+    await page.waitForFunction(
+        () => document.querySelector("#mesuresContainer") && document.querySelector("#mesuresContainer").children.length > 0,
+        { timeout: 15000 }
+    );
+    const ana = await page.evaluate(() => {
+        anaDefinirNotation(false);   // lecture en dièses, quel que soit l'état laissé par les blocs 14-16
+        const lire = () => ({
+            nom: (document.getElementById("anaNomGrand") || {}).textContent?.trim() || "",
+            avert: [...document.querySelectorAll(".ana-sous-nom")].map(e => e.textContent).find(t => t.includes("Lecture approchée")) || "",
+            alts: [...document.querySelectorAll(".ana-alt")].map(b => b.textContent.trim()),
+        });
+        anaCordes = [-1, 3, 5, 3, 3, 3];   // x35333 : Do-Sol-Sib-Ré-Sol
+        anaRendre();
+        const x35333 = lire();
+        anaCordes = [-1, 3, 4, 3, 3, 3];   // x34333 : le même avec un Fa#
+        anaRendre();
+        return { x35333, x34333: lire() };
+    });
+    if (ana.x35333.nom !== "C7sus2" || ana.x35333.avert !== "" || ana.x35333.alts[0] !== "C7sus2" || !ana.x35333.alts.includes("A#6/9/C")) {
+        throw new Error("x35333 attendu C7sus2 exact : " + JSON.stringify(ana.x35333));
+    }
+    if (ana.x34333.nom !== "C7sus2(#11)" || !ana.x34333.avert.includes("F# (#11)") || ana.x34333.alts[0] !== "C7sus2(#11)") {
+        throw new Error("x34333 attendu C7sus2(#11) : " + JSON.stringify(ana.x34333));
+    }
+    console.log("Analyseur v1.8.8 OK — x35333 → C7sus2 (basse honorée), x34333 → C7sus2(#11) avec altération annoncée.");
+
+    // b) Espacement V2 réel : vue grille, marges 5/10 px et pointillés partis
+    await page.click("#btnModeGrille");
+    await page.waitForTimeout(500);
+    const grille = await page.evaluate(() => {
+        const pair = document.querySelector(".step-column-wrapper.pair-start");
+        const croche = document.querySelector(".step-column-wrapper.croche-start");
+        const cell = document.querySelector(".step-cell:not(.beat-start)");
+        return {
+            margePair: pair ? getComputedStyle(pair).marginLeft : null,
+            margeCroche: croche ? getComputedStyle(croche).marginLeft : null,
+            separateurGrille: cell ? getComputedStyle(cell).borderLeftStyle : null,
+        };
+    });
+    if (grille.margePair !== "5px" || grille.margeCroche !== "10px") {
+        throw new Error("espacement V2 grille incorrect : " + JSON.stringify(grille));
+    }
+    if (grille.separateurGrille === "dashed") {
+        throw new Error("pointillés uniformes encore présents : " + grille.separateurGrille);
+    }
+
+    // c) Vue partition : mêmes classes sur médiator et slots rythme
+    await page.click("#btnModePartition");
+    await page.waitForTimeout(500);
+    const partition = await page.evaluate(() => ({
+        medPair: !!document.querySelector(".score-med-unit.pair-start"),
+        medCroche: !!document.querySelector(".score-med-unit.croche-start"),
+        rhythmPair: !!document.querySelector(".rhythm-step-slot.pair-start"),
+    }));
+    if (!partition.medPair || !partition.medCroche || !partition.rhythmPair) {
+        throw new Error("classes pair/croche absentes en partition : " + JSON.stringify(partition));
+    }
+    console.log("v1.8.8 OK — espacement des groupes (5 px paires / 10 px croches, 3/6 px mobile) et liste « Autres noms possibles » en place.");
+} catch (e) {
+    console.error("ÉCHEC : groupes de double-croches + autres noms possibles : " + e.message);
     echec = true;
 }
 

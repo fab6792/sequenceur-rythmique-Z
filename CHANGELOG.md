@@ -3,6 +3,26 @@
 Toutes les modifications notables de l'application sont documentées ici.
 La version en tête de fichier déclenche automatiquement la création de la release GitHub correspondante.
 
+## v1.8.8 (2026-11-12)
+
+Deux nouveautés validées ensemble : les **groupes de double-croches** et la section **« Autres noms possibles »** de l'analyseur
+
+**Point 1 — Espacement des groupes (variante V2 « paires + croches »)**
+- **Vue Partition comme vue Grille** : les **paires de 2 cases** (double-croches) se détachent par un petit espace (5 px), les **groupes de 4 cases** (croches) encore davantage (10 px) — la mesure se lit par groupes, comme sur une partition papier
+- Les traits pointillés uniformes entre chaque double-croche (v1.8.7) disparaissent : la hiérarchie vient de l'espacement, les **barres de temps** restent en place
+- Les **en-têtes** de temps et de médiator suivent le même espacement ; en **mobile**, espaces réduits (3 px / 6 px) pour que les cases gardent leurs 26 px minimum
+- Cohérent dans les **5 thèmes** ; desktop inchangé sinon
+
+**Point 2 — « Autres noms possibles » (analyseur d'accords)**
+- La liste des lectures alternatives devient une **liste plate claire** dans un encadré violet : chaque nom est cliquable pour changer de lecture, et **la note après le « / » est toujours votre basse réelle** (aucun « / » quand votre basse est la fondamentale de la lecture)
+- **Deux familles ajoutées** : **7sus2** (votre x35333 se nomme enfin **C7sus2** — votre Do devient la fondamentale, fini le renversement « Bb6/9/C » qui ne disait rien de votre basse) et **m(add11)** — chacune avec sa ligne **📐 Formule**
+- **Nouvelle règle d'altération** : quand la lecture honorant votre basse laisse exactement une note « à côté », le nom la mentionne — votre x34333 s'appelle **C7sus2(#11)** : le Fa# est la **11e augmentée** (♯11), car Sol la quinte est jouée ; l'avertissement orange et la puce degré (« F# #11 ») emploient le même libellé
+- Catalogue vérifié sur **27 doigtés de référence** : seuls les accords concernés changent de nom, les 8 accords du test verrouillé restent identiques
+
+**Rigueur, comme d'habitude**
+- Les règles sont exactement celles des maquettes que vous avez essayées (variante V2, liste plate v4) — rien d'autre n'a changé
+- Test CI étendu (bloc 18) : x35333 → C7sus2 (exact, sans avertissement), x34333 → C7sus2(#11) avec « F# (#11) » annoncé, espacement réel vérifié en vue grille (5 px / 10 px) et en partition, pointillés uniformes bien supprimés — tout est vert en local
+
 ## v1.8.7 (2026-11-10)
 
 Deux améliorations validées ensemble : les **barres de temps** et le **mobile compact**
